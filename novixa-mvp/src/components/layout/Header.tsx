@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useState } from "react";
 import { ShoppingBag, Menu, X } from "lucide-react";
+import ApiStatusBadge from "@/components/layout/ApiStatusBadge";
 
 interface HeaderProps {
   cartCount: number;
@@ -48,6 +49,7 @@ export default function Header({ cartCount, onCartClick }: HeaderProps) {
 
           {/* Actions */}
           <div className="flex items-center gap-2 md:gap-4">
+            <ApiStatusBadge />
             <button
               onClick={onCartClick}
               className="relative p-2 text-gray-700 hover:text-primary transition-colors"

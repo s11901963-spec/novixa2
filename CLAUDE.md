@@ -12,6 +12,11 @@ Full founder brief: [`docs/NOVIXA_BRIEF.md`](docs/NOVIXA_BRIEF.md). Current stat
 
 Checks (run from `novixa-mvp/`): `npx eslint src`, `npx next build`.
 
+## Integrations (status)
+
+- **HIOBuy Product API** (1688/Taobao search by keyword, image, link; product detail): code in `novixa-mvp/src/lib/hiobuy.ts`, key in `HIOBUY_API_KEY`. The live connection is **not verified yet**. The header badge turns green only after a real 1688 search succeeds. HIOBuy's claimed official Alibaba/1688 partnership is unverified.
+- Separate repo `s11901963-spec/novixa` (Python/FastAPI, Apify-based sourcing) is the larger backend and was built independently of this app.
+
 ## Non-negotiable rules
 
 1. **B2C, not B2B.** The end consumer is the customer. Factories, suppliers and platforms (1688, Taobao, Weidian, …) sit in the backend; the user only ever deals with Novixa.

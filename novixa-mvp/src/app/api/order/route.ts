@@ -26,7 +26,7 @@ export async function POST(request: Request) {
         0
       ),
       shippingCost: items.reduce(
-        (sum, item) => sum + item.product.shippingCost,
+        (sum, item) => sum + (item.product.shippingCost ?? 0),
         0
       ),
       status: "pending",

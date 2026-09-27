@@ -10,61 +10,79 @@ import ProductModal from "@/components/product/ProductModal";
 import Cart from "@/components/product/Cart";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { Product, CartItem } from "@/types";
-import { searchProducts } from "@/lib/data";
+import { Product, CartItem, SearchResponse } from "@/types";
+import { blobToBase64, compressImageFile } from "@/lib/compress-image";
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
   const [query, setQuery] = useState("");
+  const [mode, setMode] = useState<SearchResponse["mode"]>("demo");
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null);
   const [cart, setCart] = useState<CartItem[]>([]);
   const [isCartOpen, setIsCartOpen] = useState(false);
 
-  const handleSearch = useCallback(async (searchQuery: string) => {
+  const runSearch = useCallback(async (label: string, body: Record<string, string>) => {
     setLoading(true);
-    setQuery(searchQuery);
-
-    // Simulate API delay
-    await new Promise((resolve) => setTimeout(resolve, 1000));
-
-    const results = searchProducts(searchQuery);
-    setProducts(results);
-    setLoading(false);
+    setQuery(label);
+    setError(null);
+    try {
+      const response = await fetch("/api/search", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(body),
+      });
+      const data = (await response.json()) as Partial<SearchResponse> & { error?: string };
+      setMode(data.mode ?? "live");
+      setProducts(data.products ?? []);
+      setError(data.error ?? (response.ok ? null : "فشل البحث"));
+    } catch {
+      setProducts([]);
+      setError("تعذّر الاتصال بخادم الموقع.");
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
-  const handleImageUpload = useCallback(async (file: File) => {
-    setLoading(true);
+  // A pasted 1688/Taobao/Weidian link is parsed; anything else is a keyword.
+  const handleSearch = useCallback(
+    (searchQuery: string) =>
+      /^https?:\/\//i.test(searchQuery)
+        ? runSearch(searchQuery, { url: searchQuery })
+        : runSearch(searchQuery, { keyword: searchQuery }),
+    [runSearch]
+  );
 
+  const handleImageUpload = useCallback(
+    async (file: File) => {
+      try {
+        const image = await blobToBase64(await compressImageFile(file));
+        await runSearch("بحث بالصورة", { image_base64: image });
+      } catch {
+        setError("تعذّرت قراءة الصورة.");
+      }
+    },
+    [runSearch]
+  );
+
+  // Live products get their full details (description, specs, MOQ) on open.
+  const handleSelectProduct = async (product: Product) => {
+    setSelectedProduct(product);
+    if (product.source === "demo") return;
     try {
-      // Convert image to base64
-      const reader = new FileReader();
-      reader.onloadend = async () => {
-        const base64 = reader.result as string;
-        const base64Data = base64.split(",")[1];
-
-        // Call AI analysis API
-        const response = await fetch("/api/analyze", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ image: base64Data }),
-        });
-
-        if (response.ok) {
-          const data = await response.json();
-          // Search with the analyzed query
-          handleSearch(data.searchQuery || "منتجات مشابهة");
-        } else {
-          // Fallback: search with generic query
-          handleSearch("منتجات");
-        }
-      };
-      reader.readAsDataURL(file);
-    } catch (error) {
-      console.error("Error analyzing image:", error);
-      handleSearch("منتجات");
+      const response = await fetch("/api/product", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ id: product.id, channel: product.source }),
+      });
+      if (!response.ok) return;
+      const { product: detail } = (await response.json()) as { product: Product };
+      setSelectedProduct((current) => (current?.id === product.id ? { ...product, ...detail } : current));
+    } catch {
+      // Keep the list-level data if details fail.
     }
-  }, [handleSearch]);
+  };
 
   const handleAddToCart = (product: Product) => {
     setCart((prev) => {
@@ -113,8 +131,10 @@ export default function Home() {
               <SearchResults
                 products={products}
                 query={query}
+                mode={mode}
+                error={error}
                 loading={loading}
-                onSelectProduct={setSelectedProduct}
+                onSelectProduct={handleSelectProduct}
               />
             </div>
           </section>

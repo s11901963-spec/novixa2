@@ -12,6 +12,7 @@ export function formatPrice(amount: number, currency: string = "SAR"): string {
 export function calculatePricingBreakdown(
   productPrice: number,
   shippingCost: number,
+  currency: string = "SAR",
   feesPercent: number = 2.5,
   taxPercent: number = 0
 ): PricingBreakdown {
@@ -25,7 +26,7 @@ export function calculatePricingBreakdown(
     fees,
     taxes,
     total,
-    currency: "SAR",
+    currency,
   };
 }
 
@@ -40,10 +41,11 @@ export function getDiscountPercentage(
 export function generateMockProducts(query: string): Product[] {
   const baseProducts: Omit<Product, "id">[] = [
     {
+      source: "demo",
       name: `شاشة كمبيوتر gaming 27 بوصة ${query}`,
       description: "شاشة ألعاب عالية الأداء بدقة 2K ومعدل تحديث 144Hz",
       category: "إلكترونيات",
-      imageUrl: "/images/products/monitor-1.jpg",
+      imageUrl: null,
       specs: {
         size: "27 بوصة",
         resolution: "2K (2560x1440)",
@@ -73,10 +75,11 @@ export function generateMockProducts(query: string): Product[] {
       sourceUrl: "https://example.com/product/1",
     },
     {
+      source: "demo",
       name: `شاشة احترافية 32 بوصة ${query}`,
       description: "شاشة احترافية للمصممين والمطورين بألوان دقيقة",
       category: "إلكترونيات",
-      imageUrl: "/images/products/monitor-2.jpg",
+      imageUrl: null,
       specs: {
         size: "32 بوصة",
         resolution: "4K UHD",
@@ -106,10 +109,11 @@ export function generateMockProducts(query: string): Product[] {
       sourceUrl: "https://example.com/product/2",
     },
     {
+      source: "demo",
       name: `لابتوب ألعاب ${query}`,
       description: "لابتوب ألعاب قوي بمعالج latest generation وكارت شاشة dedi",
       category: "كمبيوتر",
-      imageUrl: "/images/products/laptop-1.jpg",
+      imageUrl: null,
       specs: {
         processor: "Intel Core i7-13700H",
         graphics: "RTX 4060 8GB",
@@ -143,6 +147,6 @@ export function generateMockProducts(query: string): Product[] {
 
   return baseProducts.map((product, index) => ({
     ...product,
-    id: `prod-${Date.now()}-${index}`,
+    id: `demo-${index}`,
   }));
 }
