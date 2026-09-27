@@ -1,7 +1,7 @@
 "use client";
 
 import { Product } from "@/types";
-import { X, Star, Truck, Shield, ShoppingCart, ExternalLink } from "lucide-react";
+import { X, Star, Shield, ShoppingCart, ExternalLink } from "lucide-react";
 import { formatPrice, calculatePricingBreakdown } from "@/lib/utils";
 
 interface ProductModalProps {
@@ -63,7 +63,8 @@ export default function ProductModal({
                 <div>
                   <p className="font-medium text-gray-900">{product.supplier.name}</p>
                   <p className="text-sm text-gray-500">
-                    {product.supplier.location} • موثق
+                    {product.supplier.location}
+                    {product.supplier.verified && " • موثق"}
                   </p>
                 </div>
               </div>

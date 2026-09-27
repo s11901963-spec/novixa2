@@ -1,9 +1,7 @@
 "use client";
 
-import { useState } from "react";
-import { ArrowLeft, Zap, Shield, Truck } from "lucide-react";
+import { Zap } from "lucide-react";
 import SearchBar from "@/components/search/SearchBar";
-import { Product } from "@/types";
 
 interface HeroProps {
   onSearch: (query: string) => void;
@@ -45,21 +43,10 @@ export default function Hero({ onSearch, onImageUpload, loading }: HeroProps) {
             <SearchBar onSearch={onSearch} onImageUpload={onImageUpload} loading={loading} />
           </div>
 
-          {/* Stats */}
-          <div className="grid grid-cols-3 gap-8 max-w-2xl mx-auto">
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-1">+500</div>
-              <div className="text-sm text-gray-600">مورد معتمد</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-1">+10K</div>
-              <div className="text-sm text-gray-600">منتج متوفر</div>
-            </div>
-            <div className="text-center">
-              <div className="text-3xl font-bold text-gray-900 mb-1">15+</div>
-              <div className="text-sm text-gray-600">دولة</div>
-            </div>
-          </div>
+          {/* Tagline (no supplier/product counts until they are backed by real data) */}
+          <p className="text-sm font-medium text-gray-500">
+            From Factory to Person — من المصنع إليك
+          </p>
         </div>
       </div>
     </section>

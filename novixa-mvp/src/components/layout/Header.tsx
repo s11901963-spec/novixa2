@@ -2,9 +2,14 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import { Search, ShoppingBag, Menu, X } from "lucide-react";
+import { ShoppingBag, Menu, X } from "lucide-react";
 
-export default function Header() {
+interface HeaderProps {
+  cartCount: number;
+  onCartClick: () => void;
+}
+
+export default function Header({ cartCount, onCartClick }: HeaderProps) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
 
   return (
@@ -12,7 +17,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center space-x-2 space-x-reverse">
+          <Link href="/" className="flex items-center gap-2">
             <div className="w-8 h-8 bg-gradient-to-br from-primary to-blue-700 rounded-lg flex items-center justify-center">
               <span className="text-white font-bold text-lg">N</span>
             </div>
@@ -20,7 +25,7 @@ export default function Header() {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8 space-x-reverse">
+          <nav className="hidden md:flex items-center gap-8">
             <Link
               href="/"
               className="text-gray-700 hover:text-primary transition-colors"
@@ -42,26 +47,35 @@ export default function Header() {
           </nav>
 
           {/* Actions */}
-          <div className="hidden md:flex items-center space-x-4 space-x-reverse">
-            <button className="p-2 text-gray-700 hover:text-primary transition-colors">
+          <div className="flex items-center gap-2 md:gap-4">
+            <button
+              onClick={onCartClick}
+              className="relative p-2 text-gray-700 hover:text-primary transition-colors"
+              aria-label="سلة التسوق"
+            >
               <ShoppingBag className="w-5 h-5" />
+              {cartCount > 0 && (
+                <span className="absolute -top-1 -left-1 min-w-5 h-5 px-1 bg-primary text-white text-xs font-bold rounded-full flex items-center justify-center">
+                  {cartCount}
+                </span>
+              )}
             </button>
-            <button className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
+            <button className="hidden md:block bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary-dark transition-colors">
               تسجيل الدخول
             </button>
-          </div>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden p-2"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="w-6 h-6" />
-            ) : (
-              <Menu className="w-6 h-6" />
-            )}
-          </button>
+            {/* Mobile menu button */}
+            <button
+              className="md:hidden p-2"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="w-6 h-6" />
+              ) : (
+                <Menu className="w-6 h-6" />
+              )}
+            </button>
+          </div>
         </div>
       </div>
 

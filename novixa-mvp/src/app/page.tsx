@@ -93,7 +93,10 @@ export default function Home() {
 
   return (
     <div className="min-h-screen flex flex-col">
-      <Header />
+      <Header
+        cartCount={cart.reduce((sum, item) => sum + item.quantity, 0)}
+        onCartClick={() => setIsCartOpen(true)}
+      />
 
       <main className="flex-1">
         {/* Hero Section */}
@@ -136,12 +139,14 @@ export default function Home() {
         onAddToCart={handleAddToCart}
       />
 
-      <Cart
-        items={cart}
-        onClose={() => setIsCartOpen(false)}
-        onRemoveItem={handleRemoveFromCart}
-        onCheckout={handleCheckout}
-      />
+      {isCartOpen && (
+        <Cart
+          items={cart}
+          onClose={() => setIsCartOpen(false)}
+          onRemoveItem={handleRemoveFromCart}
+          onCheckout={handleCheckout}
+        />
+      )}
     </div>
   );
 }

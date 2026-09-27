@@ -64,6 +64,11 @@ export default function SearchResults({
         </span>
       </div>
 
+      {/* All results come from mock data in lib/data.ts; remove once real sources are connected */}
+      <p className="mb-6 px-4 py-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl">
+        نتائج تجريبية لأغراض العرض فقط: أسماء الموردين والأسعار والتقييمات ليست بيانات حقيقية أو موثقة.
+      </p>
+
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (
           <ProductCard
