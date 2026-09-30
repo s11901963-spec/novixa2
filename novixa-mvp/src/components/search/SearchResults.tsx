@@ -1,12 +1,14 @@
 "use client";
 
-import { Product } from "@/types";
-import { Search } from "lucide-react";
+import { Product, SearchResponse } from "@/types";
+import { Search, AlertTriangle } from "lucide-react";
 import ProductCard from "@/components/product/ProductCard";
 
 interface SearchResultsProps {
   products: Product[];
   query: string;
+  mode: SearchResponse["mode"];
+  error: string | null;
   loading: boolean;
   onSelectProduct: (product: Product) => void;
 }
@@ -14,6 +16,8 @@ interface SearchResultsProps {
 export default function SearchResults({
   products,
   query,
+  mode,
+  error,
   loading,
   onSelectProduct,
 }: SearchResultsProps) {
@@ -33,6 +37,18 @@ export default function SearchResults({
             </div>
           </div>
         ))}
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="text-center py-16">
+        <div className="w-16 h-16 bg-red-50 rounded-full flex items-center justify-center mx-auto mb-4">
+          <AlertTriangle className="w-8 h-8 text-error" />
+        </div>
+        <h3 className="text-lg font-semibold text-gray-900 mb-2">تعذّر البحث</h3>
+        <p className="text-gray-600">{error}</p>
       </div>
     );
   }
@@ -63,6 +79,16 @@ export default function SearchResults({
           {products.length} منتج
         </span>
       </div>
+
+      {mode === "demo" ? (
+        <p className="mb-6 px-4 py-3 text-sm text-amber-800 bg-amber-50 border border-amber-200 rounded-xl">
+          نتائج تجريبية لأغراض العرض فقط: أسماء الموردين والأسعار والتقييمات ليست بيانات حقيقية أو موثقة.
+        </p>
+      ) : (
+        <p className="mb-6 px-4 py-3 text-sm text-green-800 bg-green-50 border border-green-200 rounded-xl">
+          نتائج حقيقية من المصدر عبر Hiobuy. السعر المعروض هو سعر المصدر، والشحن والجمارك والضريبة لم تُحسب بعد.
+        </p>
+      )}
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
         {products.map((product) => (

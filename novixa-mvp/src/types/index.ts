@@ -1,20 +1,27 @@
+// "demo" = mock data from lib/data.ts; the rest are live HIOBuy channels.
+export type ProductSource = "demo" | "1688" | "taobao" | "weidian";
+
+// null means "unknown / not provided by the source" and must be shown as such.
 export interface Product {
   id: string;
+  source: ProductSource;
   name: string;
   description: string;
   category: string;
-  imageUrl: string;
+  imageUrl: string | null;
+  images?: string[];
   specs: Record<string, string>;
   supplier: Supplier;
   price: number;
   currency: string;
   originalPrice?: number;
-  shippingCost: number;
-  shippingDays: number;
-  rating: number;
-  reviewCount: number;
-  availability: "in_stock" | "limited" | "out_of_stock";
-  moq?: number;
+  shippingCost: number | null;
+  shippingDays: number | null;
+  rating: number | null;
+  reviewCount: number | null;
+  salesCount?: number | null;
+  availability: "in_stock" | "limited" | "out_of_stock" | "unknown";
+  moq?: number | null;
   tags: string[];
   sourceUrl?: string;
 }
@@ -22,12 +29,12 @@ export interface Product {
 export interface Supplier {
   id: string;
   name: string;
-  location: string;
-  country: string;
-  rating: number;
+  location: string | null;
+  country: string | null;
+  rating: number | null;
   verified: boolean;
-  yearsActive: number;
-  responseRate: number;
+  yearsActive: number | null;
+  responseRate: number | null;
 }
 
 export interface CartItem {
@@ -56,11 +63,11 @@ export interface Address {
   zipCode: string;
 }
 
-export interface SearchResult {
-  query: string;
+export interface SearchResponse {
+  mode: "live" | "demo";
   products: Product[];
-  totalResults: number;
-  searchTime: number;
+  total: number;
+  error?: string;
 }
 
 export interface AIAnalysis {
@@ -78,4 +85,10 @@ export interface PricingBreakdown {
   taxes: number;
   total: number;
   currency: string;
+}
+
+export interface ApiStatus {
+  state: "connected" | "not_configured" | "error";
+  message: string;
+  checkedAt: string;
 }

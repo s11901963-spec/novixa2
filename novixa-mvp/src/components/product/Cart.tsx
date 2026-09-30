@@ -16,11 +16,14 @@ export default function Cart({ items, onClose, onRemoveItem, onCheckout }: CartP
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
+  const shippingKnown = items.every((item) => item.product.shippingCost != null);
   const shipping = items.reduce(
-    (sum, item) => sum + item.product.shippingCost,
+    (sum, item) => sum + (item.product.shippingCost ?? 0),
     0
   );
-  const pricing = calculatePricingBreakdown(subtotal, shipping);
+  const currency = items[0]?.product.currency ?? "SAR";
+  const mixedCurrencies = items.some((item) => item.product.currency !== currency);
+  const pricing = calculatePricingBreakdown(subtotal, shipping, currency);
 
   return (
     <div className="fixed inset-0 z-50 flex items-start justify-end">
@@ -57,7 +60,17 @@ export default function Cart({ items, onClose, onRemoveItem, onCheckout }: CartP
                     key={item.product.id}
                     className="flex gap-4 p-4 bg-gray-50 rounded-xl"
                   >
-                    <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 animate-shimmer" />
+                    {item.product.imageUrl ? (
+                      // eslint-disable-next-line @next/next/no-img-element -- remote marketplace CDN images
+                      <img
+                        src={item.product.imageUrl}
+                        alt={item.product.name}
+                        referrerPolicy="no-referrer"
+                        className="w-20 h-20 object-cover rounded-lg flex-shrink-0"
+                      />
+                    ) : (
+                      <div className="w-20 h-20 bg-gray-200 rounded-lg flex-shrink-0 animate-shimmer" />
+                    )}
                     <div className="flex-1 min-w-0">
                       <h4 className="font-medium text-gray-900 line-clamp-2 mb-1">
                         {item.product.name}
@@ -82,6 +95,11 @@ export default function Cart({ items, onClose, onRemoveItem, onCheckout }: CartP
               </div>
 
               {/* Summary */}
+              {mixedCurrencies ? (
+                <p className="border-t border-gray-200 pt-4 mb-6 text-sm text-amber-800">
+                  السلة فيها منتجات بعملات مختلفة، لذلك لا يمكن حساب مجموع واحد بعد.
+                </p>
+              ) : (
               <div className="border-t border-gray-200 pt-4 space-y-2 mb-6">
                 <div className="flex justify-between text-gray-600">
                   <span>المجموع الفرعي</span>
@@ -89,19 +107,26 @@ export default function Cart({ items, onClose, onRemoveItem, onCheckout }: CartP
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>الشحن</span>
-                  <span>{formatPrice(pricing.shippingCost, pricing.currency)}</span>
+                  <span>
+                    {shippingKnown
+                      ? formatPrice(pricing.shippingCost, pricing.currency)
+                      : "يُحسب لاحقًا"}
+                  </span>
                 </div>
                 <div className="flex justify-between text-gray-600">
                   <span>الرسوم</span>
                   <span>{formatPrice(pricing.fees, pricing.currency)}</span>
                 </div>
                 <div className="border-t border-gray-200 pt-2 flex justify-between text-lg font-bold">
-                  <span>الإجمالي</span>
+                  <span>
+                    {shippingKnown ? "الإجمالي" : "المجموع (بدون الشحن والجمارك والضريبة)"}
+                  </span>
                   <span className="text-primary">
                     {formatPrice(pricing.total, pricing.currency)}
                   </span>
                 </div>
               </div>
+              )}
 
               {/* Checkout Button */}
               <button

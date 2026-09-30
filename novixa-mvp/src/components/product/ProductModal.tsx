@@ -1,8 +1,9 @@
 "use client";
 
 import { Product } from "@/types";
-import { X, Star, Truck, Shield, ShoppingCart, ExternalLink } from "lucide-react";
+import { X, Star, Shield, ShoppingCart, ExternalLink } from "lucide-react";
 import { formatPrice, calculatePricingBreakdown } from "@/lib/utils";
+import { SOURCE_LABELS } from "@/lib/sources";
 
 interface ProductModalProps {
   product: Product | null;
@@ -19,7 +20,8 @@ export default function ProductModal({
 
   const pricing = calculatePricingBreakdown(
     product.price,
-    product.shippingCost
+    product.shippingCost ?? 0,
+    product.currency
   );
 
   return (
@@ -40,12 +42,22 @@ export default function ProductModal({
           <div className="grid md:grid-cols-2 gap-8">
             {/* Left: Image */}
             <div>
-              <div className="aspect-square bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
-                <div className="text-center">
-                  <div className="w-32 h-32 bg-gray-200 rounded-xl mx-auto mb-4 animate-shimmer" />
-                  <p className="text-gray-500 text-sm">صورة المنتج</p>
+              {product.imageUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element -- remote marketplace CDN images
+                <img
+                  src={product.imageUrl}
+                  alt={product.name}
+                  referrerPolicy="no-referrer"
+                  className="w-full aspect-square object-cover rounded-2xl mb-4 bg-gray-50"
+                />
+              ) : (
+                <div className="aspect-square bg-gray-50 rounded-2xl flex items-center justify-center mb-4">
+                  <div className="text-center">
+                    <div className="w-32 h-32 bg-gray-200 rounded-xl mx-auto mb-4 animate-shimmer" />
+                    <p className="text-gray-500 text-sm">صورة المنتج</p>
+                  </div>
                 </div>
-              </div>
+              )}
             </div>
 
             {/* Right: Details */}
@@ -63,31 +75,49 @@ export default function ProductModal({
                 <div>
                   <p className="font-medium text-gray-900">{product.supplier.name}</p>
                   <p className="text-sm text-gray-500">
-                    {product.supplier.location} • موثق
+                    {[product.supplier.location, SOURCE_LABELS[product.source]]
+                      .filter(Boolean)
+                      .join(" • ")}
+                    {product.supplier.verified && " • موثق"}
                   </p>
                 </div>
               </div>
 
               {/* Rating */}
               <div className="flex items-center gap-2 mb-4">
-                <div className="flex items-center gap-1">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <Star
-                      key={star}
-                      className={`w-5 h-5 ${
-                        star <= product.rating
-                          ? "text-accent fill-accent"
-                          : "text-gray-300"
-                      }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-sm text-gray-600">
-                  ({product.reviewCount} تقييم)
-                </span>
+                {product.rating != null ? (
+                  <>
+                    <div className="flex items-center gap-1">
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <Star
+                          key={star}
+                          className={`w-5 h-5 ${
+                            star <= (product.rating ?? 0)
+                              ? "text-accent fill-accent"
+                              : "text-gray-300"
+                          }`}
+                        />
+                      ))}
+                    </div>
+                    {product.reviewCount != null && (
+                      <span className="text-sm text-gray-600">
+                        ({product.reviewCount} تقييم)
+                      </span>
+                    )}
+                  </>
+                ) : (
+                  <span className="text-sm text-gray-500">لا توجد تقييمات موثقة بعد</span>
+                )}
               </div>
 
+              {product.moq != null && (
+                <p className="mb-4 text-sm text-gray-700">
+                  الحد الأدنى للطلب عند المورد: <strong>{product.moq}</strong>
+                </p>
+              )}
+
               {/* Specs */}
+              {Object.keys(product.specs).length > 0 && (
               <div className="mb-6">
                 <h4 className="font-semibold text-gray-900 mb-3">المواصفات</h4>
                 <div className="grid grid-cols-2 gap-2">
@@ -102,6 +132,7 @@ export default function ProductModal({
                   ))}
                 </div>
               </div>
+              )}
 
               {/* Pricing */}
               <div className="bg-primary/5 rounded-xl p-4 mb-6">
@@ -118,7 +149,9 @@ export default function ProductModal({
                   <div className="flex justify-between">
                     <span className="text-gray-600">الشحن</span>
                     <span className="font-medium">
-                      {formatPrice(pricing.shippingCost, pricing.currency)}
+                      {product.shippingCost != null
+                        ? formatPrice(pricing.shippingCost, pricing.currency)
+                        : "يُحسب لاحقًا"}
                     </span>
                   </div>
                   <div className="flex justify-between">
@@ -129,7 +162,9 @@ export default function ProductModal({
                   </div>
                   <div className="border-t border-gray-200 pt-2 flex justify-between">
                     <span className="font-semibold text-gray-900">
-                      الإجمالي
+                      {product.shippingCost != null
+                        ? "الإجمالي"
+                        : "المجموع (بدون الشحن والجمارك والضريبة)"}
                     </span>
                     <span className="font-bold text-primary text-lg">
                       {formatPrice(pricing.total, pricing.currency)}
@@ -149,6 +184,7 @@ export default function ProductModal({
                 </button>
                 {product.sourceUrl && (
                   <a
+                    title="فتح المنتج في المصدر"
                     href={product.sourceUrl}
                     target="_blank"
                     rel="noopener noreferrer"
