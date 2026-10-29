@@ -15,14 +15,15 @@
     "build:single": "tsc -b && vite build --mode singlefile"
   },
   "dependencies": {
+    "@fontsource/ibm-plex-mono": "^5.3.0",
     "@fontsource/ibm-plex-sans-arabic": "^5.3.0",
+    "@fontsource/noto-kufi-arabic": "^5.3.0",
     "@react-three/drei": "^10.7.9",
     "@react-three/fiber": "^9.8.2",
     "katex": "^0.19.1",
     "lucide-react": "^1.64.0",
     "react": "^19.3.1",
     "react-dom": "^19.3.1",
-    "react-router-dom": "^7.18.5",
     "three": "^0.186.1",
     "zod": "^4.6.7",
     "zustand": "^5.0.16"

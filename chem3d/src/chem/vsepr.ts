@@ -124,7 +124,10 @@ function idealAngles(shape: MolecularGeometryId, x: number, e: number, mixed: bo
         { kind: 'trans', value: 180, relation: exactOr(false) },
       ];
     case 'square-pyramidal':
-      return [{ kind: 'ap-bas', value: 90, relation: 'less-than' }];
+      return [
+        { kind: 'ap-bas', value: 90, relation: 'less-than' },
+        { kind: 'cis', value: 90, relation: 'less-than' },
+      ];
   }
 }
 

@@ -1,0 +1,224 @@
+@import 'tailwindcss';
+
+/* Layout concept: an instrument bench — a dark specimen screen for the 3D model,
+   framed by a calm, paper-like control surface with cobalt (nitrogen-blue) accents. */
+:root {
+  --bg: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #eaeef4;
+  --fg: #121a2b;
+  --fg-muted: #4c5870;
+  --border: #d3dae4;
+  --accent: #2448c7;
+  --accent-fg: #ffffff;
+  --accent-soft: #e2e9ff;
+  --ok: #0f7a45;
+  --ok-soft: #e1f4ea;
+  --bad: #bf2b2b;
+  --bad-soft: #fdeaea;
+  --warn: #9a5a00;
+  --warn-soft: #fff3dc;
+  --lp: #8a5cf6;
+  --bp: #0b9fb3;
+  --screen: #0c1322;
+  --screen-2: #141e33;
+  --screen-fg: #e4eaf6;
+  --screen-muted: #9fb0cc;
+  --screen-line: #2a3856;
+  --font-body: 'IBM Plex Sans Arabic', system-ui, 'Segoe UI', Tahoma, sans-serif;
+  --font-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic', system-ui, sans-serif;
+  --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
+  --header-h: 56px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #0a0f1a;
+    --surface: #111827;
+    --surface-2: #172036;
+    --fg: #e7ecf5;
+    --fg-muted: #9aa7bf;
+    --border: #253250;
+    --accent: #7c9bff;
+    --accent-fg: #0a0f1a;
+    --accent-soft: #1a2852;
+    --ok: #4fc98d;
+    --ok-soft: #0f2b1f;
+    --bad: #ff8080;
+    --bad-soft: #3a1519;
+    --warn: #f0b456;
+    --warn-soft: #33250c;
+    --lp: #a78bfa;
+    --bp: #34c4d6;
+    --screen: #070b14;
+    --screen-2: #0f1728;
+    --screen-fg: #e4eaf6;
+    --screen-muted: #9fb0cc;
+    --screen-line: #24314d;
+    color-scheme: dark;
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #0a0f1a;
+  --surface: #111827;
+  --surface-2: #172036;
+  --fg: #e7ecf5;
+  --fg-muted: #9aa7bf;
+  --border: #253250;
+  --accent: #7c9bff;
+  --accent-fg: #0a0f1a;
+  --accent-soft: #1a2852;
+  --ok: #4fc98d;
+  --ok-soft: #0f2b1f;
+  --bad: #ff8080;
+  --bad-soft: #3a1519;
+  --warn: #f0b456;
+  --warn-soft: #33250c;
+  --lp: #a78bfa;
+  --bp: #34c4d6;
+  --screen: #070b14;
+  --screen-2: #0f1728;
+  --screen-fg: #e4eaf6;
+  --screen-muted: #9fb0cc;
+  --screen-line: #24314d;
+  color-scheme: dark;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--fg-muted);
+  --color-line: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-fg: var(--accent-fg);
+  --color-accent-soft: var(--accent-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-bad: var(--bad);
+  --color-bad-soft: var(--bad-soft);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-lp: var(--lp);
+  --color-bp: var(--bp);
+  --color-screen: var(--screen);
+  --color-screen-2: var(--screen-2);
+  --color-screen-fg: var(--screen-fg);
+  --color-screen-muted: var(--screen-muted);
+  --color-screen-line: var(--screen-line);
+  --font-body: var(--font-body);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
+}
+
+html,
+body {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--fg);
+  font-family: var(--font-body);
+  font-size: 15px;
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root {
+  min-height: 100%;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  text-wrap: balance;
+  line-height: 1.35;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+}
+
+.tabular {
+  font-variant-numeric: tabular-nums;
+}
+
+.mono {
+  font-family: var(--font-mono);
+}
+
+/* Side gutter that also clears a phone's side system bars. */
+.gutter {
+  padding-left: max(16px, env(safe-area-inset-left, 0px));
+  padding-right: max(16px, env(safe-area-inset-right, 0px));
+}
+
+/* KaTeX blocks keep left-to-right math inside right-to-left text. */
+.tex {
+  direction: ltr;
+  unicode-bidi: isolate;
+  overflow-x: auto;
+  overflow-y: hidden;
+  max-width: 100%;
+}
+.tex .katex {
+  font-size: 1.05em;
+}
+
+.scroll-thin {
+  scrollbar-width: thin;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+/* Labels drawn over the 3D canvas */
+.atom-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 500;
+  padding: 0 5px;
+  border-radius: 6px;
+  background: rgba(7, 11, 20, 0.62);
+  color: #f3f6fb;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+}
+.angle-label {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: rgba(255, 196, 77, 0.92);
+  color: #1d1300;
+  white-space: nowrap;
+  pointer-events: none;
+  user-select: none;
+  font-variant-numeric: tabular-nums;
+}
+.lp-label {
+  font-size: 11px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: rgba(138, 92, 246, 0.85);
+  color: #fff;
+  white-space: nowrap;
+  pointer-events: none;
+}
+.atom-label.is-selected {
+  background: rgba(124, 155, 255, 0.95);
+  color: #08101f;
+}

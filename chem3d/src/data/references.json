@@ -1074,8 +1074,8 @@
         "en": "The 'Why this shape?' animation"
       },
       "description": {
-        "ar": "رسم توضيحي لنقاط على كرة تتنافر (الأزواج غير الرابطة بوزن أكبر) حتى تستقر. هو تشبيه مبسط لفكرة VSEPR وليس محاكاة فيزيائية؛ الزوايا التي يصل إليها لا تُعد تنبؤًا بالقيم الحقيقية.",
-        "en": "An illustration of points on a sphere repelling each other (lone pairs weighted more) until they settle. It is a simplified analogy of the VSEPR idea, not a physical simulation; the angles it reaches are not predictions of real values."
+        "ar": "رسم توضيحي: كل منطقة كثافة نقطة على كرة، والنقاط المتساوية تتنافر (طاقة 1/r³) حتى تستقر في ترتيب VSEPR المثالي (تحقق الاختبارات من ذلك لـ 2 إلى 6 مناطق). مواقع الأزواج غير الرابطة لا تُحاكى بل تُطبق عليها القاعدة المنشورة؛ فقد جربنا نسخة تعطي الأزواج غير الرابطة وزنًا أكبر فوضعت زوجي AX4E2 متجاورين، وهذا خطأ، لذلك لم نستخدمها. هذا تشبيه وليس محاكاة فيزيائية.",
+        "en": "An illustration: each electron domain is a point on a sphere and equal points repel (energy 1/r³) until they settle into the ideal VSEPR arrangement (the tests check this for 2–6 domains). Lone-pair positions are not simulated; the published rule is applied instead. We tried a version that gives lone pairs more weight, but it put the two lone pairs of AX4E2 next to each other, which is wrong, so it is not used. This is an analogy, not a physical simulation."
       }
     },
     {
