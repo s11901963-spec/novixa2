@@ -1,0 +1,8 @@
+node_modules
+dist
+dist-single
+coverage
+*.tsbuildinfo
+test-results
+e2e-artifacts
+.DS_Store

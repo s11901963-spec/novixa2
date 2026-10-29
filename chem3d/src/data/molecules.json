@@ -1,0 +1,1847 @@
+{
+  "$comment": "بيانات الجزيئات في Chem3D. يحسب المحرك الكيميائي كل شيء (الإلكترونات، لويس، VSEPR، التهجين) من الحقول central/ligands/charge فقط. الحقل reference تصنيف مرجعي من الأدبيات يُستخدم في الاختبارات للتحقق من المحرك. الحقل experimental قيم مقاسة للجزيء المعزول في الطور الغازي منقولة من NIST CCCBDB مع المصدر الأصلي الذي تستشهد به. لإضافة جزيء: أضف عنصرًا جديدًا بنفس البنية؛ المخطط في src/data/schema.ts يتحقق من صحة البيانات عند التشغيل وفي الاختبارات.",
+  "molecules": [
+    {
+      "id": "becl2",
+      "formula": "BeCl2",
+      "charge": 0,
+      "name": {
+        "ar": "كلوريد البيريليوم",
+        "en": "Beryllium chloride"
+      },
+      "category": "core",
+      "central": "Be",
+      "ligands": [
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX2",
+        "electronGeometry": "linear",
+        "molecularGeometry": "linear",
+        "hybridization": "sp",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D∞h",
+        "bondLengths": [
+          {
+            "ligand": "Cl",
+            "value": 1.75
+          }
+        ],
+        "angles": [
+          {
+            "label": "Cl–Be–Cl",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "gurvich1989"
+        ]
+      },
+      "notes": [
+        {
+          "id": "becl2-incomplete-octet",
+          "text": {
+            "ar": "في تركيب لويس هذا تحيط بالبيريليوم أربعة إلكترونات فقط (ثمانية غير مكتملة). تكوين رابطة ثنائية Be=Cl يكمل عدد الإلكترونات لكنه يضع شحنة رسمية موجبة على الكلور، لذلك يُعتمد التركيب ذو الروابط الأحادية.",
+            "en": "In this Lewis structure Be is surrounded by only four electrons (incomplete octet). A Be=Cl double bond would raise the count but would put a positive formal charge on Cl, so the single-bond structure is used."
+          },
+          "sources": [
+            "openstax-7-3"
+          ]
+        },
+        {
+          "id": "becl2-solid",
+          "text": {
+            "ar": "الشكل الخطي يخص جزيء BeCl₂ المعزول في الطور الغازي. في الحالة الصلبة يكوّن BeCl₂ سلاسل بوليمرية تحيط فيها أربع ذرات Cl بكل ذرة Be بترتيب رباعي الأوجه؛ أي أن نموذج VSEPR يصف الجزيء المنفرد لا البلورة.",
+            "en": "The linear shape describes the isolated BeCl₂ molecule in the gas phase. Solid BeCl₂ forms polymeric chains in which each Be is surrounded tetrahedrally by four Cl atoms, so VSEPR describes the single molecule, not the crystal."
+          },
+          "sources": [
+            "rundleLewis1952"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "bf3",
+      "formula": "BF3",
+      "charge": 0,
+      "name": {
+        "ar": "ثلاثي فلوريد البورون",
+        "en": "Boron trifluoride"
+      },
+      "category": "core",
+      "central": "B",
+      "ligands": [
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX3",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "trigonal-planar",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D3h",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.307,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–B–F",
+            "value": 120,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "kuchitsu1998"
+        ]
+      },
+      "notes": [
+        {
+          "id": "bf3-incomplete-octet",
+          "text": {
+            "ar": "يحيط بالبورون ستة إلكترونات فقط. تركيب B=F يكمل ثمانية البورون لكنه يضع شحنة رسمية +1 على الفلور، وهو أعلى العناصر سالبية كهربائية، لذلك يُفضَّل التركيب ذو الروابط الأحادية (جزيء ناقص الإلكترونات).",
+            "en": "Boron is surrounded by only six electrons. A B=F structure would complete boron's octet but put a +1 formal charge on fluorine, the most electronegative element, so the single-bond (electron-deficient) structure is preferred."
+          },
+          "sources": [
+            "openstax-7-3"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ch4",
+      "formula": "CH4",
+      "charge": 0,
+      "name": {
+        "ar": "الميثان",
+        "en": "Methane"
+      },
+      "category": "core",
+      "central": "C",
+      "ligands": [
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "Td",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.087,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–C–H",
+            "value": 109.471,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "hirota1979"
+        ]
+      },
+      "notes": [
+        {
+          "id": "ch4-exact-angle",
+          "text": {
+            "ar": "زاوية رباعي الأوجه المنتظم 109.47° تساوي arccos(−1/3) بالضبط؛ وهي قيمة تفرضها تماثلية الجزيء (Td) لا قيمة تقريبية.",
+            "en": "The regular tetrahedral angle 109.47° equals arccos(−1/3) exactly; it is fixed by the molecule's symmetry (Td), not an approximation."
+          },
+          "sources": [
+            "cccbdb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nh3",
+      "formula": "NH3",
+      "charge": 0,
+      "name": {
+        "ar": "الأمونيا",
+        "en": "Ammonia"
+      },
+      "category": "core",
+      "central": "N",
+      "ligands": [
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX3E",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "trigonal-pyramidal",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C3v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.012
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–N–H",
+            "value": 106.67,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 106.67
+        },
+        "sources": [
+          "cccbdb",
+          "herzberg1966"
+        ]
+      },
+      "notes": [
+        {
+          "id": "nh3-lone-pair",
+          "text": {
+            "ar": "الزاوية المقاسة 106.67° أقل من 109.5° لأن الزوج غير الرابط يشغل حيزًا أكبر من الزوج الرابط. تختلف القيمة المنشورة قليلًا بين المراجع (مثلًا 107.3° في OpenStax 8.2) تبعًا لطريقة القياس وتعريف البنية.",
+            "en": "The measured angle 106.67° is smaller than 109.5° because a lone pair occupies more space than a bonding pair. Published values differ slightly between sources (e.g. 107.3° in OpenStax 8.2) depending on the method and the structure definition."
+          },
+          "sources": [
+            "openstax-7-6",
+            "openstax-8-2",
+            "cccbdb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "ph3",
+      "formula": "PH3",
+      "charge": 0,
+      "name": {
+        "ar": "الفوسفين",
+        "en": "Phosphine"
+      },
+      "category": "core",
+      "central": "P",
+      "ligands": [
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX3E",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "trigonal-pyramidal",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C3v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.421
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–P–H",
+            "value": 93.3,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 93.3
+        },
+        "sources": [
+          "cccbdb",
+          "herzberg1966"
+        ]
+      },
+      "notes": [
+        {
+          "id": "ph3-small-angle",
+          "text": {
+            "ar": "الزاوية المقاسة 93.3° أصغر بكثير من زاوية NH3. نموذج VSEPR يتنبأ فقط بأنها أقل من 109.5°، ولا يفسر وحده هذا الفرق الكبير. تعزو الدراسات النظرية ذلك إلى أن أفلاك 3p أكثر امتدادًا من 3s فيضعف التهجين في عناصر الدورة الثالثة وما بعدها؛ لذلك فوصف الفوسفور هنا بأنه sp³ تبسيط تعليمي.",
+            "en": "The measured angle 93.3° is far smaller than in NH3. VSEPR only predicts 'less than 109.5°' and cannot by itself explain the large difference. Theoretical work attributes it to weaker s–p hybridization in third-period and heavier elements (their p orbitals are much more extended), so calling P 'sp³' here is a teaching simplification."
+          },
+          "sources": [
+            "kutzelnigg1984",
+            "kaupp2007"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "h2o",
+      "formula": "H2O",
+      "charge": 0,
+      "name": {
+        "ar": "الماء",
+        "en": "Water"
+      },
+      "category": "core",
+      "central": "O",
+      "ligands": [
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX2E2",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "bent",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 0.958,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–O–H",
+            "value": 104.4776,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 104.4776
+        },
+        "sources": [
+          "cccbdb",
+          "hoyBunker1979"
+        ]
+      },
+      "notes": [
+        {
+          "id": "h2o-two-lone-pairs",
+          "text": {
+            "ar": "الزاوية 104.48° (بنية توازنية) أصغر من زاوية NH3 لأن على الأكسجين زوجين غير رابطين، والتنافر بين زوجين غير رابطين هو الأكبر.",
+            "en": "The equilibrium angle 104.48° is smaller than in NH3 because oxygen carries two lone pairs, and lone pair–lone pair repulsion is the strongest."
+          },
+          "sources": [
+            "openstax-7-6",
+            "hoyBunker1979"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pcl5",
+      "formula": "PCl5",
+      "charge": 0,
+      "name": {
+        "ar": "خماسي كلوريد الفوسفور",
+        "en": "Phosphorus pentachloride"
+      },
+      "category": "core",
+      "central": "P",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX5",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "trigonal-bipyramidal",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D3h",
+        "bondLengths": [
+          {
+            "ligand": "Cl",
+            "role": "axial",
+            "value": 2.124
+          },
+          {
+            "ligand": "Cl",
+            "role": "equatorial",
+            "value": 2.02
+          }
+        ],
+        "angles": [
+          {
+            "label": "Cl(ax)–P–Cl(eq)",
+            "value": 90,
+            "basis": "symmetry"
+          },
+          {
+            "label": "Cl(eq)–P–Cl(eq)",
+            "value": 120,
+            "basis": "symmetry"
+          },
+          {
+            "label": "Cl(ax)–P–Cl(ax)",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "gurvich1989"
+        ]
+      },
+      "notes": [
+        {
+          "id": "pcl5-axial-longer",
+          "text": {
+            "ar": "الروابط المحورية (2.124 Å) أطول من الاستوائية (2.020 Å): الموقع المحوري تحيط به ثلاث مناطق بزاوية 90° بينما يتوافر للموقع الاستوائي حيز أكبر بفضل زوايا 120°.",
+            "en": "Axial bonds (2.124 Å) are longer than equatorial ones (2.020 Å): an axial position has three neighbours at 90°, whereas equatorial positions have more room thanks to the 120° angles."
+          },
+          "sources": [
+            "openstax-7-6",
+            "cccbdb"
+          ]
+        },
+        {
+          "id": "pcl5-solid",
+          "text": {
+            "ar": "في الحالة الصلبة لا يوجد PCl5 جزيئات منفصلة، بل أيونات [PCl4]⁺ (رباعي الأوجه) و[PCl6]⁻ (ثماني الأوجه).",
+            "en": "Solid PCl5 does not consist of PCl5 molecules but of [PCl4]⁺ (tetrahedral) and [PCl6]⁻ (octahedral) ions."
+          },
+          "sources": [
+            "clark1942"
+          ]
+        },
+        {
+          "id": "pcl5-hypervalent",
+          "text": {
+            "ar": "يحيط بالفوسفور عشرة إلكترونات (ثمانية ممتدة). كثير من الكتب تفسر ذلك بمشاركة أفلاك d (التهجين sp³d)، لكن الدراسات الحسابية تبين أن دور أفلاك d في الترابط ضئيل وأن السبب الرئيس هو كبر حجم الذرة.",
+            "en": "Phosphorus is surrounded by ten electrons (expanded octet). Many textbooks attribute this to d-orbital participation (sp³d), but computational studies show that d orbitals play only a minor role; atomic size is the main reason."
+          },
+          "sources": [
+            "openstax-7-3",
+            "kutzelnigg1984",
+            "magnusson1990"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sf4",
+      "formula": "SF4",
+      "charge": 0,
+      "name": {
+        "ar": "رباعي فلوريد الكبريت",
+        "en": "Sulfur tetrafluoride"
+      },
+      "category": "core",
+      "central": "S",
+      "ligands": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX4E",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "seesaw",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "role": "axial",
+            "value": 1.646
+          },
+          {
+            "ligand": "F",
+            "role": "equatorial",
+            "value": 1.545
+          }
+        ],
+        "angles": [
+          {
+            "label": "F(ax)–S–F(ax)",
+            "value": 173.07,
+            "basis": "measured"
+          },
+          {
+            "label": "F(eq)–S–F(eq)",
+            "value": 101.55,
+            "basis": "measured"
+          },
+          {
+            "label": "F(ax)–S–F(eq)",
+            "value": 87.81,
+            "basis": "derived"
+          }
+        ],
+        "angleParams": {
+          "axAx": 173.07,
+          "eqEq": 101.55
+        },
+        "sources": [
+          "cccbdb",
+          "tollesGwinn1962"
+        ]
+      },
+      "notes": [
+        {
+          "id": "sf4-equatorial-lp",
+          "text": {
+            "ar": "يشغل الزوج غير الرابط موقعًا استوائيًا لأنه أقل ازدحامًا (جاران فقط بزاوية 90°). لذلك تنحني ذرتا F المحوريتان بعيدًا عنه (173.07° بدل 180°)، وتنقص الزاوية الاستوائية إلى 101.55° بدل 120°.",
+            "en": "The lone pair takes an equatorial position because it is less crowded (only two neighbours at 90°). The axial F atoms therefore bend away from it (173.07° instead of 180°) and the equatorial angle shrinks to 101.55° instead of 120°."
+          },
+          "sources": [
+            "openstax-7-6",
+            "tollesGwinn1962"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "clf3",
+      "formula": "ClF3",
+      "charge": 0,
+      "name": {
+        "ar": "ثلاثي فلوريد الكلور",
+        "en": "Chlorine trifluoride"
+      },
+      "category": "core",
+      "central": "Cl",
+      "ligands": [
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX3E2",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "t-shaped",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "role": "equatorial",
+            "value": 1.597,
+            "structure": "re"
+          },
+          {
+            "ligand": "F",
+            "role": "axial",
+            "value": 1.697,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "F(ax)–Cl–F(eq)",
+            "value": 87.45,
+            "basis": "measured"
+          },
+          {
+            "label": "F(ax)–Cl–F(ax)",
+            "value": 174.9,
+            "basis": "derived"
+          }
+        ],
+        "angleParams": {
+          "axEq": 87.45
+        },
+        "sources": [
+          "cccbdb",
+          "muller2001"
+        ]
+      },
+      "notes": [
+        {
+          "id": "clf3-t-shape",
+          "text": {
+            "ar": "الزوجان غير الرابطين في موقعين استوائيين، فيتخذ الجزيء شكل حرف T. الزاوية F(ax)–Cl–F(eq) المقاسة 87.45° أقل من 90° لأن ذرتي F المحوريتين تبتعدان عن الزوجين غير الرابطين.",
+            "en": "Both lone pairs sit in equatorial positions, giving a T shape. The measured F(ax)–Cl–F(eq) angle of 87.45° is below 90° because the axial F atoms are pushed away from the lone pairs."
+          },
+          "sources": [
+            "openstax-7-6",
+            "muller2001"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "xef2",
+      "formula": "XeF2",
+      "charge": 0,
+      "name": {
+        "ar": "ثنائي فلوريد الزينون",
+        "en": "Xenon difluoride"
+      },
+      "category": "core",
+      "central": "Xe",
+      "ligands": [
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX2E3",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "linear",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D∞h",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.974,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–Xe–F",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "burgerMa1993"
+        ]
+      },
+      "notes": [
+        {
+          "id": "xef2-three-lp",
+          "text": {
+            "ar": "ثلاثة أزواج غير رابطة تشغل المستوى الاستوائي، وتبقى ذرتا F في الموقعين المحوريين، فيكون الجزيء خطيًا (180°) مع أن الشكل الإلكتروني ثنائي الهرم المثلثي.",
+            "en": "Three lone pairs occupy the equatorial plane and the two F atoms take the axial positions, so the molecule is linear (180°) even though its electron geometry is trigonal bipyramidal."
+          },
+          "sources": [
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sf6",
+      "formula": "SF6",
+      "charge": 0,
+      "name": {
+        "ar": "سداسي فلوريد الكبريت",
+        "en": "Sulfur hexafluoride"
+      },
+      "category": "core",
+      "central": "S",
+      "ligands": [
+        "F",
+        "F",
+        "F",
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX6",
+        "electronGeometry": "octahedral",
+        "molecularGeometry": "octahedral",
+        "hybridization": "sp3d2",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "Oh",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.561
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–S–F (cis)",
+            "value": 90,
+            "basis": "symmetry"
+          },
+          {
+            "label": "F–S–F (trans)",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "kuchitsu1998"
+        ]
+      },
+      "notes": [
+        {
+          "id": "sf6-d-orbitals",
+          "text": {
+            "ar": "ست مناطق رابطة متكافئة تعطي ثماني الأوجه بزوايا 90°. تسمية التهجين sp³d² وصف تعليمي متداول؛ أظهرت الحسابات أن أفلاك d في SF6 تعمل كدوال استقطاب ولا تشارك مشاركة مهمة في التهجين.",
+            "en": "Six equivalent bonding domains give an octahedron with 90° angles. The sp³d² label is a common teaching description; calculations show that d orbitals in SF6 act as polarization functions rather than as significant hybrid components."
+          },
+          "sources": [
+            "reedWeinhold1986",
+            "kutzelnigg1984"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "co2",
+      "formula": "CO2",
+      "charge": 0,
+      "name": {
+        "ar": "ثاني أكسيد الكربون",
+        "en": "Carbon dioxide"
+      },
+      "category": "extended",
+      "central": "C",
+      "ligands": [
+        "O",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX2",
+        "electronGeometry": "linear",
+        "molecularGeometry": "linear",
+        "hybridization": "sp",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D∞h",
+        "bondLengths": [
+          {
+            "ligand": "O",
+            "value": 1.162
+          }
+        ],
+        "angles": [
+          {
+            "label": "O–C–O",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "herzberg1966"
+        ]
+      },
+      "notes": [
+        {
+          "id": "co2-double-bond-domain",
+          "text": {
+            "ar": "تُعد كل رابطة ثنائية C=O منطقة كثافة إلكترونية واحدة، لذلك عدد المناطق حول الكربون 2 والشكل خطي.",
+            "en": "Each C=O double bond counts as one electron domain, so carbon has two domains and the molecule is linear."
+          },
+          "sources": [
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "h2s",
+      "formula": "H2S",
+      "charge": 0,
+      "name": {
+        "ar": "كبريتيد الهيدروجين",
+        "en": "Hydrogen sulfide"
+      },
+      "category": "extended",
+      "central": "S",
+      "ligands": [
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX2E2",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "bent",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.336
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–S–H",
+            "value": 92.11,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 92.11
+        },
+        "sources": [
+          "cccbdb",
+          "cook1975"
+        ]
+      },
+      "notes": [
+        {
+          "id": "h2s-small-angle",
+          "text": {
+            "ar": "الزاوية 92.11° قريبة من 90° ومثلها PH3 وAsH3. يتنبأ VSEPR باتجاه الانحراف (أقل من 109.5°) لكنه لا يتنبأ بمقداره في عناصر الدورات الأعلى.",
+            "en": "The 92.11° angle is close to 90°, like PH3 and AsH3. VSEPR predicts the direction of the deviation (below 109.5°) but not its size for heavier elements."
+          },
+          "sources": [
+            "cook1975",
+            "kutzelnigg1984"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "so2",
+      "formula": "SO2",
+      "charge": 0,
+      "name": {
+        "ar": "ثاني أكسيد الكبريت",
+        "en": "Sulfur dioxide"
+      },
+      "category": "extended",
+      "central": "S",
+      "ligands": [
+        "O",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX2E",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "bent",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "O",
+            "value": 1.432
+          }
+        ],
+        "angles": [
+          {
+            "label": "O–S–O",
+            "value": 119.5,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 119.5
+        },
+        "sources": [
+          "cccbdb",
+          "herzberg1966"
+        ]
+      },
+      "notes": [
+        {
+          "id": "so2-two-lewis",
+          "text": {
+            "ar": "يمكن كتابة تركيب لويس بطريقتين: تركيب يحقق قاعدة الثمانية للكبريت مع شحنات رسمية (S⁺ وO⁻) ويُمثَّل بتركيبي رنين، أو تركيب O=S=O بشحنات رسمية صفرية لكن الكبريت فيه عشرة إلكترونات. يعرض Chem3D الأول أساسيًا اتباعًا لـ Suidan وآخرين (1995) ويعرض الثاني بديلًا. في الحالتين: ثلاث مناطق كثافة وشكل منحنٍ.",
+            "en": "Two Lewis structures are common: an octet structure with formal charges (S⁺, O⁻) shown as two resonance forms, or O=S=O with zero formal charges but ten electrons on S. Chem3D shows the first as primary, following Suidan et al. (1995), and the second as an alternative. Either way: three domains and a bent shape."
+          },
+          "sources": [
+            "suidan1995",
+            "openstax-7-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nf3",
+      "formula": "NF3",
+      "charge": 0,
+      "name": {
+        "ar": "ثلاثي فلوريد النيتروجين",
+        "en": "Nitrogen trifluoride"
+      },
+      "category": "extended",
+      "central": "N",
+      "ligands": [
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX3E",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "trigonal-pyramidal",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C3v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.365
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–N–F",
+            "value": 102.37,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 102.37
+        },
+        "sources": [
+          "cccbdb",
+          "kuchitsu1998"
+        ]
+      },
+      "notes": [
+        {
+          "id": "nf3-electronegativity",
+          "text": {
+            "ar": "الزاوية 102.37° أصغر من زاوية NH3 (106.67°): الفلور أعلى سالبية كهربائية فيسحب إلكترونات الروابط بعيدًا عن النيتروجين، فتصغر مناطق الروابط ويضغطها الزوج غير الرابط أكثر.",
+            "en": "The 102.37° angle is smaller than in NH3 (106.67°): fluorine pulls the bonding electrons away from nitrogen, the bonding domains become smaller and the lone pair compresses them further."
+          },
+          "sources": [
+            "gillespieRobinson1996",
+            "cccbdb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "of2",
+      "formula": "OF2",
+      "charge": 0,
+      "name": {
+        "ar": "ثنائي فلوريد الأكسجين",
+        "en": "Oxygen difluoride"
+      },
+      "category": "extended",
+      "central": "O",
+      "ligands": [
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX2E2",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "bent",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.405,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–O–F",
+            "value": 103.1,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 103.1
+        },
+        "sources": [
+          "cccbdb",
+          "harmony1979"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "ash3",
+      "formula": "AsH3",
+      "charge": 0,
+      "name": {
+        "ar": "الأرسين",
+        "en": "Arsine"
+      },
+      "category": "extended",
+      "central": "As",
+      "ligands": [
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX3E",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "trigonal-pyramidal",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C3v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.511,
+            "structure": "re"
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–As–H",
+            "value": 92.083,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "xAx": 92.083
+        },
+        "sources": [
+          "cccbdb",
+          "landolt1976"
+        ]
+      },
+      "notes": [
+        {
+          "id": "ash3-trend",
+          "text": {
+            "ar": "تتناقص زاوية الرابطة في الهيدريدات بالنزول في المجموعة: NH3 ‏(106.67°) > PH3 ‏(93.3°) > AsH3 ‏(92.08°).",
+            "en": "Bond angles in the hydrides decrease down the group: NH3 (106.67°) > PH3 (93.3°) > AsH3 (92.08°)."
+          },
+          "sources": [
+            "cccbdb",
+            "kutzelnigg1984"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "sih4",
+      "formula": "SiH4",
+      "charge": 0,
+      "name": {
+        "ar": "السيلان",
+        "en": "Silane"
+      },
+      "category": "extended",
+      "central": "Si",
+      "ligands": [
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "Td",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.48
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–Si–H",
+            "value": 109.471,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "boyd1955"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "ccl4",
+      "formula": "CCl4",
+      "charge": 0,
+      "name": {
+        "ar": "رباعي كلوريد الكربون",
+        "en": "Carbon tetrachloride"
+      },
+      "category": "extended",
+      "central": "C",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "Td",
+        "bondLengths": [
+          {
+            "ligand": "Cl",
+            "value": 1.767
+          }
+        ],
+        "angles": [
+          {
+            "label": "Cl–C–Cl",
+            "value": 109.471,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "kuchitsu1998"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "xef4",
+      "formula": "XeF4",
+      "charge": 0,
+      "name": {
+        "ar": "رباعي فلوريد الزينون",
+        "en": "Xenon tetrafluoride"
+      },
+      "category": "extended",
+      "central": "Xe",
+      "ligands": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX4E2",
+        "electronGeometry": "octahedral",
+        "molecularGeometry": "square-planar",
+        "hybridization": "sp3d2",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D4h",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "value": 1.935,
+            "structure": "r0"
+          }
+        ],
+        "angles": [
+          {
+            "label": "F–Xe–F (cis)",
+            "value": 90,
+            "basis": "symmetry"
+          },
+          {
+            "label": "F–Xe–F (trans)",
+            "value": 180,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "burger1996"
+        ]
+      },
+      "notes": [
+        {
+          "id": "xef4-trans",
+          "text": {
+            "ar": "يتقابل الزوجان غير الرابطين (180°) لتقليل التنافر بينهما، فتقع ذرات F الأربع في مستوى واحد: مربع مستوٍ.",
+            "en": "The two lone pairs sit opposite each other (180°) to minimise their repulsion, leaving the four F atoms in one plane: square planar."
+          },
+          "sources": [
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brf5",
+      "formula": "BrF5",
+      "charge": 0,
+      "name": {
+        "ar": "خماسي فلوريد البروم",
+        "en": "Bromine pentafluoride"
+      },
+      "category": "extended",
+      "central": "Br",
+      "ligands": [
+        "F",
+        "F",
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX5E",
+        "electronGeometry": "octahedral",
+        "molecularGeometry": "square-pyramidal",
+        "hybridization": "sp3d2",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C4v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "role": "apical",
+            "value": 1.689
+          },
+          {
+            "ligand": "F",
+            "role": "basal",
+            "value": 1.774
+          }
+        ],
+        "angles": [
+          {
+            "label": "F(ap)–Br–F(bas)",
+            "value": 84.8,
+            "basis": "measured"
+          },
+          {
+            "label": "F(bas)–Br–F(bas) (cis)",
+            "value": 89.53,
+            "basis": "derived"
+          }
+        ],
+        "angleParams": {
+          "apBas": 84.8
+        },
+        "sources": [
+          "cccbdb",
+          "gurvich1989"
+        ]
+      },
+      "notes": [
+        {
+          "id": "brf5-basal",
+          "text": {
+            "ar": "الزاوية F(ap)–Br–F(bas) المقاسة 84.8° أقل من 90° لأن ذرات القاعدة الأربع تبتعد عن الزوج غير الرابط الواقع أسفلها.",
+            "en": "The measured F(ap)–Br–F(bas) angle of 84.8° is below 90° because the four basal F atoms are pushed away from the lone pair beneath them."
+          },
+          "sources": [
+            "cccbdb",
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "brf3",
+      "formula": "BrF3",
+      "charge": 0,
+      "name": {
+        "ar": "ثلاثي فلوريد البروم",
+        "en": "Bromine trifluoride"
+      },
+      "category": "extended",
+      "central": "Br",
+      "ligands": [
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX3E2",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "t-shaped",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "F",
+            "role": "equatorial",
+            "value": 1.721
+          },
+          {
+            "ligand": "F",
+            "role": "axial",
+            "value": 1.81
+          }
+        ],
+        "angles": [
+          {
+            "label": "F(ax)–Br–F(eq)",
+            "value": 86.21,
+            "basis": "measured"
+          }
+        ],
+        "angleParams": {
+          "axEq": 86.21
+        },
+        "sources": [
+          "cccbdb",
+          "magnuson1957"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "ch2o",
+      "formula": "CH2O",
+      "charge": 0,
+      "name": {
+        "ar": "الميثانال (الفورمالدهيد)",
+        "en": "Formaldehyde (methanal)"
+      },
+      "category": "extended",
+      "central": "C",
+      "ligands": [
+        "H",
+        "H",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX3",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "trigonal-planar",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-6",
+          "openstax-8-2"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "C2v",
+        "bondLengths": [
+          {
+            "ligand": "H",
+            "value": 1.111
+          },
+          {
+            "ligand": "O",
+            "value": 1.205
+          }
+        ],
+        "angles": [
+          {
+            "label": "H–C–H",
+            "value": 116.133,
+            "basis": "measured"
+          },
+          {
+            "label": "H–C–O",
+            "value": 121.9,
+            "basis": "derived"
+          }
+        ],
+        "angleParams": {
+          "xAx": 116.133
+        },
+        "sources": [
+          "cccbdb",
+          "gurvich1989"
+        ]
+      },
+      "notes": [
+        {
+          "id": "ch2o-double-bond-larger",
+          "text": {
+            "ar": "الزاوية H–C–H ‏(116.1°) أقل من 120° لأن منطقة الرابطة الثنائية C=O أكبر من منطقة الرابطة الأحادية C–H.",
+            "en": "The H–C–H angle (116.1°) is below 120° because the C=O double-bond domain is larger than a C–H single-bond domain."
+          },
+          "sources": [
+            "gillespieRobinson1996",
+            "cccbdb"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "nh4",
+      "formula": "NH4",
+      "charge": 1,
+      "name": {
+        "ar": "أيون الأمونيوم",
+        "en": "Ammonium ion"
+      },
+      "category": "ion",
+      "central": "N",
+      "ligands": [
+        "H",
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "nh4-isoelectronic",
+          "text": {
+            "ar": "أيون الأمونيوم له ثمانية إلكترونات تكافؤ مثل الميثان، لذلك له الشكل نفسه. الشحنة الرسمية على النيتروجين +1.",
+            "en": "The ammonium ion has eight valence electrons, like methane, and therefore the same shape. Nitrogen carries a +1 formal charge."
+          },
+          "sources": [
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "h3o",
+      "formula": "H3O",
+      "charge": 1,
+      "name": {
+        "ar": "أيون الهيدرونيوم",
+        "en": "Hydronium ion"
+      },
+      "category": "ion",
+      "central": "O",
+      "ligands": [
+        "H",
+        "H",
+        "H"
+      ],
+      "reference": {
+        "axe": "AX3E",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "trigonal-pyramidal",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "h3o-no-exp",
+          "text": {
+            "ar": "لا نعرض قيمة تجريبية لزاوية H–O–H في هذا الأيون لأنها تعتمد على البيئة المحيطة (محلول أو بلورة)؛ المعروض هو تنبؤ النموذج فقط.",
+            "en": "No experimental H–O–H angle is shown for this ion because it depends on the environment (solution or crystal); only the model prediction is shown."
+          },
+          "sources": []
+        }
+      ]
+    },
+    {
+      "id": "bf4",
+      "formula": "BF4",
+      "charge": -1,
+      "name": {
+        "ar": "أيون رباعي فلوروبورات",
+        "en": "Tetrafluoroborate ion"
+      },
+      "category": "ion",
+      "central": "B",
+      "ligands": [
+        "F",
+        "F",
+        "F",
+        "F"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "bf4-octet",
+          "text": {
+            "ar": "بإضافة أيون F⁻ إلى BF3 يكتمل ثمانية البورون، وتصبح الشحنة الرسمية على B ‏−1.",
+            "en": "Adding F⁻ to BF3 completes boron's octet; boron's formal charge becomes −1."
+          },
+          "sources": []
+        }
+      ]
+    },
+    {
+      "id": "pcl4",
+      "formula": "PCl4",
+      "charge": 1,
+      "name": {
+        "ar": "أيون رباعي كلوروفوسفونيوم",
+        "en": "Tetrachlorophosphonium ion"
+      },
+      "category": "ion",
+      "central": "P",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX4",
+        "electronGeometry": "tetrahedral",
+        "molecularGeometry": "tetrahedral",
+        "hybridization": "sp3",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "pcl4-solid-pcl5",
+          "text": {
+            "ar": "يوجد هذا الأيون مع [PCl6]⁻ في بلورة PCl5 الصلبة.",
+            "en": "This ion occurs together with [PCl6]⁻ in solid PCl5."
+          },
+          "sources": [
+            "clark1942"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "pcl6",
+      "formula": "PCl6",
+      "charge": -1,
+      "name": {
+        "ar": "أيون سداسي كلوروفوسفات",
+        "en": "Hexachlorophosphate ion"
+      },
+      "category": "ion",
+      "central": "P",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX6",
+        "electronGeometry": "octahedral",
+        "molecularGeometry": "octahedral",
+        "hybridization": "sp3d2",
+        "sources": [
+          "openstax-8-2"
+        ]
+      },
+      "notes": [
+        {
+          "id": "pcl6-solid-pcl5",
+          "text": {
+            "ar": "يوجد هذا الأيون مع [PCl4]⁺ في بلورة PCl5 الصلبة.",
+            "en": "This ion occurs together with [PCl4]⁺ in solid PCl5."
+          },
+          "sources": [
+            "clark1942"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "i3",
+      "formula": "I3",
+      "charge": -1,
+      "name": {
+        "ar": "أيون ثلاثي اليوديد",
+        "en": "Triiodide ion"
+      },
+      "category": "ion",
+      "central": "I",
+      "ligands": [
+        "I",
+        "I"
+      ],
+      "reference": {
+        "axe": "AX2E3",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "linear",
+        "hybridization": "sp3d",
+        "sources": [
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "i3-like-xef2",
+          "text": {
+            "ar": "مثل XeF2: منطقتان رابطتان وثلاثة أزواج غير رابطة استوائية، فالشكل خطي. الشحنة الرسمية −1 على ذرة اليود المركزية.",
+            "en": "Like XeF2: two bonding domains and three equatorial lone pairs give a linear shape. The −1 formal charge sits on the central iodine."
+          },
+          "sources": [
+            "openstax-7-6"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "icl4",
+      "formula": "ICl4",
+      "charge": -1,
+      "name": {
+        "ar": "أيون رباعي كلورويودات",
+        "en": "Tetrachloroiodate ion"
+      },
+      "category": "ion",
+      "central": "I",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX4E2",
+        "electronGeometry": "octahedral",
+        "molecularGeometry": "square-planar",
+        "hybridization": "sp3d2",
+        "sources": [
+          "openstax-8-2"
+        ]
+      },
+      "notes": []
+    },
+    {
+      "id": "no2",
+      "formula": "NO2",
+      "charge": -1,
+      "name": {
+        "ar": "أيون النيتريت",
+        "en": "Nitrite ion"
+      },
+      "category": "ion",
+      "central": "N",
+      "ligands": [
+        "O",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX2E",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "bent",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-4",
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "no2-resonance",
+          "text": {
+            "ar": "تركيبا رنين متكافئان؛ في الأيون الحقيقي الرابطتان N–O متساويتان في الطول (هجين رنيني).",
+            "en": "Two equivalent resonance structures; in the real ion both N–O bonds are the same length (resonance hybrid)."
+          },
+          "sources": [
+            "openstax-7-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "no3",
+      "formula": "NO3",
+      "charge": -1,
+      "name": {
+        "ar": "أيون النترات",
+        "en": "Nitrate ion"
+      },
+      "category": "ion",
+      "central": "N",
+      "ligands": [
+        "O",
+        "O",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX3",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "trigonal-planar",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-4",
+          "openstax-7-6"
+        ]
+      },
+      "notes": [
+        {
+          "id": "no3-resonance",
+          "text": {
+            "ar": "ثلاثة تراكيب رنين متكافئة؛ الروابط الثلاث متساوية في الأيون الحقيقي والزوايا 120° بحكم التماثل في الأيون المعزول.",
+            "en": "Three equivalent resonance structures; all three bonds are equal in the real ion and the angles are 120° by symmetry in the free ion."
+          },
+          "sources": [
+            "openstax-7-4"
+          ]
+        }
+      ]
+    },
+    {
+      "id": "co3",
+      "formula": "CO3",
+      "charge": -2,
+      "name": {
+        "ar": "أيون الكربونات",
+        "en": "Carbonate ion"
+      },
+      "category": "ion",
+      "central": "C",
+      "ligands": [
+        "O",
+        "O",
+        "O"
+      ],
+      "reference": {
+        "axe": "AX3",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "trigonal-planar",
+        "hybridization": "sp2",
+        "sources": [
+          "openstax-7-4",
+          "openstax-7-6"
+        ]
+      },
+      "notes": []
+    }
+  ]
+}

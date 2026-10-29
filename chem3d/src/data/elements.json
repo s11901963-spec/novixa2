@@ -1,0 +1,391 @@
+{
+  "$comment": "بيانات العناصر المستخدمة في Chem3D. Electronegativity (Pauling scale), electron configuration, atomic mass and CPK colour: PubChem Periodic Table REST data (NIH). Covalent radii: Cordero et al. 2008. van der Waals radii: Bondi 1964, or Mantina et al. 2009 where Bondi gives no value (see vdwSource). Valence electrons for main-group elements: group number for groups 1-2, group number minus 10 for groups 13-18.",
+  "sources": {
+    "electronegativity": "pubchem-periodic-table",
+    "electronConfiguration": "pubchem-periodic-table",
+    "atomicMass": "pubchem-periodic-table",
+    "color": "pubchem-periodic-table",
+    "covalentRadiusPm": "cordero2008",
+    "vdwRadiusPm": "see vdwSource per element"
+  },
+  "elements": [
+    {
+      "symbol": "H",
+      "atomicNumber": 1,
+      "name": {
+        "ar": "هيدروجين",
+        "en": "Hydrogen"
+      },
+      "group": 1,
+      "period": 1,
+      "valenceElectrons": 1,
+      "electronConfiguration": "1s1",
+      "atomicMass": 1.008,
+      "electronegativity": 2.2,
+      "covalentRadiusPm": 31,
+      "vdwRadiusPm": 120,
+      "vdwSource": "bondi1964",
+      "color": "#FFFFFF"
+    },
+    {
+      "symbol": "Be",
+      "atomicNumber": 4,
+      "name": {
+        "ar": "بيريليوم",
+        "en": "Beryllium"
+      },
+      "group": 2,
+      "period": 2,
+      "valenceElectrons": 2,
+      "electronConfiguration": "[He]2s2",
+      "atomicMass": 9.012183,
+      "electronegativity": 1.57,
+      "covalentRadiusPm": 96,
+      "vdwRadiusPm": 153,
+      "vdwSource": "mantina2009",
+      "color": "#C2FF00"
+    },
+    {
+      "symbol": "B",
+      "atomicNumber": 5,
+      "name": {
+        "ar": "بورون",
+        "en": "Boron"
+      },
+      "group": 13,
+      "period": 2,
+      "valenceElectrons": 3,
+      "electronConfiguration": "[He]2s2 2p1",
+      "atomicMass": 10.81,
+      "electronegativity": 2.04,
+      "covalentRadiusPm": 84,
+      "vdwRadiusPm": 192,
+      "vdwSource": "mantina2009",
+      "color": "#FFB5B5"
+    },
+    {
+      "symbol": "C",
+      "atomicNumber": 6,
+      "name": {
+        "ar": "كربون",
+        "en": "Carbon"
+      },
+      "group": 14,
+      "period": 2,
+      "valenceElectrons": 4,
+      "electronConfiguration": "[He]2s2 2p2",
+      "atomicMass": 12.011,
+      "electronegativity": 2.55,
+      "covalentRadiusPm": 76,
+      "vdwRadiusPm": 170,
+      "vdwSource": "bondi1964",
+      "color": "#909090"
+    },
+    {
+      "symbol": "N",
+      "atomicNumber": 7,
+      "name": {
+        "ar": "نيتروجين",
+        "en": "Nitrogen"
+      },
+      "group": 15,
+      "period": 2,
+      "valenceElectrons": 5,
+      "electronConfiguration": "[He]2s2 2p3",
+      "atomicMass": 14.007,
+      "electronegativity": 3.04,
+      "covalentRadiusPm": 71,
+      "vdwRadiusPm": 155,
+      "vdwSource": "bondi1964",
+      "color": "#3050F8"
+    },
+    {
+      "symbol": "O",
+      "atomicNumber": 8,
+      "name": {
+        "ar": "أكسجين",
+        "en": "Oxygen"
+      },
+      "group": 16,
+      "period": 2,
+      "valenceElectrons": 6,
+      "electronConfiguration": "[He]2s2 2p4",
+      "atomicMass": 15.999,
+      "electronegativity": 3.44,
+      "covalentRadiusPm": 66,
+      "vdwRadiusPm": 152,
+      "vdwSource": "bondi1964",
+      "color": "#FF0D0D"
+    },
+    {
+      "symbol": "F",
+      "atomicNumber": 9,
+      "name": {
+        "ar": "فلور",
+        "en": "Fluorine"
+      },
+      "group": 17,
+      "period": 2,
+      "valenceElectrons": 7,
+      "electronConfiguration": "[He]2s2 2p5",
+      "atomicMass": 18.99840316,
+      "electronegativity": 3.98,
+      "covalentRadiusPm": 57,
+      "vdwRadiusPm": 147,
+      "vdwSource": "bondi1964",
+      "color": "#90E050"
+    },
+    {
+      "symbol": "Al",
+      "atomicNumber": 13,
+      "name": {
+        "ar": "ألومنيوم",
+        "en": "Aluminium"
+      },
+      "group": 13,
+      "period": 3,
+      "valenceElectrons": 3,
+      "electronConfiguration": "[Ne]3s2 3p1",
+      "atomicMass": 26.981538,
+      "electronegativity": 1.61,
+      "covalentRadiusPm": 121,
+      "vdwRadiusPm": 184,
+      "vdwSource": "mantina2009",
+      "color": "#BFA6A6"
+    },
+    {
+      "symbol": "Si",
+      "atomicNumber": 14,
+      "name": {
+        "ar": "سيليكون",
+        "en": "Silicon"
+      },
+      "group": 14,
+      "period": 3,
+      "valenceElectrons": 4,
+      "electronConfiguration": "[Ne]3s2 3p2",
+      "atomicMass": 28.085,
+      "electronegativity": 1.9,
+      "covalentRadiusPm": 111,
+      "vdwRadiusPm": 210,
+      "vdwSource": "bondi1964",
+      "color": "#F0C8A0"
+    },
+    {
+      "symbol": "P",
+      "atomicNumber": 15,
+      "name": {
+        "ar": "فوسفور",
+        "en": "Phosphorus"
+      },
+      "group": 15,
+      "period": 3,
+      "valenceElectrons": 5,
+      "electronConfiguration": "[Ne]3s2 3p3",
+      "atomicMass": 30.973762,
+      "electronegativity": 2.19,
+      "covalentRadiusPm": 107,
+      "vdwRadiusPm": 180,
+      "vdwSource": "bondi1964",
+      "color": "#FF8000"
+    },
+    {
+      "symbol": "S",
+      "atomicNumber": 16,
+      "name": {
+        "ar": "كبريت",
+        "en": "Sulfur"
+      },
+      "group": 16,
+      "period": 3,
+      "valenceElectrons": 6,
+      "electronConfiguration": "[Ne]3s2 3p4",
+      "atomicMass": 32.07,
+      "electronegativity": 2.58,
+      "covalentRadiusPm": 105,
+      "vdwRadiusPm": 180,
+      "vdwSource": "bondi1964",
+      "color": "#FFFF30"
+    },
+    {
+      "symbol": "Cl",
+      "atomicNumber": 17,
+      "name": {
+        "ar": "كلور",
+        "en": "Chlorine"
+      },
+      "group": 17,
+      "period": 3,
+      "valenceElectrons": 7,
+      "electronConfiguration": "[Ne]3s2 3p5",
+      "atomicMass": 35.45,
+      "electronegativity": 3.16,
+      "covalentRadiusPm": 102,
+      "vdwRadiusPm": 175,
+      "vdwSource": "bondi1964",
+      "color": "#1FF01F"
+    },
+    {
+      "symbol": "Ge",
+      "atomicNumber": 32,
+      "name": {
+        "ar": "جرمانيوم",
+        "en": "Germanium"
+      },
+      "group": 14,
+      "period": 4,
+      "valenceElectrons": 4,
+      "electronConfiguration": "[Ar]4s2 3d10 4p2",
+      "atomicMass": 72.63,
+      "electronegativity": 2.01,
+      "covalentRadiusPm": 120,
+      "vdwRadiusPm": 211,
+      "vdwSource": "mantina2009",
+      "color": "#668F8F"
+    },
+    {
+      "symbol": "As",
+      "atomicNumber": 33,
+      "name": {
+        "ar": "زرنيخ",
+        "en": "Arsenic"
+      },
+      "group": 15,
+      "period": 4,
+      "valenceElectrons": 5,
+      "electronConfiguration": "[Ar]4s2 3d10 4p3",
+      "atomicMass": 74.92159,
+      "electronegativity": 2.18,
+      "covalentRadiusPm": 119,
+      "vdwRadiusPm": 185,
+      "vdwSource": "bondi1964",
+      "color": "#BD80E3"
+    },
+    {
+      "symbol": "Se",
+      "atomicNumber": 34,
+      "name": {
+        "ar": "سيلينيوم",
+        "en": "Selenium"
+      },
+      "group": 16,
+      "period": 4,
+      "valenceElectrons": 6,
+      "electronConfiguration": "[Ar]4s2 3d10 4p4",
+      "atomicMass": 78.97,
+      "electronegativity": 2.55,
+      "covalentRadiusPm": 120,
+      "vdwRadiusPm": 190,
+      "vdwSource": "bondi1964",
+      "color": "#FFA100"
+    },
+    {
+      "symbol": "Br",
+      "atomicNumber": 35,
+      "name": {
+        "ar": "بروم",
+        "en": "Bromine"
+      },
+      "group": 17,
+      "period": 4,
+      "valenceElectrons": 7,
+      "electronConfiguration": "[Ar]4s2 3d10 4p5",
+      "atomicMass": 79.9,
+      "electronegativity": 2.96,
+      "covalentRadiusPm": 120,
+      "vdwRadiusPm": 185,
+      "vdwSource": "bondi1964",
+      "color": "#A62929"
+    },
+    {
+      "symbol": "Kr",
+      "atomicNumber": 36,
+      "name": {
+        "ar": "كريبتون",
+        "en": "Krypton"
+      },
+      "group": 18,
+      "period": 4,
+      "valenceElectrons": 8,
+      "electronConfiguration": "[Ar]4s2 3d10 4p6",
+      "atomicMass": 83.8,
+      "electronegativity": 3.0,
+      "covalentRadiusPm": 116,
+      "vdwRadiusPm": 202,
+      "vdwSource": "bondi1964",
+      "color": "#5CB8D1"
+    },
+    {
+      "symbol": "Sb",
+      "atomicNumber": 51,
+      "name": {
+        "ar": "أنتيمون",
+        "en": "Antimony"
+      },
+      "group": 15,
+      "period": 5,
+      "valenceElectrons": 5,
+      "electronConfiguration": "[Kr]5s2 4d10 5p3",
+      "atomicMass": 121.76,
+      "electronegativity": 2.05,
+      "covalentRadiusPm": 139,
+      "vdwRadiusPm": 206,
+      "vdwSource": "mantina2009",
+      "color": "#9E63B5"
+    },
+    {
+      "symbol": "Te",
+      "atomicNumber": 52,
+      "name": {
+        "ar": "تيلوريوم",
+        "en": "Tellurium"
+      },
+      "group": 16,
+      "period": 5,
+      "valenceElectrons": 6,
+      "electronConfiguration": "[Kr]5s2 4d10 5p4",
+      "atomicMass": 127.6,
+      "electronegativity": 2.1,
+      "covalentRadiusPm": 138,
+      "vdwRadiusPm": 206,
+      "vdwSource": "bondi1964",
+      "color": "#D47A00"
+    },
+    {
+      "symbol": "I",
+      "atomicNumber": 53,
+      "name": {
+        "ar": "يود",
+        "en": "Iodine"
+      },
+      "group": 17,
+      "period": 5,
+      "valenceElectrons": 7,
+      "electronConfiguration": "[Kr]5s2 4d10 5p5",
+      "atomicMass": 126.9045,
+      "electronegativity": 2.66,
+      "covalentRadiusPm": 139,
+      "vdwRadiusPm": 198,
+      "vdwSource": "bondi1964",
+      "color": "#940094"
+    },
+    {
+      "symbol": "Xe",
+      "atomicNumber": 54,
+      "name": {
+        "ar": "زينون",
+        "en": "Xenon"
+      },
+      "group": 18,
+      "period": 5,
+      "valenceElectrons": 8,
+      "electronConfiguration": "[Kr]5s2 4d10 5p6",
+      "atomicMass": 131.29,
+      "electronegativity": 2.6,
+      "covalentRadiusPm": 140,
+      "vdwRadiusPm": 216,
+      "vdwSource": "bondi1964",
+      "color": "#429EB0"
+    }
+  ]
+}

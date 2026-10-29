@@ -1,0 +1,1104 @@
+{
+  "$comment": "المراجع العلمية في Chem3D. verification.scope يبيّن ما تم التحقق منه فعلًا: metadata = بيانات المرجع (المؤلفون، العنوان، السنة، DOI) عبر Crossref؛ abstract = قُرئ الملخص المنشور أيضًا؛ page = قُرئت الصفحة نفسها؛ cited = مرجع ورقي تستشهد به قاعدة NIST CCCBDB ولم نطلع عليه مباشرة. لا تُضف مرجعًا دون تعبئة هذا الحقل بصدق.",
+  "checkedOn": "2026-10-29",
+  "references": [
+    {
+      "id": "sidgwick1940",
+      "type": "article",
+      "authors": [
+        "N. V. Sidgwick",
+        "H. M. Powell"
+      ],
+      "title": "Bakerian Lecture: Stereochemical types and valency groups",
+      "container": "Proceedings of the Royal Society of London. Series A",
+      "volume": "176",
+      "issue": "965",
+      "pages": "153–180",
+      "year": 1940,
+      "doi": "10.1098/rspa.1940.0084",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "gillespie1957",
+      "type": "article",
+      "authors": [
+        "R. J. Gillespie",
+        "R. S. Nyholm"
+      ],
+      "title": "Inorganic stereochemistry",
+      "container": "Quarterly Reviews, Chemical Society",
+      "volume": "11",
+      "issue": "4",
+      "pages": "339–380",
+      "year": 1957,
+      "doi": "10.1039/QR9571100339",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "gillespie1970",
+      "type": "article",
+      "authors": [
+        "R. J. Gillespie"
+      ],
+      "title": "The electron-pair repulsion model for molecular geometry",
+      "container": "Journal of Chemical Education",
+      "volume": "47",
+      "issue": "1",
+      "pages": "18",
+      "year": 1970,
+      "doi": "10.1021/ed047p18",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "gillespie1992",
+      "type": "article",
+      "authors": [
+        "R. J. Gillespie"
+      ],
+      "title": "The VSEPR model revisited",
+      "container": "Chemical Society Reviews",
+      "volume": "21",
+      "issue": "1",
+      "pages": "59",
+      "year": 1992,
+      "doi": "10.1039/CS9922100059",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "gillespieRobinson1996",
+      "type": "article",
+      "authors": [
+        "R. J. Gillespie",
+        "E. A. Robinson"
+      ],
+      "title": "Electron Domains and the VSEPR Model of Molecular Geometry",
+      "container": "Angewandte Chemie International Edition in English",
+      "volume": "35",
+      "issue": "5",
+      "pages": "495–514",
+      "year": 1996,
+      "doi": "10.1002/anie.199604951",
+      "verification": {
+        "status": "verified",
+        "scope": "abstract",
+        "method": "Crossref (metadata + abstract)"
+      }
+    },
+    {
+      "id": "gillespie2008",
+      "type": "article",
+      "authors": [
+        "R. J. Gillespie"
+      ],
+      "title": "Fifty years of the VSEPR model",
+      "container": "Coordination Chemistry Reviews",
+      "volume": "252",
+      "issue": "12–14",
+      "pages": "1315–1327",
+      "year": 2008,
+      "doi": "10.1016/j.ccr.2007.07.007",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "lewis1916",
+      "type": "article",
+      "authors": [
+        "G. N. Lewis"
+      ],
+      "title": "The atom and the molecule",
+      "container": "Journal of the American Chemical Society",
+      "volume": "38",
+      "issue": "4",
+      "pages": "762–785",
+      "year": 1916,
+      "doi": "10.1021/ja02261a002",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "pauling1931",
+      "type": "article",
+      "authors": [
+        "L. Pauling"
+      ],
+      "title": "The nature of the chemical bond. Application of results obtained from the quantum mechanics and from a theory of paramagnetic susceptibility to the structure of molecules",
+      "container": "Journal of the American Chemical Society",
+      "volume": "53",
+      "issue": "4",
+      "pages": "1367–1400",
+      "year": 1931,
+      "doi": "10.1021/ja01355a027",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "pauling1932",
+      "type": "article",
+      "authors": [
+        "L. Pauling"
+      ],
+      "title": "The nature of the chemical bond. IV. The energy of single bonds and the relative electronegativity of atoms",
+      "container": "Journal of the American Chemical Society",
+      "volume": "54",
+      "issue": "9",
+      "pages": "3570–3582",
+      "year": 1932,
+      "doi": "10.1021/ja01348a011",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "allred1961",
+      "type": "article",
+      "authors": [
+        "A. L. Allred"
+      ],
+      "title": "Electronegativity values from thermochemical data",
+      "container": "Journal of Inorganic and Nuclear Chemistry",
+      "volume": "17",
+      "issue": "3–4",
+      "pages": "215–221",
+      "year": 1961,
+      "doi": "10.1016/0022-1902(61)80142-5",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "bent1961",
+      "type": "article",
+      "authors": [
+        "H. A. Bent"
+      ],
+      "title": "An appraisal of valence-bond structures and hybridization in compounds of the first-row elements",
+      "container": "Chemical Reviews",
+      "volume": "61",
+      "issue": "3",
+      "pages": "275–311",
+      "year": 1961,
+      "doi": "10.1021/cr60211a005",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "kutzelnigg1984",
+      "type": "article",
+      "authors": [
+        "W. Kutzelnigg"
+      ],
+      "title": "Chemical Bonding in Higher Main Group Elements",
+      "container": "Angewandte Chemie International Edition in English",
+      "volume": "23",
+      "issue": "4",
+      "pages": "272–295",
+      "year": 1984,
+      "doi": "10.1002/anie.198402721",
+      "verification": {
+        "status": "verified",
+        "scope": "abstract",
+        "method": "Crossref + OpenAlex abstract"
+      }
+    },
+    {
+      "id": "reedWeinhold1986",
+      "type": "article",
+      "authors": [
+        "A. E. Reed",
+        "F. Weinhold"
+      ],
+      "title": "On the role of d orbitals in sulfur hexafluoride",
+      "container": "Journal of the American Chemical Society",
+      "volume": "108",
+      "issue": "13",
+      "pages": "3586–3593",
+      "year": 1986,
+      "doi": "10.1021/ja00273a006",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "magnusson1990",
+      "type": "article",
+      "authors": [
+        "E. Magnusson"
+      ],
+      "title": "Hypercoordinate molecules of second-row elements: d functions or d orbitals?",
+      "container": "Journal of the American Chemical Society",
+      "volume": "112",
+      "issue": "22",
+      "pages": "7940–7951",
+      "year": 1990,
+      "doi": "10.1021/ja00178a014",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "suidan1995",
+      "type": "article",
+      "authors": [
+        "L. Suidan",
+        "J. K. Badenhoop",
+        "E. D. Glendening",
+        "F. Weinhold"
+      ],
+      "title": "Common Textbook and Teaching Misrepresentations of Lewis Structures",
+      "container": "Journal of Chemical Education",
+      "volume": "72",
+      "issue": "7",
+      "pages": "583",
+      "year": 1995,
+      "doi": "10.1021/ed072p583",
+      "verification": {
+        "status": "verified",
+        "scope": "abstract",
+        "method": "Crossref + OpenAlex abstract"
+      }
+    },
+    {
+      "id": "kaupp2007",
+      "type": "article",
+      "authors": [
+        "M. Kaupp"
+      ],
+      "title": "The role of radial nodes of atomic orbitals for chemical bonding and the periodic table",
+      "container": "Journal of Computational Chemistry",
+      "volume": "28",
+      "issue": "1",
+      "pages": "320–325",
+      "year": 2007,
+      "doi": "10.1002/jcc.20522",
+      "verification": {
+        "status": "verified",
+        "scope": "abstract",
+        "method": "Crossref + OpenAlex abstract"
+      }
+    },
+    {
+      "id": "openstax-7-3",
+      "type": "textbook",
+      "authors": [
+        "P. Flowers",
+        "K. Theopold",
+        "R. Langley",
+        "W. R. Robinson"
+      ],
+      "title": "Chemistry 2e — 7.3 Lewis Symbols and Structures",
+      "container": "OpenStax (Rice University)",
+      "year": 2019,
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-3-lewis-symbols-and-structures",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Page text read"
+      }
+    },
+    {
+      "id": "openstax-7-4",
+      "type": "textbook",
+      "authors": [
+        "P. Flowers",
+        "K. Theopold",
+        "R. Langley",
+        "W. R. Robinson"
+      ],
+      "title": "Chemistry 2e — 7.4 Formal Charges and Resonance",
+      "container": "OpenStax (Rice University)",
+      "year": 2019,
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-4-formal-charges-and-resonance",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Page text read"
+      }
+    },
+    {
+      "id": "openstax-7-6",
+      "type": "textbook",
+      "authors": [
+        "P. Flowers",
+        "K. Theopold",
+        "R. Langley",
+        "W. R. Robinson"
+      ],
+      "title": "Chemistry 2e — 7.6 Molecular Structure and Polarity",
+      "container": "OpenStax (Rice University)",
+      "year": 2019,
+      "url": "https://openstax.org/books/chemistry-2e/pages/7-6-molecular-structure-and-polarity",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Page text read"
+      }
+    },
+    {
+      "id": "openstax-8-2",
+      "type": "textbook",
+      "authors": [
+        "P. Flowers",
+        "K. Theopold",
+        "R. Langley",
+        "W. R. Robinson"
+      ],
+      "title": "Chemistry 2e — 8.2 Hybrid Atomic Orbitals",
+      "container": "OpenStax (Rice University)",
+      "year": 2019,
+      "url": "https://openstax.org/books/chemistry-2e/pages/8-2-hybrid-atomic-orbitals",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Page text read"
+      }
+    },
+    {
+      "id": "cccbdb",
+      "type": "database",
+      "authors": [
+        "R. D. Johnson III (ed.)"
+      ],
+      "title": "NIST Computational Chemistry Comparison and Benchmark Database (CCCBDB), NIST Standard Reference Database 101, Release 22",
+      "container": "National Institute of Standards and Technology",
+      "year": 2022,
+      "doi": "10.18434/T47C7Z",
+      "url": "https://cccbdb.nist.gov/",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Experimental-geometry pages read for every molecule in this app"
+      }
+    },
+    {
+      "id": "herzberg1966",
+      "type": "book",
+      "authors": [
+        "G. Herzberg"
+      ],
+      "title": "Electronic Spectra and Electronic Structure of Polyatomic Molecules",
+      "container": "Van Nostrand, New York",
+      "year": 1966,
+      "verification": {
+        "status": "cited",
+        "scope": "cited",
+        "method": "Cited by NIST CCCBDB; not consulted directly"
+      }
+    },
+    {
+      "id": "kuchitsu1998",
+      "type": "book",
+      "authors": [
+        "K. Kuchitsu (ed.)"
+      ],
+      "title": "Structure of Free Polyatomic Molecules: Basic Data",
+      "container": "Springer, Berlin",
+      "year": 1998,
+      "doi": "10.1007/978-3-642-45748-7",
+      "verification": {
+        "status": "cited",
+        "scope": "cited",
+        "method": "DOI checked via Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "gurvich1989",
+      "type": "book",
+      "authors": [
+        "L. V. Gurvich",
+        "I. V. Veyts",
+        "C. B. Alcock"
+      ],
+      "title": "Thermodynamic Properties of Individual Substances, 4th ed.",
+      "container": "Hemisphere, New York",
+      "year": 1989,
+      "verification": {
+        "status": "cited",
+        "scope": "cited",
+        "method": "Cited by NIST CCCBDB; not consulted directly"
+      }
+    },
+    {
+      "id": "landolt1976",
+      "type": "book",
+      "authors": [
+        "K.-H. Hellwege",
+        "A. M. Hellwege (eds.)"
+      ],
+      "title": "Landolt-Börnstein, Group II, Volume 7: Structure Data of Free Polyatomic Molecules",
+      "container": "Springer, Berlin",
+      "year": 1976,
+      "verification": {
+        "status": "cited",
+        "scope": "cited",
+        "method": "Cited by NIST CCCBDB; not consulted directly"
+      }
+    },
+    {
+      "id": "harmony1979",
+      "type": "article",
+      "authors": [
+        "M. D. Harmony",
+        "V. W. Laurie",
+        "R. L. Kuczkowski",
+        "R. H. Schwendeman",
+        "D. A. Ramsay",
+        "F. J. Lovas",
+        "W. J. Lafferty",
+        "A. G. Maki"
+      ],
+      "title": "Molecular structures of gas-phase polyatomic molecules determined by spectroscopic methods",
+      "container": "Journal of Physical and Chemical Reference Data",
+      "volume": "8",
+      "issue": "3",
+      "pages": "619–722",
+      "year": 1979,
+      "doi": "10.1063/1.555605",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "hoyBunker1979",
+      "type": "article",
+      "authors": [
+        "A. R. Hoy",
+        "P. R. Bunker"
+      ],
+      "title": "A precise solution of the rotation bending Schrödinger equation for a triatomic molecule with application to the water molecule",
+      "container": "Journal of Molecular Spectroscopy",
+      "volume": "74",
+      "issue": "1",
+      "pages": "1–8",
+      "year": 1979,
+      "doi": "10.1016/0022-2852(79)90019-5",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "hirota1979",
+      "type": "article",
+      "authors": [
+        "E. Hirota"
+      ],
+      "title": "Anharmonic potential function and equilibrium structure of methane",
+      "container": "Journal of Molecular Spectroscopy",
+      "volume": "77",
+      "issue": "2",
+      "pages": "213–221",
+      "year": 1979,
+      "doi": "10.1016/0022-2852(79)90103-6",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "tollesGwinn1962",
+      "type": "article",
+      "authors": [
+        "W. M. Tolles",
+        "W. D. Gwinn"
+      ],
+      "title": "Structure and Dipole Moment for SF4",
+      "container": "The Journal of Chemical Physics",
+      "volume": "36",
+      "issue": "5",
+      "pages": "1119–1121",
+      "year": 1962,
+      "doi": "10.1063/1.1732702",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "muller2001",
+      "type": "article",
+      "authors": [
+        "H. S. P. Müller"
+      ],
+      "title": "The rotational spectrum of chlorine trifluoride, ClF3. Centrifugal distortion analysis, Cl nuclear magnetic shielding tensor, structure, and the harmonic force field",
+      "container": "Physical Chemistry Chemical Physics",
+      "volume": "3",
+      "issue": "9",
+      "pages": "1570–1575",
+      "year": 2001,
+      "doi": "10.1039/b100527h",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "burgerMa1993",
+      "type": "article",
+      "authors": [
+        "H. Bürger",
+        "S. Ma"
+      ],
+      "title": "The Ground State and Equilibrium Structure of XeF2",
+      "container": "Journal of Molecular Spectroscopy",
+      "volume": "157",
+      "issue": "2",
+      "pages": "536–539",
+      "year": 1993,
+      "doi": "10.1006/jmsp.1993.1043",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "burger1996",
+      "type": "article",
+      "authors": [
+        "H. Bürger",
+        "S. Ma",
+        "J. Breidung",
+        "W. Thiel"
+      ],
+      "title": "Ab initio calculations and high resolution infrared investigation on XeF4",
+      "container": "The Journal of Chemical Physics",
+      "volume": "104",
+      "issue": "13",
+      "pages": "4945–4953",
+      "year": 1996,
+      "doi": "10.1063/1.471266",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "cook1975",
+      "type": "article",
+      "authors": [
+        "R. L. Cook",
+        "F. C. De Lucia",
+        "P. Helminger"
+      ],
+      "title": "Molecular force field and structure of hydrogen sulfide: recent microwave results",
+      "container": "Journal of Molecular Structure",
+      "volume": "28",
+      "issue": "2",
+      "pages": "237–246",
+      "year": 1975,
+      "doi": "10.1016/0022-2860(75)80094-9",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "magnuson1957",
+      "type": "article",
+      "authors": [
+        "D. W. Magnuson"
+      ],
+      "title": "Microwave Spectrum and Molecular Structure of Bromine Trifluoride",
+      "container": "The Journal of Chemical Physics",
+      "volume": "27",
+      "issue": "1",
+      "pages": "223–226",
+      "year": 1957,
+      "doi": "10.1063/1.1743675",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "boyd1955",
+      "type": "article",
+      "authors": [
+        "D. R. J. Boyd"
+      ],
+      "title": "Infrared Spectrum of Trideuterosilane and the Structure of the Silane Molecule",
+      "container": "The Journal of Chemical Physics",
+      "volume": "23",
+      "issue": "5",
+      "pages": "922–926",
+      "year": 1955,
+      "doi": "10.1063/1.1742148",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values taken from NIST CCCBDB"
+      }
+    },
+    {
+      "id": "rundleLewis1952",
+      "type": "article",
+      "authors": [
+        "R. E. Rundle",
+        "P. H. Lewis"
+      ],
+      "title": "Electron Deficient Compounds. VI. The Structure of Beryllium Chloride",
+      "container": "The Journal of Chemical Physics",
+      "volume": "20",
+      "pages": "132–134",
+      "year": 1952,
+      "doi": "10.1063/1.1700153",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "clark1942",
+      "type": "article",
+      "authors": [
+        "D. Clark",
+        "H. M. Powell",
+        "A. F. Wells"
+      ],
+      "title": "The crystal structure of phosphorus pentachloride",
+      "container": "Journal of the Chemical Society (Resumed)",
+      "pages": "642",
+      "year": 1942,
+      "doi": "10.1039/JR9420000642",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "cordero2008",
+      "type": "article",
+      "authors": [
+        "B. Cordero",
+        "V. Gómez",
+        "A. E. Platero-Prats",
+        "M. Revés",
+        "J. Echeverría",
+        "E. Cremades",
+        "F. Barragán",
+        "S. Alvarez"
+      ],
+      "title": "Covalent radii revisited",
+      "container": "Dalton Transactions",
+      "issue": "21",
+      "pages": "2832–2838",
+      "year": 2008,
+      "doi": "10.1039/b801115j",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; radii cross-checked against a published reproduction of the table"
+      }
+    },
+    {
+      "id": "bondi1964",
+      "type": "article",
+      "authors": [
+        "A. Bondi"
+      ],
+      "title": "van der Waals Volumes and Radii",
+      "container": "The Journal of Physical Chemistry",
+      "volume": "68",
+      "issue": "3",
+      "pages": "441–451",
+      "year": 1964,
+      "doi": "10.1021/j100785a001",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref"
+      }
+    },
+    {
+      "id": "mantina2009",
+      "type": "article",
+      "authors": [
+        "M. Mantina",
+        "A. C. Chamberlin",
+        "R. Valero",
+        "C. J. Cramer",
+        "D. G. Truhlar"
+      ],
+      "title": "Consistent van der Waals Radii for the Whole Main Group",
+      "container": "The Journal of Physical Chemistry A",
+      "volume": "113",
+      "issue": "19",
+      "pages": "5806–5812",
+      "year": 2009,
+      "doi": "10.1021/jp8111556",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref; values cross-checked against PubChem"
+      }
+    },
+    {
+      "id": "pubchem-pt",
+      "type": "database",
+      "authors": [
+        "National Center for Biotechnology Information (NCBI)"
+      ],
+      "title": "PubChem Periodic Table of Elements",
+      "container": "U.S. National Library of Medicine",
+      "year": 2026,
+      "url": "https://pubchem.ncbi.nlm.nih.gov/periodic-table/",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Data downloaded from https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON"
+      }
+    }
+  ],
+  "topics": [
+    {
+      "id": "vsepr-foundations",
+      "kind": "established",
+      "title": {
+        "ar": "نموذج VSEPR: الفكرة والأصل",
+        "en": "VSEPR: core idea and origin"
+      },
+      "summary": {
+        "ar": "تترتب مناطق الكثافة الإلكترونية (أزواج رابطة وأزواج غير رابطة) حول الذرة المركزية بحيث تتباعد أكبر قدر ممكن، ويحدد هذا الترتيب الشكل الإلكتروني ثم الشكل الجزيئي. ربط Sidgwick وPowell (1940) الشكل بعدد أزواج الإلكترونات في غلاف التكافؤ، وطوّر Gillespie وNyholm (1957) الفكرة إلى ما يُعرف بنموذج VSEPR (قواعد Gillespie–Nyholm).",
+        "en": "Electron domains (bonding and lone pairs) around a central atom arrange themselves as far apart as possible; this gives the electron geometry and then the molecular shape. Sidgwick and Powell (1940) linked shape to the number of valence-shell electron pairs; Gillespie and Nyholm (1957) developed this into the VSEPR model (the Gillespie–Nyholm rules)."
+      },
+      "supports": {
+        "ar": "الترتيبات الخمسة لمناطق الكثافة من 2 إلى 6 (خطي، مثلث مستوٍ، رباعي الأوجه، ثنائي الهرم المثلثي، ثماني الأوجه) والأشكال الجزيئية الناتجة عنها لجزيئات عناصر المجموعات الرئيسة.",
+        "en": "The five arrangements for 2–6 domains (linear, trigonal planar, tetrahedral, trigonal bipyramidal, octahedral) and the resulting molecular shapes of main-group molecules."
+      },
+      "limits": {
+        "ar": "النموذج نوعي: يتنبأ بالترتيب العام واتجاه انحراف الزوايا، ولا يحسب أطوال الروابط أو قيم الزوايا بدقة، وليس حسابًا ميكانيكيًا كموميًا.",
+        "en": "The model is qualitative: it predicts the overall arrangement and the direction of angle deviations, not exact bond lengths or angles, and it is not a quantum-mechanical calculation."
+      },
+      "references": [
+        "sidgwick1940",
+        "gillespie1957",
+        "gillespie1970",
+        "gillespieRobinson1996",
+        "openstax-7-6"
+      ]
+    },
+    {
+      "id": "lone-pair-repulsion",
+      "kind": "established",
+      "title": {
+        "ar": "ترتيب قوى التنافر وأثر الأزواج غير الرابطة",
+        "en": "Order of repulsions and the effect of lone pairs"
+      },
+      "summary": {
+        "ar": "التنافر: زوج غير رابط–زوج غير رابط > زوج غير رابط–زوج رابط > زوج رابط–زوج رابط. لذلك تصغر الزوايا عن القيم المثالية عند وجود أزواج غير رابطة (CH4 ‏109.47° > NH3 ‏106.67° > H2O ‏104.48°)، وتشغل الأزواج غير الرابطة المواقع الاستوائية في ثنائي الهرم المثلثي، ويتقابل زوجان غير رابطين في ثماني الأوجه.",
+        "en": "Repulsion: lone pair–lone pair > lone pair–bonding pair > bonding pair–bonding pair. Angles therefore shrink below the ideal values when lone pairs are present (CH4 109.47° > NH3 106.67° > H2O 104.48°); lone pairs take equatorial positions in a trigonal bipyramid, and two lone pairs sit opposite each other in an octahedron."
+      },
+      "supports": {
+        "ar": "اتجاه الانحراف عن القيمة المثالية ومواقع الأزواج غير الرابطة.",
+        "en": "The direction of deviations from ideal angles and the positions of lone pairs."
+      },
+      "limits": {
+        "ar": "لا يعطي مقدار الانحراف بدقة؛ فمثلًا لا يتنبأ بأن زاوية PH3 تقارب 93°.",
+        "en": "It does not give the size of the deviation; for example it does not predict that the PH3 angle is about 93°."
+      },
+      "references": [
+        "openstax-7-6",
+        "gillespieRobinson1996",
+        "cccbdb"
+      ]
+    },
+    {
+      "id": "domain-size",
+      "kind": "established",
+      "title": {
+        "ar": "حجم مناطق الكثافة: الروابط المتعددة والسالبية الكهربائية",
+        "en": "Domain size: multiple bonds and electronegativity"
+      },
+      "summary": {
+        "ar": "في صيغة «المجالات الإلكترونية» للنموذج تختلف أحجام المناطق: منطقة الرابطة المتعددة أكبر من منطقة الرابطة الأحادية (الزاوية H–C–H في CH2O ‏116.1° < 120°)، ومنطقة الرابطة مع ذرة طرفية أعلى سالبية كهربائية أصغر (NF3 ‏102.37° < NH3 ‏106.67°).",
+        "en": "In the electron-domain version of the model domains differ in size: a multiple-bond domain is larger than a single-bond domain (H–C–H in CH2O is 116.1° < 120°), and a bond to a more electronegative ligand has a smaller domain (NF3 102.37° < NH3 106.67°)."
+      },
+      "supports": {
+        "ar": "تفسير نوعي لهذه الفروق؛ يصف ملخص Gillespie وRobinson (1996) إعادة صياغة النموذج بالاعتماد على أحجام المجالات وأشكالها.",
+        "en": "A qualitative explanation of these differences; the abstract of Gillespie & Robinson (1996) describes the reformulation of the model in terms of domain sizes and shapes."
+      },
+      "limits": {
+        "ar": "تفسير نوعي لا يحسب القيم، والفروق الكبيرة في هيدريدات الدورات الأعلى تحتاج تفسيرًا إضافيًا (انظر موضوع التهجين). مقالا Gillespie 1992 و2008 مراجع للاستزادة تحققنا من بياناتهما فقط.",
+        "en": "Qualitative only; the large differences for heavier hydrides need a further explanation (see hybridization). Gillespie 1992 and 2008 are further reading whose bibliographic data only were checked."
+      },
+      "references": [
+        "gillespieRobinson1996",
+        "gillespie1992",
+        "gillespie2008"
+      ]
+    },
+    {
+      "id": "lewis-structures",
+      "kind": "established",
+      "title": {
+        "ar": "تراكيب لويس وقاعدة الثمانية واستثناءاتها",
+        "en": "Lewis structures, the octet rule and its exceptions"
+      },
+      "summary": {
+        "ar": "اقترح Lewis (1916) الرابطة التساهمية زوجًا من الإلكترونات المشتركة. خطوات الرسم: حساب إلكترونات التكافؤ (مع طرح الشحنة الموجبة وإضافة السالبة)، ثم روابط أحادية، ثم إكمال ثمانيات الذرات الطرفية، ثم وضع الباقي على الذرة المركزية، ثم روابط متعددة عند الحاجة. الاستثناءات: جزيئات بعدد فردي من الإلكترونات، وجزيئات ناقصة الإلكترونات (BeH2 وBF3)، وجزيئات تحمل ذرتها المركزية أكثر من ثمانية (PCl5 وSF6).",
+        "en": "Lewis (1916) described the covalent bond as a shared electron pair. Procedure: count valence electrons (subtract positive, add negative charge), draw single bonds, complete the terminal atoms' octets, put the rest on the central atom, then form multiple bonds if needed. Exceptions: odd-electron molecules, electron-deficient molecules (BeH2, BF3) and molecules whose central atom carries more than eight electrons (PCl5, SF6)."
+      },
+      "supports": {
+        "ar": "طريقة محاسبة الإلكترونات التي يطبقها محرك Chem3D وتصنيف الاستثناءات.",
+        "en": "The electron bookkeeping applied by the Chem3D engine and the classification of exceptions."
+      },
+      "limits": {
+        "ar": "تركيب لويس ثنائي الأبعاد لا يبين الشكل الهندسي ولا توزيع الإلكترونات الفعلي. ويعزو OpenStax توسع الثمانية إلى أفلاك d الفارغة، وهو تفسير تقليدي تعارضه الدراسات الحسابية (انظر موضوع التهجين).",
+        "en": "A Lewis structure is two-dimensional: it shows neither the geometry nor the real electron distribution. OpenStax attributes expanded octets to empty d orbitals, a traditional explanation that computational studies contradict (see hybridization)."
+      },
+      "references": [
+        "lewis1916",
+        "openstax-7-3"
+      ]
+    },
+    {
+      "id": "formal-charge",
+      "kind": "established",
+      "title": {
+        "ar": "الشحنة الرسمية واختيار تركيب لويس",
+        "en": "Formal charge and choosing a Lewis structure"
+      },
+      "summary": {
+        "ar": "الشحنة الرسمية = إلكترونات التكافؤ − الإلكترونات غير الرابطة − نصف الإلكترونات الرابطة. يُفضَّل التركيب ذو الشحنات الرسمية الأصغر، وتوضع الشحنة السالبة على الذرة الأعلى سالبية كهربائية، وعند وجود تراكيب متكافئة يُستخدم الرنين.",
+        "en": "Formal charge = valence electrons − nonbonding electrons − half the bonding electrons. The structure with the smallest formal charges is preferred, negative charge goes on the more electronegative atom, and equivalent structures are combined by resonance."
+      },
+      "supports": {
+        "ar": "حساب الشحنة الرسمية لكل ذرة في Chem3D ومعيار المفاضلة بين التراكيب.",
+        "en": "The per-atom formal charges in Chem3D and the criterion for choosing between structures."
+      },
+      "limits": {
+        "ar": "الشحنة الرسمية أداة محاسبية وليست الشحنة الفعلية على الذرة. وتقليلها بتوسيع ثمانية الذرة المركزية (مثل O=S=O) ممارسة شائعة في الكتب انتقدها Suidan وآخرون (1995) استنادًا إلى حسابات تبين أن التراكيب المحققة لقاعدة الثمانية أدق تمثيلًا.",
+        "en": "Formal charge is a bookkeeping device, not the real atomic charge. Minimising it by expanding the central atom's octet (e.g. O=S=O) is common in textbooks but was criticised by Suidan et al. (1995), whose calculations indicate that octet-rule structures are more accurate."
+      },
+      "references": [
+        "openstax-7-4",
+        "suidan1995"
+      ]
+    },
+    {
+      "id": "hybridization",
+      "kind": "established",
+      "title": {
+        "ar": "التهجين التقليدي: فائدته وحدوده",
+        "en": "Traditional hybridization: use and limits"
+      },
+      "summary": {
+        "ar": "قدّم Pauling (1931) فكرة الأفلاك المهجنة. في النموذج التعليمي يرتبط عدد مناطق الكثافة بنوع التهجين: 2 ← sp، 3 ← sp²، 4 ← sp³، 5 ← sp³d، 6 ← sp³d².",
+        "en": "Pauling (1931) introduced hybrid orbitals. In the teaching model the number of domains maps to a hybridization: 2 → sp, 3 → sp², 4 → sp³, 5 → sp³d, 6 → sp³d²."
+      },
+      "supports": {
+        "ar": "تسمية تصف الشكل الإلكتروني بلغة الأفلاك ومتسقة مع VSEPR، كما في OpenStax 8.2.",
+        "en": "A label describing the electron geometry in orbital language, consistent with VSEPR, as in OpenStax 8.2."
+      },
+      "limits": {
+        "ar": "التهجين وصف لاحق للشكل وليس سببًا له. يبين Kutzelnigg (1984) وKaupp (2007) أن التهجين يضعف في عناصر الدورة الثالثة وما بعدها (لذلك زوايا PH3 وH2S قريبة من 90°)، وأن «التكافؤ الممتد» لا يرجع أساسًا إلى أفلاك d. ويناقش Reed وWeinhold (1986) وMagnusson (1990) ضآلة دور أفلاك d في SF6 وأمثاله؛ فالتسميات sp³d وsp³d² تبسيط تعليمي. قاعدة Bent (1961) تكمل الصورة لروابط مختلفة الذرات.",
+        "en": "Hybridization describes the shape after the fact; it does not cause it. Kutzelnigg (1984) and Kaupp (2007) show that hybridization weakens for third-period and heavier elements (hence ~90° angles in PH3 and H2S) and that 'extended valence' is not mainly due to d orbitals. Reed & Weinhold (1986) and Magnusson (1990) discuss the minor role of d orbitals in SF6 and similar molecules, so sp³d and sp³d² are teaching simplifications. Bent's rule (1961) refines the picture for unequal ligands."
+      },
+      "references": [
+        "pauling1931",
+        "openstax-8-2",
+        "kutzelnigg1984",
+        "kaupp2007",
+        "reedWeinhold1986",
+        "magnusson1990",
+        "bent1961"
+      ]
+    },
+    {
+      "id": "ideal-vs-experimental",
+      "kind": "established",
+      "title": {
+        "ar": "القيم المثالية مقابل القيم التجريبية",
+        "en": "Ideal versus experimental values"
+      },
+      "summary": {
+        "ar": "الزوايا المثالية قيم هندسية للأشكال المنتظمة (مثل 109.47° = arccos(−1/3) لرباعي الأوجه). أما القيم التجريبية في Chem3D فهي لجزيئات معزولة في الطور الغازي قيست بطرق طيفية أو بحيود الإلكترونات، ومأخوذة من قاعدة NIST CCCBDB مع المصدر الأصلي لكل قيمة.",
+        "en": "Ideal angles are geometric values of regular shapes (e.g. 109.47° = arccos(−1/3) for a tetrahedron). Experimental values in Chem3D are for isolated gas-phase molecules measured spectroscopically or by electron diffraction, taken from NIST CCCBDB together with the original source of each value."
+      },
+      "supports": {
+        "ar": "قيم أطوال الروابط والزوايا المعروضة في وضع «تجريبي».",
+        "en": "The bond lengths and angles shown in 'experimental' mode."
+      },
+      "limits": {
+        "ar": "تختلف القيم قليلًا بين المراجع بحسب الطريقة وتعريف البنية (توازنية rₑ أو متوسطة r₀)، وقد تختلف البنية في الحالتين السائلة والصلبة. لا نعرض قيمًا تجريبية للأيونات.",
+        "en": "Values differ slightly between sources depending on the method and structure definition (equilibrium rₑ or averaged r₀), and structures can differ in liquids and solids. No experimental values are shown for ions."
+      },
+      "references": [
+        "cccbdb",
+        "harmony1979",
+        "kuchitsu1998",
+        "herzberg1966"
+      ]
+    },
+    {
+      "id": "vsepr-limits",
+      "kind": "established",
+      "title": {
+        "ar": "حدود نموذج VSEPR والاستثناءات",
+        "en": "Limits of VSEPR and exceptions"
+      },
+      "summary": {
+        "ar": "(1) النموذج يصف الجزيء المعزول: BeCl2 الصلب سلاسل بوليمرية، وPCl5 الصلب أيونات [PCl4]⁺ و[PCl6]⁻. (2) لا يتنبأ بالقيم الكمية للزوايا، والفرق بين NH3 ‏(106.67°) وPH3 ‏(93.3°) يتجاوز قدرته. (3) لا يتناول Chem3D في هذه النسخة أكثر من ست مناطق (مثل IF7 وXeF6) ولا الجزيئات ذات الذرات المركزية المتعددة.",
+        "en": "(1) The model describes the isolated molecule: solid BeCl2 is a polymeric chain and solid PCl5 consists of [PCl4]⁺ and [PCl6]⁻ ions. (2) It does not predict quantitative angles; the difference between NH3 (106.67°) and PH3 (93.3°) is beyond it. (3) This version of Chem3D does not handle more than six domains (e.g. IF7, XeF6) or molecules with several central atoms."
+      },
+      "supports": {
+        "ar": "النقطتان (1) و(2) مدعومتان بالمراجع المذكورة؛ النقطة (3) حدود خاصة بهذه النسخة من البرنامج.",
+        "en": "Points (1) and (2) are supported by the cited references; point (3) is a limit of this version of the software."
+      },
+      "limits": {
+        "ar": "مقال Gillespie (2008) مرجع للاستزادة عن تاريخ النموذج وحدوده؛ تحققنا من بياناته فقط ولم نراجع نصه الكامل.",
+        "en": "Gillespie (2008) is further reading on the model's history and limits; only its bibliographic data were checked."
+      },
+      "references": [
+        "rundleLewis1952",
+        "clark1942",
+        "kutzelnigg1984",
+        "gillespie2008"
+      ]
+    },
+    {
+      "id": "element-data",
+      "kind": "established",
+      "title": {
+        "ar": "مصادر بيانات العناصر",
+        "en": "Sources of element data"
+      },
+      "summary": {
+        "ar": "السالبية الكهربائية (مقياس Pauling) والتوزيع الإلكتروني والكتلة الذرية وألوان CPK من جدول PubChem الدوري؛ أنصاف الأقطار التساهمية من Cordero وآخرين (2008) وتُستخدم لأطوال الروابط في الوضع المثالي؛ أنصاف أقطار فان دير فالس من Bondi (1964) أو Mantina وآخرين (2009) وتُستخدم لنموذج الملء الفراغي فقط.",
+        "en": "Electronegativity (Pauling scale), electron configuration, atomic mass and CPK colours come from the PubChem periodic table; covalent radii from Cordero et al. (2008) are used for bond lengths in ideal mode; van der Waals radii from Bondi (1964) or Mantina et al. (2009) are used for the space-filling view only."
+      },
+      "supports": {
+        "ar": "قيم بطاقة معلومات الذرة.",
+        "en": "The values on the atom information card."
+      },
+      "limits": {
+        "ar": "أطوال الروابط في الوضع المثالي مجموع نصفي القطرين التساهميين، وهي تقدير وليست قياسًا.",
+        "en": "Ideal-mode bond lengths are sums of covalent radii: an estimate, not a measurement."
+      },
+      "references": [
+        "pubchem-pt",
+        "pauling1932",
+        "allred1961",
+        "cordero2008",
+        "bondi1964",
+        "mantina2009"
+      ]
+    }
+  ],
+  "projectMethods": [
+    {
+      "id": "lewis-selection",
+      "title": {
+        "ar": "قاعدة اختيار تركيب لويس في المحرك",
+        "en": "Lewis-structure selection rule in the engine"
+      },
+      "description": {
+        "ar": "يولّد المحرك كل توزيعات رتب الروابط الممكنة، ويستبعد ما يخالف القيود (ثنائية H، وعدم تجاوز ثمانية عناصر الدورة الثانية)، ولا يوسّع ثمانية الذرة المركزية إلا بقدر الضرورة، ثم يختار بأقل مجموع للشحنات الرسمية، ثم بوضع الشحنة السالبة على الذرة الأعلى سالبية. القواعد معروفة؛ ترتيبها اختيار تعليمي من المشروع.",
+        "en": "The engine enumerates all bond-order assignments, discards those violating constraints (H duet, no more than an octet for period-2 atoms), expands the central atom's octet only as far as necessary, then picks the smallest total formal charge, then negative charge on the most electronegative atom. The rules are standard; their ordering is a teaching choice made by this project."
+      }
+    },
+    {
+      "id": "error-diagnosis",
+      "title": {
+        "ar": "قواعد تشخيص الأخطاء",
+        "en": "Error-diagnosis rules"
+      },
+      "description": {
+        "ar": "رسائل التصحيح الفوري (مثل «نسيت الشحنة» أو «اخترت الشكل الإلكتروني بدل الجزيئي») قواعد صممها المشروع لأخطاء متوقعة شائعة. لم تُختبر فعاليتها التعليمية في دراسة منشورة.",
+        "en": "The instant-feedback messages (e.g. 'you ignored the charge', 'you chose the electron geometry') are rules designed by this project for common expected mistakes. Their teaching effectiveness has not been tested in a published study."
+      }
+    },
+    {
+      "id": "experimental-coordinates",
+      "title": {
+        "ar": "بناء الإحداثيات التجريبية",
+        "en": "Building experimental coordinates"
+      },
+      "description": {
+        "ar": "تُحسب مواقع الذرات في الوضع التجريبي هندسيًا من أطوال الروابط والزوايا المقاسة مع افتراض التماثل المنشور (مثل C3v). مواقع الأزواج غير الرابطة في النموذج تخطيطية وليست مقاسة.",
+        "en": "Atom positions in experimental mode are computed geometrically from measured bond lengths and angles assuming the published symmetry (e.g. C3v). Lone-pair positions in the model are schematic, not measured."
+      }
+    },
+    {
+      "id": "repulsion-demo",
+      "title": {
+        "ar": "عرض «لماذا هذا الشكل؟»",
+        "en": "The 'Why this shape?' animation"
+      },
+      "description": {
+        "ar": "رسم توضيحي لنقاط على كرة تتنافر (الأزواج غير الرابطة بوزن أكبر) حتى تستقر. هو تشبيه مبسط لفكرة VSEPR وليس محاكاة فيزيائية؛ الزوايا التي يصل إليها لا تُعد تنبؤًا بالقيم الحقيقية.",
+        "en": "An illustration of points on a sphere repelling each other (lone pairs weighted more) until they settle. It is a simplified analogy of the VSEPR idea, not a physical simulation; the angles it reaches are not predictions of real values."
+      }
+    },
+    {
+      "id": "angle-descriptions",
+      "title": {
+        "ar": "أوصاف الزوايا في الأسئلة",
+        "en": "Angle descriptions in questions"
+      },
+      "description": {
+        "ar": "تُطرح أسئلة الزوايا بصيغة ما يتنبأ به النموذج فعلًا (مثل «أقل من 109.5°») بدل قيمة رقمية مفصلة، وتُعرض القيمة التجريبية للمقارنة فقط.",
+        "en": "Angle questions ask for what the model actually predicts (e.g. 'less than 109.5°') rather than a detailed number; the experimental value is shown for comparison only."
+      }
+    },
+    {
+      "id": "scoring",
+      "title": {
+        "ar": "نظام النقاط",
+        "en": "Scoring system"
+      },
+      "description": {
+        "ar": "النقاط والمحاولات والتلميحات نظام تحفيزي من تصميم المشروع، وليس مقياسًا معتمدًا للتحصيل.",
+        "en": "Points, attempts and hints are a motivational system designed by this project, not a validated measure of achievement."
+      }
+    }
+  ]
+}
