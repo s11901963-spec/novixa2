@@ -18,7 +18,7 @@ import { ELECTRON_GEOMETRIES, HYBRIDIZATIONS, MOLECULAR_GEOMETRIES } from '../..
 import { useT, type TFunction } from '../../i18n';
 import { useHistory } from '../../state/history';
 import { useLab } from '../../state/lab';
-import { Badge, Button, Segmented } from '../ui/controls';
+import { Badge, Button } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
 import { Axe, Deg, Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
 import { NumberPad } from '../ui/NumberPad';
@@ -465,49 +465,52 @@ export function IssueList({ analysis }: { analysis: Analysis }) {
   );
 }
 
+function PanelHeader({ model }: { model: LabModel }) {
+  const t = useT();
+  return (
+    <>
+      <h2 className="text-base font-bold">
+        <Formula formula={model.formula} charge={model.charge} />
+      </h2>
+      <IssueList analysis={model.analysis} />
+      {model.analysis.ok && (
+        <details className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-xs text-muted">
+          <summary className="cursor-pointer font-semibold text-fg">{t('steps.legend')}</summary>
+          <p className="mt-1.5 leading-6">{t('steps.legend.body')}</p>
+        </details>
+      )}
+    </>
+  );
+}
+
+/** "Solve it yourself": the steps as questions, the 3D shape hidden until the shape step. */
+export function PracticePanel({ model }: { model: LabModel }) {
+  const t = useT();
+  const practiceKey = useLab((s) => s.practiceKey);
+  return (
+    <div className="flex flex-col gap-3" data-testid="practice-panel">
+      <p className="rounded-xl bg-accent-soft px-3 py-2 text-sm text-accent">{t('lab.practice.intro')}</p>
+      <PanelHeader model={model} />
+      {model.analysis.ok && <Practice key={`${practiceKey}-${model.specKey}`} model={model} />}
+    </div>
+  );
+}
+
+/** The full worked solution, step by step. */
 export function SolutionPanel({ model }: { model: LabModel }) {
   const t = useT();
-  const solveMode = useLab((s) => s.solveMode);
-  const setSolveMode = useLab((s) => s.setSolveMode);
-  const practiceKey = useLab((s) => s.practiceKey);
   const { analysis } = model;
-
   return (
     <div className="flex flex-col gap-3">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <h2 className="text-base font-bold">
-          <Formula formula={model.formula} charge={model.charge} />
-        </h2>
-        <Segmented
-          label={t('steps.modeLabel')}
-          value={solveMode ? 'solve' : 'show'}
-          size="sm"
-          onChange={(v) => setSolveMode(v === 'solve')}
-          options={[
-            { value: 'show', label: t('steps.mode.show') },
-            { value: 'solve', label: t('steps.mode.solve') },
-          ]}
-        />
-      </div>
-      <IssueList analysis={analysis} />
+      <PanelHeader model={model} />
       {analysis.ok && (
-        <>
-          <details className="rounded-xl border border-line bg-surface-2 px-3 py-2 text-xs text-muted">
-            <summary className="cursor-pointer font-semibold text-fg">{t('steps.legend')}</summary>
-            <p className="mt-1.5 leading-6">{t('steps.legend.body')}</p>
-          </details>
-          {solveMode ? (
-            <Practice key={`${practiceKey}-${model.specKey}`} model={model} />
-          ) : (
-            <ol className="flex flex-col gap-3" data-testid="solution-steps">
-              {model.steps.map((s, i) => (
-                <StepShell key={s.id} index={i + 1} title={t(`step.${s.id}.title` as never)} testId={`step-${s.id}`}>
-                  <StepBody step={s} analysis={analysis} />
-                </StepShell>
-              ))}
-            </ol>
-          )}
-        </>
+        <ol className="flex flex-col gap-3" data-testid="solution-steps">
+          {model.steps.map((s, i) => (
+            <StepShell key={s.id} index={i + 1} title={t(`step.${s.id}.title` as never)} testId={`step-${s.id}`}>
+              <StepBody step={s} analysis={analysis} />
+            </StepShell>
+          ))}
+        </ol>
       )}
     </div>
   );

@@ -18,6 +18,8 @@ export function AngleDial({
   label,
   presets = [90, 104.5, 107, 109.5, 120, 180],
   disabled,
+  min = 0,
+  max = 180,
   testId = 'angle-dial',
 }: {
   value: number | null;
@@ -25,13 +27,16 @@ export function AngleDial({
   label: string;
   presets?: number[];
   disabled?: boolean;
+  /** Allowed range (the dial still shows 0–180°). */
+  min?: number;
+  max?: number;
   testId?: string;
 }) {
   const t = useT();
   const svg = useRef<SVGSVGElement>(null);
   const [dragging, setDragging] = useState(false);
   const shown = value ?? 90;
-  const set = (v: number) => !disabled && onChange(snapAngle(v));
+  const set = (v: number) => !disabled && onChange(Math.min(max, Math.max(min, snapAngle(v))));
 
   const fromEvent = (e: React.PointerEvent) => {
     const el = svg.current;
@@ -64,8 +69,8 @@ export function AngleDial({
         role="slider"
         tabIndex={disabled ? -1 : 0}
         aria-label={label}
-        aria-valuemin={0}
-        aria-valuemax={180}
+        aria-valuemin={min}
+        aria-valuemax={max}
         aria-valuenow={value ?? undefined}
         aria-valuetext={value === null ? t('touch.dragHint') : `${value}°`}
         onPointerDown={(e) => {
@@ -128,7 +133,7 @@ export function AngleDial({
         ))}
       </div>
       <div className="flex flex-wrap gap-1.5" dir="ltr" role="group" aria-label={t('touch.presets')}>
-        {presets.map((p) => (
+        {presets.filter((p) => p >= min && p <= max).map((p) => (
           <button
             key={p}
             type="button"

@@ -66,6 +66,8 @@ const IDEAL = { AX2: [180], AX3: [120], AX4: [109.5], AX5: [90, 120], AX6: [90] 
 try {
   console.log('1. Every lesson molecule: rendered atoms, lone pairs and angles match the data file');
   await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
+  check((await page.$eval('[data-testid=tab-practice]', (el) => el.getAttribute('aria-selected'))) === 'true', '"Solve it yourself" is the first, selected activity');
+  await page.click('[data-testid=tab-solution]');
   for (const m of molecules.filter((x) => x.category === 'core')) {
     await page.click(`[data-testid=chip-${m.id}]`);
     await page.waitForTimeout(300);
@@ -109,7 +111,7 @@ try {
   await page.click('[data-testid=tab-solution]');
 
   console.log('4. Solve-it-yourself mode: instant feedback and hidden shape');
-  await page.getByRole('radio', { name: /حل بنفسك|Solve it yourself/ }).click();
+  await page.click('[data-testid=tab-practice]');
   await page.waitForTimeout(500);
   check((await page.$eval('[data-testid=molecule-viewer]', (el) => el.dataset.mystery)) === 'true', 'shape hidden before answering');
   await page.fill('#practice-valence', '5');
@@ -128,9 +130,68 @@ try {
   await page.waitForTimeout(1500);
   check((await page.$eval('[data-testid=molecule-viewer]', (el) => el.dataset.mystery)) === 'false', 'shape revealed after the shape step');
   await page.screenshot({ path: `${out}/solve-nh3.png` });
-  await page.getByRole('radio', { name: /عرض الحل|Show solution/ }).click();
+  await page.click('[data-testid=tab-solution]');
 
-  console.log('5. Builder recomputes the model');
+  console.log('5. Change the angle yourself: the model follows, three tries, then the answer');
+  await page.click('[data-testid=chip-nh3]');
+  await page.click('[data-testid=tab-angle]');
+  await page.waitForSelector('[data-testid=angle-panel]', { state: 'visible' });
+  check((await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value)) === '120', 'NH₃ starts flat (120°), not at the answer');
+  const shows = (deg) =>
+    page.waitForFunction(
+      (a) => {
+        const d = document.querySelector('[data-testid=molecule-viewer]')?.dataset;
+        return !!d && d.settled === 'true' && d.renderedAngles.split(',').some((x) => Math.abs(Number(x) - a) <= 0.1);
+      },
+      deg,
+      { timeout: 15000 },
+    );
+  const tryAngle = async (deg) => {
+    await page.click(`[data-testid="angle-try-preset-${deg}"]`);
+    await shows(deg);
+    const d = await rendered();
+    await page.click('[data-testid=angle-check]');
+    return { d, f: await page.$eval('[data-testid=angle-feedback]', (el) => ({ correct: el.dataset.correct, code: el.dataset.code, text: el.textContent })) };
+  };
+  let at = await tryAngle(109.5);
+  check(at.d.renderedAngles.split(',').every((x) => x === '109.5'), `3D model shows the chosen 109.5° (${at.d.renderedAngles})`);
+  check(at.f.correct === 'false' && at.f.code === 'ignored-lp', `109.5° for NH₃ → ❌ lone pair not taken into account: "${at.f.text.slice(0, 80)}"`);
+  at = await tryAngle(120);
+  check(at.f.code === 'other-geometry', '120° → ❌ that is the angle of three domains');
+  const svg = await page.$('[data-testid=angle-try] svg');
+  const bb = await svg.boundingBox();
+  const k = bb.width / 260;
+  await page.mouse.click(bb.x + (130 + 90 * Math.cos((100 * Math.PI) / 180)) * k, bb.y + (128 - 90 * Math.sin((100 * Math.PI) / 180)) * k);
+  const dragged = Number(await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value));
+  check(Math.abs(dragged - 100) <= 1, `tapping the protractor sets the angle (${dragged}°)`);
+  at = await tryAngle(107);
+  check(at.f.correct === 'true' && at.d.renderedAngles.split(',').every((x) => x === '107.0'), `107° → ✅ and the model shows it (measured 106.67°)`);
+  await page.screenshot({ path: `${out}/angle-nh3.png` });
+  await page.click('[data-testid=chip-h2o]');
+  await page.waitForTimeout(400);
+  for (const deg of [180, 90, 120]) await tryAngle(deg);
+  check((await page.$eval('[data-testid=angle-panel]', (el) => el.dataset.revealed)) === 'true', 'H₂O: after three wrong tries the correct angle is shown on the model');
+  await shows(104.48);
+  const shown = await rendered();
+  check(shown.renderedAngles.split(',').every((x) => Math.abs(Number(x) - 104.5) <= 0.1), `the model moves to 104.48° (${shown.renderedAngles})`);
+
+  console.log('6. Info card can be dragged aside and folded');
+  const card = await page.$('[data-testid=viewport-summary]');
+  const before = await card.boundingBox();
+  const handle = await (await page.$('[data-testid=viewport-summary-handle]')).boundingBox();
+  await page.mouse.move(handle.x + handle.width / 2, handle.y + handle.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(handle.x - 220, handle.y + 200, { steps: 6 });
+  await page.mouse.up();
+  const after = await card.boundingBox();
+  check(Math.abs(after.x - before.x) > 60 && Math.abs(after.y - before.y) > 60, `info card dragged (${Math.round(before.x)},${Math.round(before.y)} → ${Math.round(after.x)},${Math.round(after.y)})`);
+  await page.click('[data-testid=viewport-summary-fold]');
+  check((await page.$eval('[data-testid=viewport-summary]', (el) => el.dataset.collapsed)) === 'true', 'info card folds to one line');
+  await page.click('[data-testid=viewport-summary-fold]');
+  await page.click('[data-testid=tab-solution]');
+
+  console.log('7. Builder recomputes the model');
+  await page.click('[data-testid=chip-nh3]');
   await page.click('[data-testid=open-builder]');
   await page.getByRole('button', { name: /ابدأ من الجزيء الحالي|Start from the current molecule/ }).click();
   await page.click('[data-testid=builder] button[title="هيدروجين"], [data-testid=builder] button[title="Hydrogen"]');
@@ -138,7 +199,7 @@ try {
   const nh4 = await rendered();
   check(nh4.renderedElements === 'N,H,H,H,H' && nh4.renderedAngles.split(',').every((x) => x === '109.5'), 'NH₃ + H⁺ → tetrahedral NH₄⁺ (109.5°)');
 
-  console.log('6. Challenge level 1');
+  console.log('8. Challenge level 1');
   await page.goto(`${base}#challenges`, { waitUntil: 'networkidle' });
   await page.click('[data-testid=start-level-1]');
   await page.waitForSelector('[data-testid=question-prompt]');
@@ -149,7 +210,7 @@ try {
   check(await page.locator('[role=status]').first().isVisible(), 'answer gets instant feedback');
   await page.screenshot({ path: `${out}/challenge.png` });
 
-  console.log('7. Electron configurations: four representations and instant correction');
+  console.log('9. Electron configurations: four representations and instant correction');
   await page.goto(`${base}#electrons`, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-testid=electrons-page]', { timeout: 10000 });
   check((await page.textContent('[data-testid=credits]')).includes('عوض عواض وسلطان عبدالله العصيمي'), 'credits line shown in the footer');
@@ -195,7 +256,7 @@ try {
   check((await fb('dots')).correct === 'true', 'corrected dot symbol → ✅');
   await page.screenshot({ path: `${out}/electrons-practice.png`, fullPage: true });
 
-  console.log('8. Textbook Table 6-4 in the library');
+  console.log('10. Textbook Table 6-4 in the library');
   await page.goto(`${base}#library`, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-testid=book-table]', { timeout: 10000 }).catch(() => {});
   check(await page.isVisible('[data-testid=book-table]'), 'textbook table shown');
@@ -203,7 +264,7 @@ try {
   check((await page.$$('[data-testid^=book-row-]')).length === 7, 'all seven textbook molecules listed');
   await page.screenshot({ path: `${out}/book-table.png`, fullPage: true });
 
-  console.log('9. Electron-configuration challenge');
+  console.log('11. Electron-configuration challenge');
   await page.goto(`${base}#challenges`, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-testid=start-level-2]', { timeout: 10000 });
   await page.getByRole('radio', { name: /التوزيع الإلكتروني|Electron configuration/ }).click();
@@ -215,16 +276,20 @@ try {
   check(await page.locator('[role=status]').first().isVisible(), 'electron question gets instant feedback');
   await page.screenshot({ path: `${out}/challenge-electrons.png` });
 
-  console.log('10. Touch screen (phone): everything by tapping');
+  console.log('12. Touch screen (phone): everything by tapping');
   const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
   const tp = await phone.newPage();
   tp.on('pageerror', (e) => errors.push(e.message));
   await tp.goto(`${base}#lab`, { waitUntil: 'networkidle' });
-  await tp.waitForSelector('[data-testid=view-controls-toggle]', { timeout: 15000 });
+  await tp.waitForSelector('[data-testid=view-controls-fold]', { timeout: 15000 });
   const cam = () => tp.$eval('[data-testid=molecule-viewer]', (el) => ({ az: Number(el.dataset.cameraAzimuth), dist: Number(el.dataset.cameraDistance) }));
   await tp.waitForTimeout(1500);
-  check((await tp.$eval('[data-testid=view-controls]', (el) => el.dataset.open)) === 'false', 'phone: view buttons start folded so they do not cover the molecule');
-  await tp.tap('[data-testid=view-controls-toggle]');
+  check((await tp.$eval('[data-testid=view-controls]', (el) => el.dataset.collapsed)) === 'true', 'phone: view buttons start folded so they do not cover the molecule');
+  check((await tp.$eval('[data-testid=viewport-summary]', (el) => el.dataset.collapsed)) === 'true', 'phone: info card starts folded');
+  const tabY = await tp.$eval('[data-testid=mtab-practice]', (el) => [el.getAttribute('aria-selected'), el.getBoundingClientRect().top]);
+  const viewY = await tp.$eval('[data-testid=lab-viewport]', (el) => el.getBoundingClientRect().top);
+  check(tabY[0] === 'true' && tabY[1] < viewY, 'phone: "Solve it yourself" tab is above the 3D view and selected');
+  await tp.tap('[data-testid=view-controls-fold]');
   const c0 = await cam();
   await tp.tap('[data-testid=view-rotate-right]');
   await tp.tap('[data-testid=view-rotate-right]');
@@ -234,7 +299,6 @@ try {
   const turned = Math.abs(((c1.az - c0.az + 540) % 360) - 180);
   check(Math.abs(turned - 30) < 3, `rotate buttons turn the model (${c0.az}° → ${c1.az}°)`);
   check(c1.dist < c0.dist - 0.3, `zoom button brings the camera closer (${c0.dist} → ${c1.dist})`);
-  await tp.getByRole('radio', { name: /حل بنفسك/ }).tap();
   await tp.tap('[data-testid=pad-valence-key-8]');
   await tp.tap('[data-testid=check-valence]');
   check(await tp.locator('[data-testid=practice-step-valence] [role=status]').first().innerText().then((x) => x.includes('✅')), 'number pad: NH₃ valence 8 entered by tapping → ✅');
@@ -270,7 +334,7 @@ try {
   check((await tp.evaluate(() => document.documentElement.style.fontSize)) === '125%', 'text size setting enlarges the whole interface');
   await phone.close();
 
-  console.log('11. Language switch');
+  console.log('13. Language switch');
   await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
   await page.click('[data-testid=lang-toggle]');
   check((await page.evaluate(() => document.documentElement.dir)) === 'ltr', 'English switches the page to left-to-right');

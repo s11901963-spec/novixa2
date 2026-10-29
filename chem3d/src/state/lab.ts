@@ -6,7 +6,7 @@ import { safeStorage } from './storage';
 
 export type LabSource = { kind: 'library'; id: string } | { kind: 'builder'; spec: MoleculeSpec };
 export type ViewMode = 'lewis' | 'vsepr' | 'shape';
-export type LabTab = 'solution' | 'atom' | 'builder' | 'notes';
+export type LabTab = 'practice' | 'angle' | 'solution' | 'atom' | 'builder' | 'notes';
 export type CameraPreset = 'reset' | 'front' | 'top' | 'side';
 
 interface LabState {
@@ -15,7 +15,8 @@ interface LabState {
   geometryMode: GeometryMode;
   selectedAtom: number | null;
   tab: LabTab;
-  solveMode: boolean;
+  /** Angle chosen in the "change the angle yourself" tab (null = not moved yet). */
+  angleTry: number | null;
   /** Changes whenever the practice must restart (new molecule, explicit restart). */
   practiceKey: number;
   shapeRevealed: boolean;
@@ -27,7 +28,7 @@ interface LabState {
   setGeometryMode: (m: GeometryMode) => void;
   selectAtom: (i: number | null) => void;
   setTab: (t: LabTab) => void;
-  setSolveMode: (v: boolean) => void;
+  setAngleTry: (v: number | null) => void;
   restartPractice: () => void;
   revealShape: () => void;
   cameraTo: (p: CameraPreset) => void;
@@ -41,8 +42,9 @@ export const useLab = create<LabState>()(
       viewMode: 'shape',
       geometryMode: 'experimental',
       selectedAtom: null,
-      tab: 'solution',
-      solveMode: false,
+      // "Solve it yourself" is the first thing a student sees.
+      tab: 'practice',
+      angleTry: null,
       practiceKey: 0,
       shapeRevealed: false,
       camera: { preset: 'reset', nonce: 0 },
@@ -55,7 +57,8 @@ export const useLab = create<LabState>()(
           shapeRevealed: false,
           whyOpen: false,
           camera: { preset: 'reset', nonce: s.camera.nonce + 1 },
-          tab: s.tab === 'builder' ? 'solution' : s.tab,
+          tab: s.tab === 'builder' ? 'practice' : s.tab,
+          angleTry: null,
         })),
       setBuilderSpec: (spec) =>
         set((s) => ({
@@ -64,12 +67,15 @@ export const useLab = create<LabState>()(
           practiceKey: s.practiceKey + 1,
           shapeRevealed: false,
           whyOpen: false,
+          angleTry: null,
         })),
       setViewMode: (viewMode) => set({ viewMode }),
       setGeometryMode: (geometryMode) => set({ geometryMode }),
-      selectAtom: (selectedAtom) => set((s) => ({ selectedAtom, tab: selectedAtom === null ? s.tab : 'atom' })),
+      // Tapping an atom opens its details, except while the student is solving or changing the angle.
+      selectAtom: (selectedAtom) =>
+        set((s) => ({ selectedAtom, tab: selectedAtom === null || s.tab === 'practice' || s.tab === 'angle' || s.tab === 'builder' ? s.tab : 'atom' })),
       setTab: (tab) => set({ tab }),
-      setSolveMode: (solveMode) => set((s) => ({ solveMode, practiceKey: s.practiceKey + 1, shapeRevealed: false })),
+      setAngleTry: (angleTry) => set({ angleTry }),
       restartPractice: () => set((s) => ({ practiceKey: s.practiceKey + 1, shapeRevealed: false })),
       revealShape: () => set({ shapeRevealed: true }),
       cameraTo: (preset) => set((s) => ({ camera: { preset, nonce: s.camera.nonce + 1 } })),

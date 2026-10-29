@@ -3,6 +3,7 @@ import { useEffect, useRef, useState, type MutableRefObject, type ReactNode, typ
 import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useT } from '../../i18n';
+import { DraggablePanel } from '../ui/DraggablePanel';
 
 export interface CameraHandle {
   /** Orbit the camera by the given degrees (azimuth around the vertical axis, elevation). */
@@ -112,23 +113,8 @@ export function ViewControls({ handle, host }: { handle: MutableRefObject<Camera
   const t = useT();
   const repeat = useRepeat();
   const [full, setFull] = useState(false);
-  // Open by default on wide viewers; on phones it starts folded so it does not cover the molecule.
-  const [open, setOpen] = useState(false);
-  const decided = useRef(false);
-  useEffect(() => {
-    const el = host.current;
-    if (!el) return;
-    // Decide once, as soon as the viewer has a size; afterwards the student's choice wins.
-    const decide = () => {
-      if (decided.current || el.clientWidth === 0) return;
-      decided.current = true;
-      setOpen(el.clientWidth >= 480);
-    };
-    decide();
-    const ro = new ResizeObserver(decide);
-    ro.observe(el);
-    return () => ro.disconnect();
-  }, [host]);
+  // Folded on phones so it does not cover the molecule; it can be dragged anywhere in the view.
+  const [narrow] = useState(() => typeof window !== 'undefined' && window.innerWidth < 640);
   const canFull = typeof document !== 'undefined' && !!document.fullscreenEnabled;
   useEffect(() => {
     const on = () => setFull(!!host.current && document.fullscreenElement === host.current);
@@ -136,55 +122,48 @@ export function ViewControls({ handle, host }: { handle: MutableRefObject<Camera
     return () => document.removeEventListener('fullscreenchange', on);
   }, [host]);
   return (
-    <div className="absolute end-2 top-1/2 z-20 flex -translate-y-1/2 flex-col items-center gap-1" data-testid="view-controls" data-open={open}>
-      {open && (
-        <div className="grid grid-cols-2 gap-0.5 rounded-2xl border border-screen-line bg-screen-2/85 p-1 shadow-lg backdrop-blur" dir="ltr" role="toolbar" aria-label={t('touch.viewControls')}>
-          <Btn label={t('touch.rotateLeft')} {...repeat(() => handle.current?.rotate(-15, 0))} data-testid="view-rotate-left">
-            ⟲
+    <DraggablePanel
+      bounds={host}
+      title={t('touch.viewControls')}
+      defaultCollapsed={narrow}
+      placement={narrow ? 'bottom-end' : 'middle-end'}
+      className="w-auto"
+      testId="view-controls"
+      folded={<span className="px-1 text-base" aria-hidden>✥</span>}
+    >
+      <div className="grid grid-cols-2 gap-0.5" dir="ltr" role="toolbar" aria-label={t('touch.viewControls')}>
+        <Btn label={t('touch.rotateLeft')} {...repeat(() => handle.current?.rotate(-15, 0))} data-testid="view-rotate-left">
+          ⟲
+        </Btn>
+        <Btn label={t('touch.rotateRight')} {...repeat(() => handle.current?.rotate(15, 0))} data-testid="view-rotate-right">
+          ⟳
+        </Btn>
+        <Btn label={t('touch.tiltUp')} {...repeat(() => handle.current?.rotate(0, 12))} data-testid="view-tilt-up">
+          ▲
+        </Btn>
+        <Btn label={t('touch.tiltDown')} {...repeat(() => handle.current?.rotate(0, -12))} data-testid="view-tilt-down">
+          ▼
+        </Btn>
+        <Btn label={t('touch.zoomIn')} {...repeat(() => handle.current?.zoom(0.88))} data-testid="view-zoom-in">
+          +
+        </Btn>
+        <Btn label={t('touch.zoomOut')} {...repeat(() => handle.current?.zoom(1.14))} data-testid="view-zoom-out">
+          −
+        </Btn>
+        {canFull && (
+          <Btn
+            label={full ? t('touch.exitFullscreen') : t('touch.fullscreen')}
+            className="col-span-2 w-auto text-base"
+            onClick={() => {
+              if (full) void document.exitFullscreen();
+              else void host.current?.requestFullscreen?.();
+            }}
+            data-testid="view-fullscreen"
+          >
+            {full ? '⤡' : '⛶'}
           </Btn>
-          <Btn label={t('touch.rotateRight')} {...repeat(() => handle.current?.rotate(15, 0))} data-testid="view-rotate-right">
-            ⟳
-          </Btn>
-          <Btn label={t('touch.tiltUp')} {...repeat(() => handle.current?.rotate(0, 12))} data-testid="view-tilt-up">
-            ▲
-          </Btn>
-          <Btn label={t('touch.tiltDown')} {...repeat(() => handle.current?.rotate(0, -12))} data-testid="view-tilt-down">
-            ▼
-          </Btn>
-          <Btn label={t('touch.zoomIn')} {...repeat(() => handle.current?.zoom(0.88))} data-testid="view-zoom-in">
-            +
-          </Btn>
-          <Btn label={t('touch.zoomOut')} {...repeat(() => handle.current?.zoom(1.14))} data-testid="view-zoom-out">
-            −
-          </Btn>
-          {canFull && (
-            <Btn
-              label={full ? t('touch.exitFullscreen') : t('touch.fullscreen')}
-              className="col-span-2 w-auto text-base"
-              onClick={() => {
-                if (full) void document.exitFullscreen();
-                else void host.current?.requestFullscreen?.();
-              }}
-              data-testid="view-fullscreen"
-            >
-              {full ? '⤡' : '⛶'}
-            </Btn>
-          )}
-        </div>
-      )}
-      <button
-        type="button"
-        aria-expanded={open}
-        aria-label={t('touch.viewControls')}
-        title={t('touch.viewControls')}
-        onClick={() => setOpen((o) => !o)}
-        className={`flex h-9 w-9 items-center justify-center rounded-full border text-lg shadow-lg backdrop-blur pointer-coarse:h-11 pointer-coarse:w-11 ${
-          open ? 'border-screen-fg/40 bg-screen-fg/90 text-screen' : 'border-screen-line bg-screen-2/85 text-screen-fg'
-        }`}
-        data-testid="view-controls-toggle"
-      >
-        <span aria-hidden>{open ? '×' : '✥'}</span>
-      </button>
-    </div>
+        )}
+      </div>
+    </DraggablePanel>
   );
 }

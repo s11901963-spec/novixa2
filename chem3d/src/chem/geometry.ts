@@ -349,15 +349,16 @@ function terminalLonePairDirs(bondToCentral: Vec3, count: number, reference: Vec
 
 export function buildSceneModel(
   analysis: Analysis,
-  opts: { mode: GeometryMode; experimental?: ExperimentalData },
+  opts: { mode: GeometryMode; experimental?: ExperimentalData; layout?: DomainLayout },
 ): SceneModel {
   if (!analysis.ok || !analysis.lewis || !analysis.vsepr) throw new Error('Cannot build a 3D model for an invalid analysis');
   const { spec, lewis, vsepr } = analysis;
   const shape = vsepr.molecularGeometry;
   const useExp = opts.mode === 'experimental' && !!opts.experimental;
-  const layout = useExp
-    ? experimentalLayout(shape, vsepr.bondingDomains, vsepr.lonePairs, opts.experimental!.angleParams)
-    : idealLayout(vsepr.bondingDomains, vsepr.lonePairs);
+  // A student-chosen layout (angle explorer) replaces the directions; bond lengths stay as selected.
+  const layout =
+    opts.layout ??
+    (useExp ? experimentalLayout(shape, vsepr.bondingDomains, vsepr.lonePairs, opts.experimental!.angleParams) : idealLayout(vsepr.bondingDomains, vsepr.lonePairs));
 
   const order = slotAssignment(spec.ligands);
   const slotOfLigand = new Map<number, number>();
@@ -406,5 +407,5 @@ export function buildSceneModel(
   ];
   const radius = Math.max(...atoms.map((a) => length(a.position) + getElement(a.element).covalentRadiusPm / 100));
 
-  return { atoms, bonds, lonePairs, angles, domainDirs, mode: useExp ? 'experimental' : 'ideal', measured: useExp, radius };
+  return { atoms, bonds, lonePairs, angles, domainDirs, mode: useExp ? 'experimental' : 'ideal', measured: useExp && !opts.layout, radius };
 }
