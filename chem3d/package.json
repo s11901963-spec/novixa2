@@ -12,7 +12,8 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "node scripts/e2e-smoke.mjs",
-    "build:single": "tsc -b && vite build --mode singlefile && node scripts/make-artifact.mjs"
+    "build:single": "tsc -b && vite build --mode singlefile && node scripts/make-artifact.mjs",
+    "build:docs": "npm run build:single && node scripts/make-docs.mjs"
   },
   "dependencies": {
     "@fontsource/ibm-plex-mono": "^5.3.0",
