@@ -10,6 +10,8 @@ export const SCREEN_COLORS = {
   lonePairDot: '#f5f0ff',
   bondingPair: '#34c4d6',
   angle: '#ffc44d',
+  angleOk: '#22c55e',
+  angleBad: '#f05252',
   polyhedron: '#7c9bff',
   domainBond: '#7c9bff',
   selection: '#9db4ff',

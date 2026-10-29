@@ -133,6 +133,11 @@ export function angleTarget(ex: AngleExplorer, analysis: Analysis, measured?: nu
   return { value: Math.round(ex.reference * 100) / 100, source: 'symmetry' };
 }
 
+/** True when the angle counts as right (within ±TOLERANCE of the value, or inside the range). */
+export function angleHits(value: number, target: AngleTarget): boolean {
+  return target.value !== undefined ? Math.abs(value - target.value) <= TOLERANCE + 1e-9 : value >= target.range![0] && value <= target.range![1];
+}
+
 export interface AngleJudgement {
   correct: boolean;
   code: 'correct' | 'book-value' | 'linear' | 'ignored-lp' | 'other-geometry' | 'close' | 'too-large' | 'too-small';
@@ -149,7 +154,7 @@ const STANDARD: { value: number; sn: number }[] = [
 export function judgeAngle(value: number, ex: AngleExplorer, target: AngleTarget, analysis: Analysis, bookValue?: number): AngleJudgement {
   const v = analysis.vsepr!;
   const goal = target.value ?? (target.range![0] + target.range![1]) / 2;
-  const hit = target.value !== undefined ? Math.abs(value - target.value) <= TOLERANCE : value >= target.range![0] && value <= target.range![1];
+  const hit = angleHits(value, target);
   const fmt = (n: number) => Number(n.toFixed(2));
   const params: Record<string, string | number> = { value: fmt(value), target: target.value !== undefined ? fmt(target.value) : `${fmt(target.range![0])}–${fmt(target.range![1])}`, reference: fmt(ex.reference), sn: v.stericNumber, e: v.lonePairs };
   if (hit) return { correct: true, code: 'correct', params };

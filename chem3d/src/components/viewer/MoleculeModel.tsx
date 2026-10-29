@@ -1,15 +1,28 @@
 import { Line2 } from 'three/addons/lines/Line2.js';
 import { LineGeometry } from 'three/addons/lines/LineGeometry.js';
 import { LineMaterial } from 'three/addons/lines/LineMaterial.js';
-import { useFrame, type ThreeEvent } from '@react-three/fiber';
+import { useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import * as THREE from 'three';
 import { getElement } from '../../data';
 import type { SceneModel } from '../../chem/geometry';
+import type { AngleKindId } from '../../chem/types';
 import type { DisplayToggles, Lang, LabelMode, RenderStyle } from '../../state/settings';
 import { atomRadius, bondRadius, SCALE, SCREEN_COLORS } from './constants';
 import { LabelLayer } from './labels';
 import { Polyhedron } from './Polyhedron';
+
+/** Lets the student bend the molecule by dragging an atom (one-parameter angle family). */
+export interface BendConfig {
+  min: number;
+  max: number;
+  step: number;
+  /** Atom positions (same order as scene.atoms, unscaled) for an angle. */
+  positionsFor: (theta: number) => [number, number, number][];
+  /** Atoms that move when the angle changes (the ones that can be grabbed). */
+  movable: number[];
+  onChange: (theta: number) => void;
+}
 
 export interface MoleculeModelProps {
   scene: SceneModel;
@@ -27,6 +40,14 @@ export interface MoleculeModelProps {
   labelContainer: HTMLElement | null;
   /** Identifies what is drawn; read back by the scene probe. */
   modelKey: string;
+  bend?: BendConfig | null;
+  /** Colours the arcs and labels of one kind of angle: right (green) or wrong (red). */
+  angleTone?: AngleTone | null;
+}
+
+export interface AngleTone {
+  kind: AngleKindId;
+  tone: 'ok' | 'bad';
 }
 
 const Y = new THREE.Vector3(0, 1, 0);
@@ -73,6 +94,10 @@ export function MoleculeModel(props: MoleculeModelProps) {
   const labelPos = useRef(new THREE.Vector3());
   const [hovered, setHovered] = useState<number | null>(null);
   const rootRef = useRef<THREE.Group>(null);
+  const dragging = useRef(false);
+  const bent = useRef(false);
+  const { camera, gl, controls } = useThree();
+  const bend = props.bend && !mystery ? props.bend : null;
 
   // Keep the animated positions array aligned with the atoms; new atoms grow out of the centre.
   if (current.current.length !== n) {
@@ -92,19 +117,38 @@ export function MoleculeModel(props: MoleculeModelProps) {
     return nonStraight.length ? nonStraight : reps.slice(0, 1);
   }, [scene, display.angles, display.allAngles, mystery]);
 
+  // Arcs are reused while the angle changes (bending gives a new scene on every step).
+  const arcCount = shownAngles.length;
   const arcObjects = useMemo(
     () =>
-      shownAngles.map(() => {
+      Array.from({ length: arcCount }, () => {
         const g = new LineGeometry();
         g.setPositions(new Float32Array(33 * 3));
         const m = new LineMaterial({ color: SCREEN_COLORS.angle, linewidth: 2.5, transparent: true, opacity: 0.95 });
         return new Line2(g, m);
       }),
-    [shownAngles],
+    [arcCount],
   );
   const arcBuffer = useRef(new Float32Array(33 * 3));
   arcLines.current = arcObjects;
-  useEffect(() => () => arcObjects.forEach((l) => l.geometry.dispose()), [arcObjects]);
+  useEffect(
+    () => () =>
+      arcObjects.forEach((l) => {
+        l.geometry.dispose();
+        l.material.dispose();
+      }),
+    [arcObjects],
+  );
+  const toneKind = props.angleTone?.kind;
+  const tone = props.angleTone?.tone;
+  const toneOf = (kind: AngleKindId) => (toneKind === kind ? tone : undefined);
+  useEffect(() => {
+    arcObjects.forEach((l, i) => {
+      const tn = shownAngles[i]?.kind === toneKind ? tone : undefined;
+      l.material.color.set(tn === 'ok' ? SCREEN_COLORS.angleOk : tn === 'bad' ? SCREEN_COLORS.angleBad : SCREEN_COLORS.angle);
+      l.material.linewidth = tn ? 3.5 : 2.5;
+    });
+  }, [arcObjects, shownAngles, toneKind, tone]);
 
   const showBonds = display.bonds && renderStyle !== 'space-filling' && !mystery;
 
@@ -123,14 +167,19 @@ export function MoleculeModel(props: MoleculeModelProps) {
         lonePairs.forEach((lp, i) => lp.central && defs.push({ key: `lp-${i}`, text: props.lonePairLabel, className: 'lp-label' }));
       }
     }
-    shownAngles.forEach((_, i) => defs.push({ key: `angle-${i}`, text: '', className: 'angle-label' }));
+    shownAngles.forEach((a, i) => {
+      const tn = toneOf(a.kind);
+      defs.push({ key: `angle-${i}`, text: '', className: `angle-label${tn ? ` is-${tn}` : ''}` });
+    });
     return defs;
-  }, [scene, labelMode, selectedAtom, lang, mystery, mode, lonePairs, shownAngles, props.lonePairLabel]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [scene, labelMode, selectedAtom, lang, mystery, mode, lonePairs, shownAngles, props.lonePairLabel, toneKind, tone]);
   useEffect(() => layer?.sync(labelDefs), [layer, labelDefs]);
 
   useFrame((state, dt) => {
     const t = state.clock.elapsedTime;
-    const k = reduceMotion ? 1 : 1 - Math.pow(0.002, Math.min(dt, 0.1));
+    // While an atom is being dragged the model follows the finger without easing.
+    const k = reduceMotion || dragging.current ? 1 : 1 - Math.pow(0.002, Math.min(dt, 0.1));
     const cur = current.current;
     let converged = !mystery;
     for (let i = 0; i < n; i++) {
@@ -243,15 +292,91 @@ export function MoleculeModel(props: MoleculeModelProps) {
 
   const onAtomClick = (i: number) => (e: ThreeEvent<MouseEvent>) => {
     e.stopPropagation();
+    // A drag (bending the molecule or turning the view) is not a tap on the atom.
+    if (bent.current || e.delta > 10) return;
     if (!mystery) onSelectAtom?.(selectedAtom === i ? null : i);
   };
 
+  /**
+   * Dragging a bonded atom: every candidate angle gives a position for that atom; the angle whose
+   * on-screen position is nearest to the finger wins. Works from any camera direction and for
+   * every shape family. Atoms that do not move in the family (e.g. axial ones) just rotate the view.
+   */
+  const onAtomDown = (i: number) => (e: ThreeEvent<PointerEvent>) => {
+    bent.current = false;
+    if (!bend || !bend.movable.includes(i)) return;
+    e.stopPropagation();
+    const thetas: number[] = [];
+    for (let th = bend.min; th <= bend.max + 1e-9; th += bend.step) thetas.push(Math.round(th * 100) / 100);
+    const cands = thetas.map((th) => ({ th, pos: toV(bend.positionsFor(th)[i]) }));
+    const el = gl.domElement;
+    const rect0 = el.getBoundingClientRect();
+    const screen = (v: THREE.Vector3, rect: DOMRect) => {
+      const p = tmpA.copy(v).project(camera);
+      return [((p.x + 1) / 2) * rect.width, ((1 - p.y) / 2) * rect.height];
+    };
+    // Start from the angle shown now, and keep the point where the atom was grabbed under the finger.
+    const atomNow = current.current[i];
+    let last = cands.reduce((b, c) => (c.pos.distanceToSquared(atomNow) < b.pos.distanceToSquared(atomNow) ? c : b)).th;
+    const [ax, ay] = screen(atomNow, rect0);
+    const offX = e.nativeEvent.clientX - rect0.left - ax;
+    const offY = e.nativeEvent.clientY - rect0.top - ay;
+    const id = e.pointerId;
+    const orbit = controls as unknown as { enabled: boolean } | null;
+    if (orbit) orbit.enabled = false;
+    dragging.current = true;
+    try {
+      el.setPointerCapture(id);
+    } catch {
+      // not an active pointer (synthetic event): window listeners still follow it
+    }
+    const pick = (ev: PointerEvent) => {
+      if (ev.pointerId !== id) return;
+      const rect = el.getBoundingClientRect();
+      const px = ev.clientX - rect.left - offX;
+      const py = ev.clientY - rect.top - offY;
+      let best = last;
+      let bestD = Infinity;
+      for (const c of cands) {
+        const [sx, sy] = screen(c.pos, rect);
+        const d = (sx - px) ** 2 + (sy - py) ** 2;
+        if (d < bestD) {
+          bestD = d;
+          best = c.th;
+        }
+      }
+      if (best !== last) {
+        bent.current = true;
+        last = best;
+        bend.onChange(best);
+      }
+    };
+    let done = false;
+    const end = (ev: PointerEvent) => {
+      if (done || ev.pointerId !== id) return;
+      done = true;
+      window.removeEventListener('pointermove', pick, true);
+      window.removeEventListener('pointerup', end, true);
+      window.removeEventListener('pointercancel', end, true);
+      el.removeEventListener('lostpointercapture', end);
+      dragging.current = false;
+      if (orbit) orbit.enabled = true;
+      document.body.style.cursor = '';
+    };
+    window.addEventListener('pointermove', pick, true);
+    window.addEventListener('pointerup', end, true);
+    window.addEventListener('pointercancel', end, true);
+    el.addEventListener('lostpointercapture', end);
+    document.body.style.cursor = 'grabbing';
+  };
+
   useEffect(() => {
-    document.body.style.cursor = hovered !== null && !mystery ? 'pointer' : '';
+    if (dragging.current) return;
+    document.body.style.cursor = hovered !== null && !mystery ? (bend?.movable.includes(hovered) ? 'grab' : 'pointer') : '';
     return () => {
       document.body.style.cursor = '';
     };
-  }, [hovered, mystery]);
+  }, [hovered, mystery, bend]);
 
   return (
     <group ref={rootRef} name="molecule-root">
@@ -267,6 +392,7 @@ export function MoleculeModel(props: MoleculeModelProps) {
               scale={r}
               userData={{ atomIndex: i, element: a.element }}
               onClick={onAtomClick(i)}
+              onPointerDown={onAtomDown(i)}
               onPointerOver={(e) => {
                 e.stopPropagation();
                 setHovered(i);
@@ -282,6 +408,22 @@ export function MoleculeModel(props: MoleculeModelProps) {
                 emissiveIntensity={isSel ? 0.55 : hovered === i ? 0.3 : 0}
               />
             </mesh>
+            {bend?.movable.includes(i) && (
+              // Invisible, larger target so a fingertip can grab small atoms such as H.
+              <mesh
+                scale={Math.max(r * 1.9, 0.55)}
+                onClick={onAtomClick(i)}
+                onPointerDown={onAtomDown(i)}
+                onPointerOver={(e) => {
+                  e.stopPropagation();
+                  setHovered(i);
+                }}
+                onPointerOut={() => setHovered((h) => (h === i ? null : h))}
+              >
+                <sphereGeometry args={[1, 16, 12]} />
+                <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
+              </mesh>
+            )}
             {isSel && (
               <mesh scale={r * 1.22}>
                 <sphereGeometry args={[1, 32, 20]} />

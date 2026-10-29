@@ -31,6 +31,8 @@ interface SettingsState {
   textSize: TextSize;
   haptics: boolean;
   viewButtons: boolean;
+  /** Colour the angle green/red on the model while it is being changed. */
+  angleLive: boolean;
   setLang: (l: Lang) => void;
   setTheme: (t: ThemePref) => void;
   setLighting: (l: Lighting) => void;
@@ -40,6 +42,7 @@ interface SettingsState {
   setTextSize: (v: TextSize) => void;
   setHaptics: (v: boolean) => void;
   setViewButtons: (v: boolean) => void;
+  setAngleLive: (v: boolean) => void;
   toggle: (key: keyof DisplayToggles) => void;
   reset: () => void;
 }
@@ -66,6 +69,7 @@ const defaults = {
   textSize: 'normal' as TextSize,
   haptics: true,
   viewButtons: true,
+  angleLive: true,
 };
 
 export const useSettings = create<SettingsState>()(
@@ -81,6 +85,7 @@ export const useSettings = create<SettingsState>()(
       setTextSize: (textSize) => set({ textSize }),
       setHaptics: (haptics) => set({ haptics }),
       setViewButtons: (viewButtons) => set({ viewButtons }),
+      setAngleLive: (angleLive) => set({ angleLive }),
       toggle: (key) => set((s) => ({ display: { ...s.display, [key]: !s.display[key] } })),
       reset: () => set({ ...defaults, display: { ...DEFAULT_DISPLAY } }),
     }),
@@ -88,7 +93,7 @@ export const useSettings = create<SettingsState>()(
       name: 'chem3d.settings',
       version: 1,
       storage: safeStorage,
-      partialize: ({ lang, theme, lighting, renderStyle, labelMode, reduceMotion, display, textSize, haptics, viewButtons }) => ({
+      partialize: ({ lang, theme, lighting, renderStyle, labelMode, reduceMotion, display, textSize, haptics, viewButtons, angleLive }) => ({
         lang,
         theme,
         lighting,
@@ -99,6 +104,7 @@ export const useSettings = create<SettingsState>()(
         textSize,
         haptics,
         viewButtons,
+        angleLive,
       }),
     },
   ),

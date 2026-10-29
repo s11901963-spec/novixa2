@@ -8,7 +8,7 @@ import { useSettings, type DisplayToggles } from '../../state/settings';
 import { CameraRig } from './CameraRig';
 import { SCALE, webglAvailable } from './constants';
 import { Lights } from './Lights';
-import { MoleculeModel } from './MoleculeModel';
+import { MoleculeModel, type AngleTone, type BendConfig } from './MoleculeModel';
 import { RepulsionDemo } from './RepulsionDemo';
 import { SceneProbe } from './SceneProbe';
 import { CameraCommands, ViewControls, type CameraHandle } from './ViewControls';
@@ -39,6 +39,9 @@ export interface MoleculeViewerProps {
   ariaLabel: string;
   /** On-screen rotate/zoom/full-screen buttons (default on). */
   controls?: boolean;
+  /** Drag an atom to change the bond angle. */
+  bend?: BendConfig | null;
+  angleTone?: AngleTone | null;
 }
 
 /** The 3D canvas (three.js via react-three-fiber) with orbit controls and camera presets. */
@@ -98,6 +101,8 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
                   lonePairLabel={t('lab.legend.lonePair')}
                   labelContainer={labelLayer}
                   modelKey={sceneKey}
+                  bend={props.bend}
+                  angleTone={props.angleTone}
                 />
               )
             )}

@@ -1,14 +1,15 @@
-import { useEffect, useMemo, useState } from 'react';
-import { angleOfKind, angleTarget, judgeAngle, TOLERANCE, type AngleJudgement } from '../../chem/angleExplorer';
-import { buildSceneModel } from '../../chem/geometry';
+import { useEffect, useState } from 'react';
+import { judgeAngle, TOLERANCE, type AngleJudgement } from '../../chem/angleExplorer';
 import { useT, type TFunction } from '../../i18n';
 import { useHistory } from '../../state/history';
 import { useLab } from '../../state/lab';
+import { useSettings } from '../../state/settings';
 import { AngleDial } from '../ui/AngleDial';
 import { Button } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
 import { Deg, Formula, formulaText, Ltr } from '../ui/Formula';
 import { RefCite } from '../ui/RefCite';
+import { useAngleChallenge } from './useAngleChallenge';
 import type { LabModel } from './useLabModel';
 
 const MAX_ATTEMPTS = 3;
@@ -21,7 +22,8 @@ function verdictText(t: TFunction, j: AngleJudgement, ctx: { central: string; fo
 }
 
 /**
- * "Change the angle yourself": drag the main bond angle, watch the 3D model follow, then check.
+ * "Change the angle yourself": set the main bond angle (drag an atom in the 3D model, or use the
+ * protractor), see right/wrong at once on the model, then check for the explanation.
  * Three tries; after that the correct angle is shown on the model.
  */
 export function AnglePanel({ model }: { model: LabModel }) {
@@ -29,7 +31,10 @@ export function AnglePanel({ model }: { model: LabModel }) {
   const angleTry = useLab((s) => s.angleTry);
   const setAngleTry = useLab((s) => s.setAngleTry);
   const addPractice = useHistory((s) => s.addPractice);
+  const angleLive = useSettings((s) => s.angleLive);
+  const setAngleLive = useSettings((s) => s.setAngleLive);
   const ex = model.explorer;
+  const challenge = useAngleChallenge(model);
   const [attempts, setAttempts] = useState(0);
   const [verdict, setVerdict] = useState<AngleJudgement | null>(null);
   const [revealed, setRevealed] = useState(false);
@@ -38,21 +43,17 @@ export function AnglePanel({ model }: { model: LabModel }) {
     if (ex && angleTry === null) setAngleTry(ex.start);
   }, [ex, angleTry, setAngleTry]);
 
-  const measured = useMemo(
-    () => (ex && model.analysis.ok && model.experimental ? angleOfKind(buildSceneModel(model.analysis, { mode: 'experimental', experimental: model.experimental }), ex.kind) : undefined),
-    [ex, model.analysis, model.experimental],
-  );
-  if (!model.analysis.ok || !ex) return <p className="text-sm text-muted">{t('angle.unavailable')}</p>;
+  if (!model.analysis.ok || !ex || !challenge) return <p className="text-sm text-muted">{t('angle.unavailable')}</p>;
 
-  const target = angleTarget(ex, model.analysis, measured);
-  const value = angleTry ?? ex.start;
+  const { target, value, goal } = challenge;
   const formula = formulaText(model.formula, model.charge);
   const central = model.spec.central;
   const label = model.baseScene?.angles.find((a) => a.kind === ex.kind)?.label.replace(/ \((cis|trans)\)$/, '') ?? '';
   const lp = (model.analysis.vsepr?.lonePairs ?? 0) > 0;
   const book = model.molecule?.textbook && ex.kind === 'x-a-x' ? model.molecule.textbook.angles[0] : undefined;
-  const goal = target.value ?? (target.range![0] + target.range![1]) / 2;
   const solved = !!verdict?.correct;
+  // A wrong verdict explains the value that was checked; it goes away once the angle is changed.
+  const shownVerdict = verdict && (verdict.correct || revealed || verdict.params.value === fmt(value)) ? verdict : null;
   const sourceText =
     target.source === 'measured' ? t('angle.source.measured') : target.source === 'symmetry' ? t('angle.source.symmetry') : t('angle.source.vsepr', { reference: fmt(ex.reference) });
 
@@ -83,12 +84,14 @@ export function AnglePanel({ model }: { model: LabModel }) {
         <p className="mt-0.5 text-xs leading-5 text-muted">{t('angle.intro', { formula })}</p>
       </div>
 
+      <label className="flex items-center gap-2 rounded-xl border border-line bg-surface-2/60 px-3 py-2 text-sm pointer-coarse:min-h-11">
+        <input type="checkbox" className="h-5 w-5 shrink-0" checked={angleLive} onChange={(e) => setAngleLive(e.target.checked)} data-testid="angle-live-toggle" />
+        <span>{t('angle.liveToggle')}</span>
+      </label>
+
       <AngleDial
         value={value}
-        onChange={(v) => {
-          setAngleTry(v);
-          if (verdict && !verdict.correct) setVerdict(null);
-        }}
+        onChange={(v) => setAngleTry(v)}
         label={`${t('angle.title')} ${label}`}
         min={ex.min}
         max={ex.max}
@@ -118,12 +121,12 @@ export function AnglePanel({ model }: { model: LabModel }) {
         {!solved && !revealed && <span className="text-sm text-muted">{t('angle.attemptsLeft', { n: MAX_ATTEMPTS - attempts })}</span>}
       </div>
 
-      {verdict && (
-        <div data-testid="angle-feedback" data-correct={verdict.correct} data-code={verdict.code}>
+      {shownVerdict && (
+        <div data-testid="angle-feedback" data-correct={shownVerdict.correct} data-code={shownVerdict.code}>
           <Feedback
-            correct={verdict.correct}
-            message={verdict.correct ? t('angle.correct', { label, target: target.value !== undefined ? fmt(target.value) : `${fmt(target.range![0])}–${fmt(target.range![1])}`, source: sourceText }) : verdictText(t, verdict, { central, formula, hint: lp ? t('angle.hint.lp') : t('angle.hint.spread') })}
-            rule={verdict.correct ? t('angle.rule', { tol: TOLERANCE }) : undefined}
+            correct={shownVerdict.correct}
+            message={shownVerdict.correct ? t('angle.correct', { label, target: target.value !== undefined ? fmt(target.value) : `${fmt(target.range![0])}–${fmt(target.range![1])}`, source: sourceText }) : verdictText(t, shownVerdict, { central, formula, hint: lp ? t('angle.hint.lp') : t('angle.hint.spread') })}
+            rule={shownVerdict.correct ? t('angle.rule', { tol: TOLERANCE }) : undefined}
           />
         </div>
       )}
@@ -137,12 +140,14 @@ export function AnglePanel({ model }: { model: LabModel }) {
         <div className="overflow-x-auto rounded-xl border border-line">
           <table className="w-full text-sm">
             <tbody>
-              <tr className="border-b border-line">
-                <td className="px-3 py-1.5 text-muted">{t('angle.compare.you')}</td>
-                <td className="px-3 py-1.5 font-semibold">
-                  <Deg value={value} />
-                </td>
-              </tr>
+              {verdict && (
+                <tr className="border-b border-line">
+                  <td className="px-3 py-1.5 text-muted">{t('angle.compare.you')}</td>
+                  <td className="px-3 py-1.5 font-semibold">
+                    <Deg value={Number(verdict.params.value)} />
+                  </td>
+                </tr>
+              )}
               <tr className="border-b border-line">
                 <td className="px-3 py-1.5 text-muted">{t('angle.compare.correct')}</td>
                 <td className="px-3 py-1.5 font-semibold">

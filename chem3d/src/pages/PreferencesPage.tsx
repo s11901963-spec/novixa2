@@ -91,6 +91,10 @@ export function PreferencesPage() {
               {t('pref.viewButtons')}
             </label>
             <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-5 w-5" checked={s.angleLive} onChange={(e) => s.setAngleLive(e.target.checked)} />
+              {t('pref.angleLive')}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" className="h-5 w-5" checked={s.haptics} onChange={(e) => s.setHaptics(e.target.checked)} />
               {t('pref.haptics')}
             </label>

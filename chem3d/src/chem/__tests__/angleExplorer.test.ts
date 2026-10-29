@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { dataset } from '../../data';
 import { analyze, specOf } from '../analyze';
-import { angleOfKind, angleTarget, explorerFor, judgeAngle } from '../angleExplorer';
+import { angleHits, angleOfKind, angleTarget, explorerFor, judgeAngle, TOLERANCE } from '../angleExplorer';
 import { buildSceneModel } from '../geometry';
 import { TETRAHEDRAL_ANGLE } from '../vsepr';
 
@@ -50,6 +50,28 @@ describe('angle explorer families', () => {
   });
 });
 
+describe('dragging an atom in the 3D model', () => {
+  // The viewer picks the angle whose atom position is nearest to the finger, so an outer atom must
+  // move steadily (never back over its own path) as the angle goes from min to max.
+  it('moves at least one outer atom steadily along the whole range, for every species and both geometries', () => {
+    for (const m of dataset.molecules) {
+      const a = analyze(specOf(m));
+      const ex = explorerFor(a)!;
+      for (const mode of m.experimental ? (['ideal', 'experimental'] as const) : (['ideal'] as const)) {
+        const path = (th: number) => buildSceneModel(a, { mode, experimental: m.experimental, layout: ex.layout(th) }).atoms.map((x) => x.position);
+        const thetas: number[] = [];
+        for (let th = ex.min; th <= ex.max + 1e-9; th += 0.5) thetas.push(th);
+        const all = thetas.map(path);
+        const dist = (p: number[], q: number[]) => Math.hypot(p[0] - q[0], p[1] - q[1], p[2] - q[2]);
+        const moving = all[0].findIndex((p, i) => i > 0 && dist(p, all[all.length - 1][i]) > 1e-3);
+        expect(moving, `${m.id} (${mode})`).toBeGreaterThan(0);
+        const fromStart = all.map((ps) => dist(ps[moving], all[0][moving]));
+        for (let k = 1; k < fromStart.length; k++) expect(fromStart[k], `${m.id} (${mode}) θ=${thetas[k]}`).toBeGreaterThan(fromStart[k - 1] + 1e-5);
+      }
+    }
+  });
+});
+
 describe('judging the student’s angle', () => {
   const judge = (id: string, value: number) => {
     const a = analysisOf(id);
@@ -64,6 +86,21 @@ describe('judging the student’s angle', () => {
     expect(judge('bf3', 120).correct).toBe(true);
     expect(judge('ch2o', 120).correct).toBe(true);
     expect(judge('sf4', 101.5).correct).toBe(true);
+  });
+
+  it('colours the model right or wrong with the same rule as the check (±1.5° or the predicted range)', () => {
+    expect(TOLERANCE).toBe(1.5);
+    expect(angleHits(106.67 + 1.5, { value: 106.67, source: 'measured' })).toBe(true);
+    expect(angleHits(106.67 - 1.5, { value: 106.67, source: 'measured' })).toBe(true);
+    expect(angleHits(108.5, { value: 106.67, source: 'measured' })).toBe(false);
+    expect(angleHits(120, { range: [105, 119.5], source: 'vsepr' })).toBe(false);
+    expect(angleHits(105, { range: [105, 119.5], source: 'vsepr' })).toBe(true);
+    for (const [id, value] of [['nh3', 107], ['nh3', 120], ['h2o', 104.5], ['h2o', 109.5], ['sf4', 101.5]] as const) {
+      const a = analysisOf(id);
+      const ex = explorerFor(a)!;
+      const target = angleTarget(ex, a, measured(id));
+      expect(angleHits(value, target), `${id} ${value}`).toBe(judge(id, value).correct);
+    }
   });
 
   it('explains the typical mistakes', () => {

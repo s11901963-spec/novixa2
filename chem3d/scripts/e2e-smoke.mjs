@@ -132,11 +132,23 @@ try {
   await page.screenshot({ path: `${out}/solve-nh3.png` });
   await page.click('[data-testid=tab-solution]');
 
-  console.log('5. Change the angle yourself: the model follows, three tries, then the answer');
+  console.log('5. Change the angle yourself: drag an atom in the model, right/wrong at once, three tries, then the answer');
   await page.click('[data-testid=chip-nh3]');
   await page.click('[data-testid=tab-angle]');
   await page.waitForSelector('[data-testid=angle-panel]', { state: 'visible' });
   check((await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value)) === '120', 'NH₃ starts flat (120°), not at the answer');
+  const live = () => page.$eval('[data-testid=angle-live]', (el) => ({ live: el.dataset.live, value: Number(el.dataset.value) }));
+  const arcLabel = () => page.$eval('[data-label-key="angle-0"]', (el) => el.className);
+  check((await live()).live === 'bad' && (await page.isVisible('[data-testid=angle-drag-hint]')), 'the model shows ❌ for 120° and invites the student to drag an atom');
+  await rendered();
+  const selectedBefore = await page.$$eval('.atom-label.is-selected', (els) => els.length);
+  const h1 = await page.locator('[data-label-key="atom-1"]').boundingBox();
+  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2 + 45, { steps: 9 });
+  await page.mouse.up();
+  const bentTo = Number(await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value));
+  check(bentTo < 118 && (await live()).value === bentTo, `dragging an H atom in the 3D model closes the umbrella (120° → ${bentTo}°), the protractor follows`);
   const shows = (deg) =>
     page.waitForFunction(
       (a) => {
@@ -153,6 +165,20 @@ try {
     await page.click('[data-testid=angle-check]');
     return { d, f: await page.$eval('[data-testid=angle-feedback]', (el) => ({ correct: el.dataset.correct, code: el.dataset.code, text: el.textContent })) };
   };
+  await shows(bentTo);
+  const bentScene = await rendered();
+  check(bentScene.renderedAngles.split(',').every((x) => Math.abs(Number(x) - bentTo) <= 0.1), `the model is drawn at the dragged angle (${bentScene.renderedAngles})`);
+  check((await page.$$eval('.atom-label.is-selected', (els) => els.length)) === selectedBefore, 'dragging an atom does not select it');
+  await page.click('[data-testid="angle-try-preset-107"]');
+  await shows(107);
+  check((await live()).live === 'ok' && (await arcLabel()).includes('is-ok'), '107° → the model turns green ✅ at once (badge and angle label)');
+  await page.screenshot({ path: `${out}/angle-live-ok.png` });
+  await page.click('[data-testid="angle-try-preset-120"]');
+  await shows(120);
+  check((await live()).live === 'bad' && (await arcLabel()).includes('is-bad'), '120° → red ❌ at once');
+  await page.click('[data-testid=angle-live-toggle]');
+  check((await live()).live === 'off' && !(await arcLabel()).includes('is-'), 'right/wrong on the model can be switched off (challenge mode)');
+  await page.click('[data-testid=angle-live-toggle]');
   let at = await tryAngle(109.5);
   check(at.d.renderedAngles.split(',').every((x) => x === '109.5'), `3D model shows the chosen 109.5° (${at.d.renderedAngles})`);
   check(at.f.correct === 'false' && at.f.code === 'ignored-lp', `109.5° for NH₃ → ❌ lone pair not taken into account: "${at.f.text.slice(0, 80)}"`);
@@ -306,6 +332,30 @@ try {
   await tp.tap('[data-testid=check-bonding]');
   check(await tp.locator('[data-testid=practice-step-bonding] [role=status]').first().innerText().then((x) => x.includes('✅')), 'quick-pick button: 3 bonding pairs → ✅');
   await tp.screenshot({ path: `${out}/touch-lab.png`, fullPage: true });
+  // Bend the molecule with a finger: drag an H atom of NH₃ in the 3D view.
+  await tp.tap('[data-testid=view-controls-fold]');
+  await tp.tap('[data-testid=camera-reset]');
+  await tp.tap('[data-testid=mtab-angle]');
+  await tp.waitForSelector('[data-testid=angle-live]', { timeout: 15000 });
+  await tp.waitForTimeout(1500);
+  await tp.waitForFunction(() => {
+    const d = document.querySelector('[data-testid=molecule-viewer]')?.dataset;
+    return !!d && d.renderedFor === d.sceneKey && d.settled === 'true';
+  });
+  const touch = await phone.newCDPSession(tp);
+  const th = await tp.locator('[data-label-key="atom-1"]').boundingBox();
+  const a0 = Number(await tp.$eval('[data-testid=angle-live]', (el) => el.dataset.value));
+  const az0 = (await cam()).az;
+  const tx = th.x + th.width / 2;
+  const ty = th.y + th.height / 2;
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: tx, y: ty }] });
+  for (let k = 1; k <= 10; k++) await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: tx, y: ty + 5 * k }] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await tp.waitForTimeout(600);
+  const a1 = await tp.$eval('[data-testid=angle-live]', (el) => ({ value: Number(el.dataset.value), live: el.dataset.live }));
+  const az1 = (await cam()).az;
+  check(a1.value < a0 - 2 && Math.abs(az1 - az0) < 2 && (a1.live === 'ok' || a1.live === 'bad'), `phone: dragging an H atom with a finger bends NH₃ (${a0}° → ${a1.value}°, ${a1.live === 'ok' ? '✅' : '❌'}) without turning the view`);
+  await tp.screenshot({ path: `${out}/touch-bend.png`, fullPage: true });
 
   await tp.goto(`${base}#predict`, { waitUntil: 'networkidle' });
   await tp.waitForSelector('[data-testid=predict-eg]', { timeout: 15000 });

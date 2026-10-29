@@ -1,4 +1,5 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
+import { buildSceneModel } from '../../chem/geometry';
 import { mainAngle } from '../../chem/steps';
 import { dataset } from '../../data';
 import { useLang, useT } from '../../i18n';
@@ -10,7 +11,9 @@ import { Axe, Formula, formulaText, Ltr } from '../ui/Formula';
 import { shortCitation } from '../ui/RefCite';
 import { SCREEN_COLORS } from '../viewer/constants';
 import { LewisDiagram } from '../viewer/LewisDiagram';
+import type { BendConfig } from '../viewer/MoleculeModel';
 import { MoleculeViewer } from '../viewer/MoleculeViewer';
+import { useAngleChallenge } from './useAngleChallenge';
 import type { LabModel } from './useLabModel';
 
 const SCREEN_LEWIS = {
@@ -48,11 +51,50 @@ export function LabViewport({ model }: { model: LabModel }) {
   const { analysis, scene, experimental } = model;
   const v = analysis.vsepr;
   const mystery = tab === 'practice' && !shapeRevealed;
+  const setAngleTry = useLab((s) => s.setAngleTry);
+  const angleLive = useSettings((s) => s.angleLive);
+  const challenge = useAngleChallenge(model);
+  const [bentOnce, setBentOnce] = useState(false);
+
+  // "Change the angle yourself" in the model: drag an outer atom, the angle follows the finger.
+  const ex = model.explorer;
+  const bending = tab === 'angle' && model.exploring && !!ex && viewMode !== 'lewis' && !whyOpen;
+  const bendInfo = useMemo(() => {
+    if (!bending || !ex || !analysis.ok) return null;
+    const positionsFor = (th: number) => buildSceneModel(analysis, { mode: model.geometryMode, experimental, layout: ex.layout(th) }).atoms.map((a) => a.position);
+    // Only atoms that move with the angle can be grabbed; the hint names the first of them.
+    const lo = positionsFor(ex.min);
+    const hi = positionsFor(ex.max);
+    const movable = lo.flatMap((p, i) => (i > 0 && Math.hypot(p[0] - hi[i][0], p[1] - hi[i][1], p[2] - hi[i][2]) > 1e-3 ? [i] : []));
+    const config: BendConfig = {
+      min: ex.min,
+      max: ex.max,
+      step: 0.5,
+      positionsFor,
+      movable,
+      onChange: (th) => {
+        setAngleTry(th);
+        setBentOnce(true);
+      },
+    };
+    return { config, atom: movable.length ? analysis.spec.ligands[movable[0] - 1] : null };
+  }, [bending, ex, analysis, model.geometryMode, experimental, setAngleTry]);
+  const live = bending && challenge ? (angleLive ? (challenge.hit ? 'ok' : 'bad') : 'off') : null;
+  // A short buzz on phones the moment the angle becomes right.
+  const haptics = useSettings((s) => s.haptics);
+  const wasLive = useRef(live);
+  useEffect(() => {
+    if (live === 'ok' && wasLive.current === 'bad' && haptics && typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(25);
+    wasLive.current = live;
+  }, [live, haptics]);
   const main = scene ? mainAngle(scene) : undefined;
   const resonance = analysis.lewis?.resonance ?? [];
   const structure = resonance[Math.min(resIdx, resonance.length - 1)];
 
-  useEffect(() => setResIdx(0), [model.specKey]);
+  useEffect(() => {
+    setResIdx(0);
+    setBentOnce(false);
+  }, [model.specKey]);
   useEffect(() => {
     setDemoSettled(false);
   }, [demoKey, whyOpen]);
@@ -88,6 +130,8 @@ export function LabViewport({ model }: { model: LabModel }) {
           demo={whyOpen && v ? { count: v.stericNumber, playKey: demoKey, onSettled: () => setDemoSettled(true) } : null}
           moleculeKey={model.specKey}
           ariaLabel={ariaLabel}
+          bend={bendInfo?.config}
+          angleTone={ex && (live === 'ok' || live === 'bad') ? { kind: ex.kind, tone: live } : null}
         />
 
         {/* top bar */}
@@ -109,19 +153,43 @@ export function LabViewport({ model }: { model: LabModel }) {
               ]}
             />
           </div>
-          <div className={`pointer-events-auto flex flex-col items-end gap-1 ${viewMode === 'lewis' || model.exploring ? 'invisible' : ''}`}>
-            <Segmented
-              tone="screen"
-              size="sm"
-              label={t('lab.geomLabel')}
-              value={model.geometryMode}
-              onChange={(m) => setGeometryMode(m)}
-              options={[
-                { value: 'ideal', label: t('lab.geom.ideal') },
-                { value: 'experimental', label: t('lab.geom.experimental'), disabled: !experimental, title: experimental ? undefined : t('lab.geom.noExp') },
-              ]}
-            />
-          </div>
+          {live && challenge ? (
+            // Right or wrong, live, while the angle changes.
+            <div className="flex flex-col items-end gap-1" data-testid="angle-live" data-live={live} data-value={challenge.value}>
+              <span
+                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold shadow-lg transition-colors pointer-coarse:py-1.5 ${
+                  live === 'ok' ? 'bg-[#22c55e] text-[#04210f]' : live === 'bad' ? 'bg-[#f05252] text-white' : 'bg-[#ffc44d] text-[#1d1300]'
+                }`}
+                aria-label={live === 'off' ? `${t('angle.yourAngle')} ${challenge.value}°` : t('angle.live.aria', { value: challenge.value, verdict: live === 'ok' ? t('angle.live.ok') : t('angle.live.bad') })}
+              >
+                <span aria-hidden>{live === 'ok' ? '✅' : live === 'bad' ? '❌' : '📐'}</span>
+                {live !== 'off' && <span>{live === 'ok' ? t('angle.live.ok') : t('angle.live.bad')}</span>}
+                <bdi dir="ltr" className="tabular font-mono">
+                  {challenge.value.toFixed(1)}°
+                </bdi>
+              </span>
+              {!bentOnce && bendInfo?.atom && (
+                <span className="rounded-full bg-screen-2/90 px-2.5 py-0.5 text-xs text-screen-fg shadow" data-testid="angle-drag-hint">
+                  <span aria-hidden>👆 </span>
+                  {t('angle.dragHint', { atom: bendInfo.atom })}
+                </span>
+              )}
+            </div>
+          ) : (
+            <div className={`pointer-events-auto flex flex-col items-end gap-1 ${viewMode === 'lewis' || model.exploring ? 'invisible' : ''}`}>
+              <Segmented
+                tone="screen"
+                size="sm"
+                label={t('lab.geomLabel')}
+                value={model.geometryMode}
+                onChange={(m) => setGeometryMode(m)}
+                options={[
+                  { value: 'ideal', label: t('lab.geom.ideal') },
+                  { value: 'experimental', label: t('lab.geom.experimental'), disabled: !experimental, title: experimental ? undefined : t('lab.geom.noExp') },
+                ]}
+              />
+            </div>
+          )}
         </div>
 
         {/* Lewis view replaces the 3D canvas */}

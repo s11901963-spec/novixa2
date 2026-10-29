@@ -210,6 +210,14 @@ h3 {
   user-select: none;
   font-variant-numeric: tabular-nums;
 }
+.angle-label.is-ok {
+  background: rgba(34, 197, 94, 0.95);
+  color: #04210f;
+}
+.angle-label.is-bad {
+  background: rgba(240, 82, 82, 0.95);
+  color: #fff;
+}
 .lp-label {
   font-size: 11px;
   padding: 0 6px;
