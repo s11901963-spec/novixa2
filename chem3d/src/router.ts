@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 
 // Plain-name hash routes (#lab, #library…). They work on any static host and inside
 // sandboxed viewers that only pass simple #names through.
-export const ROUTES = ['lab', 'library', 'challenges', 'predict', 'history', 'references', 'preferences'] as const;
+export const ROUTES = ['lab', 'electrons', 'library', 'challenges', 'predict', 'history', 'references', 'preferences'] as const;
 export type Route = (typeof ROUTES)[number];
 
 function parse(hash: string): Route {

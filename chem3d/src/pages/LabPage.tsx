@@ -20,7 +20,7 @@ export function LabPage() {
     { id: 'notes', label: t('lab.tab.notes') },
   ];
   return (
-    <div className="gutter mx-auto flex w-full max-w-[1600px] flex-col gap-3 py-3 lg:grid lg:h-[calc(100dvh-var(--header-h))] lg:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] lg:grid-rows-[auto_minmax(0,1fr)]">
+    <div className="gutter mx-auto flex w-full max-w-[1600px] flex-col gap-3 py-3 lg:grid lg:h-[calc(100dvh-var(--header-h)-var(--footer-h))] lg:grid-cols-[minmax(0,1fr)_minmax(360px,440px)] lg:grid-rows-[auto_minmax(0,1fr)]">
       <div className="min-w-0 lg:col-span-2">
         <MoleculePicker model={model} />
       </div>

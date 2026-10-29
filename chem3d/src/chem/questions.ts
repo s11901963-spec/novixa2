@@ -12,6 +12,8 @@ import {
   type Diagnosis,
 } from './diagnose';
 import { buildSceneModel } from './geometry';
+import { ELECTRON_GENERATORS } from './electronQuestions';
+import type { BoxSubshell } from './electrons';
 import { createRng, type Rng } from './random';
 import { mainAngle } from './steps';
 import type { Analysis, AngleSignatureId, ElectronGeometryId, HybridizationId, MolecularGeometryId } from './types';
@@ -23,6 +25,7 @@ import { angleSignature, ELECTRON_GEOMETRY_BY_SN, shapeFor, TETRAHEDRAL_ANGLE } 
  * stay consistent with the chemistry. Text is referenced by i18n keys; the UI renders it.
  */
 export type Level = 1 | 2 | 3;
+export type Topic = 'shapes' | 'electrons';
 export type QuestionKind = 'number' | 'single' | 'multi';
 
 export type Label =
@@ -32,7 +35,11 @@ export type Label =
   | { t: 'sig'; id: AngleSignatureId }
   | { t: 'hyb'; id: HybridizationId }
   | { t: 'molecule'; id: string }
-  | { t: 'order'; ids: string[] };
+  | { t: 'order'; ids: string[] }
+  /** Literal left-to-right text such as an electron configuration. */
+  | { t: 'text'; text: string }
+  /** An element by atomic number (rendered as name and symbol). */
+  | { t: 'atom'; z: number };
 
 export interface Option {
   id: string;
@@ -55,6 +62,10 @@ export interface Question {
   tolerance?: number;
   hintKey: string;
   diagnose?: (answer: string) => Diagnosis;
+  /** Specific explanation of a wrong answer (i18n key + params), when one applies. */
+  feedback?: (answer: string) => { key: string; params?: Record<string, string | number> } | null;
+  /** A drawing shown with the prompt (orbital diagram). */
+  figure?: { t: 'boxes'; boxes: BoxSubshell[] };
   explanation?: { key: string; params?: Record<string, string | number> };
   sources?: string[];
   points: number;
@@ -663,9 +674,9 @@ function signature(q: Question): string {
 }
 
 /** A shuffled set of distinct questions for one challenge attempt. */
-export function generateSession(level: Level, seed: number, count = 8): Question[] {
+export function generateSession(level: Level, seed: number, count = 8, topic: Topic = 'shapes'): Question[] {
   const rng = createRng(seed);
-  const gens = GENERATORS[level];
+  const gens: Gen[] = topic === 'electrons' ? ELECTRON_GENERATORS[level] : GENERATORS[level];
   const out: Question[] = [];
   const seen = new Set<string>();
   const typeCount = new Map<string, number>();

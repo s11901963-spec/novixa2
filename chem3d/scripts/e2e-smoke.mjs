@@ -61,6 +61,8 @@ async function rendered() {
   return page.$eval('[data-testid=molecule-viewer]', (el) => ({ ...el.dataset }));
 }
 
+const IDEAL = { AX2: [180], AX3: [120], AX4: [109.5], AX5: [90, 120], AX6: [90] };
+
 try {
   console.log('1. Every lesson molecule: rendered atoms, lone pairs and angles match the data file');
   await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
@@ -74,7 +76,9 @@ try {
     const expectedLp = m.reference.axe.includes('E') ? Number(lp?.[1] ?? 1) : 0;
     check(Number(d.renderedCentralLonePairs) === expectedLp, `${m.formula}: ${d.renderedCentralLonePairs} lone pair(s) on the central atom`);
     const angles = d.renderedAngles.split(',').map(Number);
-    for (const a of m.experimental.angles) {
+    // Molecules without measured data (NbBr5) are drawn with the ideal VSEPR angles.
+    const expectedAngles = m.experimental ? m.experimental.angles : IDEAL[m.reference.axe].map((value) => ({ label: `ideal ${m.reference.axe}`, value }));
+    for (const a of expectedAngles) {
       check(angles.some((x) => Math.abs(x - a.value) <= 0.11), `${m.formula}: ${a.label} = ${a.value}° is drawn (${[...new Set(angles)].join('/')})`);
     }
   }
@@ -145,7 +149,73 @@ try {
   check(await page.locator('[role=status]').first().isVisible(), 'answer gets instant feedback');
   await page.screenshot({ path: `${out}/challenge.png` });
 
-  console.log('7. Language switch');
+  console.log('7. Electron configurations: four representations and instant correction');
+  await page.goto(`${base}#electrons`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('[data-testid=electrons-page]', { timeout: 10000 });
+  check((await page.textContent('[data-testid=credits]')).includes('عوض عواض وسلطان عبدالله العصيمي'), 'credits line shown in the footer');
+  await page.getByRole('radio', { name: /استكشف|Explore/ }).click();
+  await page.click('[data-testid=pt-Cr]');
+  check((await page.$eval('[data-testid=ec-element]', (el) => el.dataset.symbol)) === 'Cr', 'periodic table selects chromium');
+  check((await page.textContent('[data-testid=ec-rep-noble]')).includes('[Ar] 4s1 3d5'), 'Cr noble-gas notation is the measured [Ar] 4s¹ 3d⁵');
+  check(await page.isVisible('[data-testid=ec-exception]'), 'Cr is flagged as an Aufbau exception');
+  await page.click('[data-testid=pt-P]');
+  check((await page.textContent('[data-testid=ec-rep-full]')).includes('1s2 2s2 2p6 3s2 3p3'), 'P full notation 1s² 2s² 2p⁶ 3s² 3p³');
+  check((await page.$eval('[data-testid=ec-rep-dots] [data-testid=dot-symbol]', (el) => el.dataset.dots)) === '1,2,1,1', 'P dot symbol has 5 dots (one pair)');
+  await page.screenshot({ path: `${out}/electrons-explore.png`, fullPage: true });
+
+  await page.getByRole('radio', { name: /تدرّب|Practise/ }).click();
+  const fb = (task) => page.$eval(`[data-testid=ec-feedback-${task}]`, (el) => ({ correct: el.dataset.correct, code: el.dataset.code, text: el.textContent }));
+  await page.fill('[data-testid=ec-input-full]', '1s2 2s2 2p6 3s2 3p4');
+  await page.click('[data-testid=ec-check-full]');
+  let f = await fb('full');
+  check(f.correct === 'false' && f.code === 'wrong-total' && f.text.includes('16') && f.text.includes('15'), `wrong total → ❌ "${f.text.slice(0, 90)}"`);
+  await page.fill('[data-testid=ec-input-full]', '1s²2s²2p⁶3s²3p³');
+  await page.click('[data-testid=ec-check-full]');
+  check((await fb('full')).correct === 'true', 'correct full notation (with superscripts) → ✅');
+  await page.fill('[data-testid=ec-input-noble]', '[He] 2s2 2p6 3s2 3p3');
+  await page.click('[data-testid=ec-check-noble]');
+  check((await fb('noble')).code === 'core-not-previous', 'wrong noble-gas core → named diagnosis');
+  const tap = (id) => page.click(`[data-testid=${id}]`);
+  for (const sub of ['1s', '2s', '3s']) for (const id of [`box-${sub}-0-0`, `box-${sub}-0-1`, `box-${sub}-0-1`]) await tap(id);
+  for (let i = 0; i < 3; i++) for (const id of [`box-2p-${i}-0`, `box-2p-${i}-1`, `box-2p-${i}-1`]) await tap(id);
+  for (const id of ['box-3p-0-0', 'box-3p-0-1', 'box-3p-0-1', 'box-3p-1-0']) await tap(id);
+  await tap('ec-check-boxes');
+  check((await fb('boxes')).code === 'hund-pairing', 'pairing in 3p while an orbital is empty → Hund’s rule diagnosis');
+  await tap('box-3p-0-1'); // ↓ → empty: the pair becomes a single ↑
+  await tap('box-3p-2-0');
+  await tap('ec-check-boxes');
+  check((await fb('boxes')).correct === 'true', 'corrected orbital diagram → ✅');
+  for (const id of ['dot-side-0', 'dot-side-0', 'dot-side-1', 'dot-side-1', 'dot-side-2']) await tap(id);
+  await tap('ec-check-dots');
+  check((await fb('dots')).code === 'dots-paired-early', 'pairs before spreading dots → diagnosis');
+  await tap('dot-side-0');
+  await tap('dot-side-0');
+  await tap('dot-side-3');
+  await tap('ec-check-dots');
+  check((await fb('dots')).correct === 'true', 'corrected dot symbol → ✅');
+  await page.screenshot({ path: `${out}/electrons-practice.png`, fullPage: true });
+
+  console.log('8. Textbook Table 6-4 in the library');
+  await page.goto(`${base}#library`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('[data-testid=book-table]', { timeout: 10000 }).catch(() => {});
+  check(await page.isVisible('[data-testid=book-table]'), 'textbook table shown');
+  check((await page.$eval('[data-testid=book-row-ph3]', (el) => el.dataset.angleDiffers)) === 'true', 'PH₃: textbook 107.3° flagged against measured 93.3°');
+  check((await page.$$('[data-testid^=book-row-]')).length === 7, 'all seven textbook molecules listed');
+  await page.screenshot({ path: `${out}/book-table.png`, fullPage: true });
+
+  console.log('9. Electron-configuration challenge');
+  await page.goto(`${base}#challenges`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('[data-testid=start-level-2]', { timeout: 10000 });
+  await page.getByRole('radio', { name: /التوزيع الإلكتروني|Electron configuration/ }).click();
+  await page.click('[data-testid=start-level-2]');
+  await page.waitForSelector('[data-testid=question-prompt]');
+  if (await page.$('[data-testid=answer-number]')) await page.fill('[data-testid=answer-number]', '999');
+  else await page.click('[role=radiogroup] button >> nth=0');
+  await page.click('[data-testid=submit-answer]');
+  check(await page.locator('[role=status]').first().isVisible(), 'electron question gets instant feedback');
+  await page.screenshot({ path: `${out}/challenge-electrons.png` });
+
+  console.log('10. Language switch');
   await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
   await page.click('[data-testid=lang-toggle]');
   check((await page.evaluate(() => document.documentElement.dir)) === 'ltr', 'English switches the page to left-to-right');

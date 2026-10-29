@@ -1,4 +1,7 @@
+import { electronConfig, configText } from '../../chem/electrons';
 import { getElement } from '../../data';
+import { navigate } from '../../router';
+import { useElectrons } from '../../state/electrons';
 import { useLang, useT } from '../../i18n';
 import { useLab } from '../../state/lab';
 import { Formula, Ltr } from '../ui/Formula';
@@ -95,13 +98,25 @@ export function AtomInfoPanel({ model }: { model: LabModel }) {
           <Row label={t('atom.group')}>{el.group}</Row>
           <Row label={t('atom.period')}>{el.period}</Row>
           <Row label={t('atom.config')}>
-            <Ltr className="font-mono">{el.electronConfiguration.replace(/(\d)([spdf])(\d+)/g, '$1$2^$3').replace(/\^(\d+)/g, (_, d: string) => d.replace(/\d/g, (c) => '⁰¹²³⁴⁵⁶⁷⁸⁹'[Number(c)]))}</Ltr>
+            <Ltr className="font-mono">{configText(electronConfig(el.atomicNumber).outerTerms, electronConfig(el.atomicNumber).core?.symbol)}</Ltr>
           </Row>
           <Row label={t('atom.valence')}>{el.valenceElectrons}</Row>
           <Row label={t('atom.en')}>{el.electronegativity.toFixed(2)}</Row>
           <Row label={t('atom.covalent')}>{el.covalentRadiusPm} pm</Row>
           <Row label={t('atom.vdw')}>{el.vdwRadiusPm} pm</Row>
         </dl>
+        <button
+          type="button"
+          className="mt-2 text-sm font-semibold text-accent hover:underline"
+          onClick={() => {
+            useElectrons.getState().setZ(el.atomicNumber);
+            useElectrons.getState().setMode('explore');
+            navigate('electrons');
+          }}
+          data-testid="atom-electrons-link"
+        >
+          {t('atom.fourConfigs')} {lang === 'ar' ? '←' : '→'}
+        </button>
         <p className="mt-2 text-xs text-muted">{t('atom.dataSources')}</p>
       </section>
     </div>

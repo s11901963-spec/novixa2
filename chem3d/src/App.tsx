@@ -4,6 +4,7 @@ import { navigate, useRoute, type Route } from './router';
 import { useSettings } from './state/settings';
 import { LabPage } from './pages/LabPage';
 
+const ElectronsPage = lazy(() => import('./pages/ElectronsPage').then((m) => ({ default: m.ElectronsPage })));
 const LibraryPage = lazy(() => import('./pages/LibraryPage').then((m) => ({ default: m.LibraryPage })));
 const ChallengesPage = lazy(() => import('./pages/ChallengesPage').then((m) => ({ default: m.ChallengesPage })));
 const PredictPage = lazy(() => import('./pages/PredictPage').then((m) => ({ default: m.PredictPage })));
@@ -54,7 +55,7 @@ function Logo() {
   );
 }
 
-const NAV: Route[] = ['lab', 'library', 'challenges', 'predict', 'history', 'references', 'preferences'];
+const NAV: Route[] = ['lab', 'electrons', 'library', 'challenges', 'predict', 'history', 'references', 'preferences'];
 
 function Header({ route }: { route: Route }) {
   const t = useT();
@@ -127,6 +128,22 @@ function Header({ route }: { route: Route }) {
   );
 }
 
+function Footer() {
+  const t = useT();
+  return (
+    <footer className="border-t border-line bg-surface/90 text-xs text-muted">
+      <div className="gutter mx-auto flex min-h-[var(--footer-h)] max-w-[1600px] flex-wrap items-center justify-between gap-x-4 gap-y-1 py-1.5">
+        <span className="font-semibold text-fg" data-testid="credits">
+          {t('app.credits')}
+        </span>
+        <a href="#references" className="hover:text-accent">
+          {t('app.footer.data')}
+        </a>
+      </div>
+    </footer>
+  );
+}
+
 export function App() {
   useDocumentSettings();
   const route = useRoute();
@@ -135,7 +152,7 @@ export function App() {
     document.title = route === 'lab' ? 'Chem3D Lab' : `Chem3D · ${t(`nav.${route}`)}`;
   }, [route, t]);
   return (
-    <div className="flex min-h-full flex-col">
+    <div className="flex min-h-dvh flex-col">
       <a href="#main" className="sr-only focus:not-sr-only focus:absolute focus:start-2 focus:top-2 focus:z-[60] focus:rounded-lg focus:bg-accent focus:px-3 focus:py-2 focus:text-accent-fg" onClick={(e) => { e.preventDefault(); document.getElementById('main')?.focus(); }}>
         {t('app.skip')}
       </a>
@@ -143,6 +160,7 @@ export function App() {
       <main id="main" tabIndex={-1} className="flex-1 outline-none">
         <Suspense fallback={<div className="gutter py-10 text-muted">{t('common.loading')}</div>}>
           {route === 'lab' && <LabPage />}
+          {route === 'electrons' && <ElectronsPage />}
           {route === 'library' && <LibraryPage />}
           {route === 'challenges' && <ChallengesPage />}
           {route === 'predict' && <PredictPage />}
@@ -151,6 +169,7 @@ export function App() {
           {route === 'preferences' && <PreferencesPage />}
         </Suspense>
       </main>
+      <Footer />
     </div>
   );
 }

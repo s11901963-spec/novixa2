@@ -117,7 +117,9 @@ export type IssueCode =
   | 'too-many-domains'
   | 'unsupported-domain-combination'
   | 'large-formal-charge'
-  | 'central-more-electronegative';
+  | 'central-more-electronegative'
+  | 'transition-metal'
+  | 'transition-metal-dn';
 
 export interface AnalysisIssue {
   code: IssueCode;

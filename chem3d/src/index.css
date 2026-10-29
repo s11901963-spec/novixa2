@@ -29,6 +29,7 @@
   --font-display: 'Noto Kufi Arabic', 'IBM Plex Sans Arabic', system-ui, sans-serif;
   --font-mono: 'IBM Plex Mono', ui-monospace, 'SFMono-Regular', Menlo, Consolas, monospace;
   --header-h: 56px;
+  --footer-h: 36px;
 }
 
 @media (prefers-color-scheme: dark) {

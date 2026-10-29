@@ -795,6 +795,79 @@
         "scope": "page",
         "method": "Data downloaded from https://pubchem.ncbi.nlm.nih.gov/rest/pug/periodictable/JSON"
       }
+    },
+    {
+      "id": "nist-asd",
+      "type": "database",
+      "authors": [
+        "A. Kramida",
+        "Yu. Ralchenko",
+        "J. Reader",
+        "NIST ASD Team"
+      ],
+      "title": "NIST Atomic Spectra Database (version 5.12): ground levels and ionization energies of the neutral atoms",
+      "container": "National Institute of Standards and Technology, Gaithersburg, MD",
+      "year": 2024,
+      "doi": "10.18434/T4W30F",
+      "url": "https://physics.nist.gov/PhysRefData/ASD/ionEnergy.html",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Ground-state configurations of H–Rn downloaded from the ASD query (CSV) and stored verbatim in atoms.json; they match the PubChem Periodic Table for all 86 elements"
+      }
+    },
+    {
+      "id": "openstax-6-4",
+      "type": "textbook",
+      "authors": [
+        "P. Flowers",
+        "K. Theopold",
+        "R. Langley",
+        "W. R. Robinson"
+      ],
+      "title": "Chemistry 2e — 6.4 Electronic Structure of Atoms (Electron Configurations)",
+      "container": "OpenStax (Rice University)",
+      "year": 2019,
+      "url": "https://openstax.org/books/chemistry-2e/pages/6-4-electronic-structure-of-atoms-electron-configurations",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "Page text read: Aufbau principle, Pauli exclusion principle, Hund's rule, orbital diagrams, core and valence electrons, noble-gas abbreviation, exceptions such as Cr, Cu and Nb"
+      }
+    },
+    {
+      "id": "course-textbook",
+      "type": "school-textbook",
+      "authors": [],
+      "label": {
+        "ar": "الكتاب المقرر ص 142",
+        "en": "Course textbook p. 142"
+      },
+      "title": "كتاب الكيمياء المقرر — القسم 4-4 «أشكال الجزيئات» والجدول 6-4 «الأشكال الفراغية للجزيئات» (ص 142)",
+      "verification": {
+        "status": "verified",
+        "scope": "page",
+        "method": "صورتا الصفحتين اللتين أرسلهما المستخدم. لا تظهر في الصورتين بيانات المؤلفين أو الطبعة أو سنة النشر، لذلك لم تُكتب هنا"
+      }
+    },
+    {
+      "id": "kaupp2001",
+      "type": "article",
+      "authors": [
+        "M. Kaupp"
+      ],
+      "title": "“Non-VSEPR” structures and bonding in d0 systems",
+      "container": "Angewandte Chemie International Edition",
+      "volume": "40",
+      "issue": "19",
+      "pages": "3534–3565",
+      "year": 2001,
+      "doi": "10.1002/1521-3773(20011001)40:19<3534::AID-ANIE3534>3.0.CO;2-#",
+      "verification": {
+        "status": "verified",
+        "scope": "metadata",
+        "method": "Crossref metadata; the title states the claim used here (d0 compounds can adopt structures that VSEPR does not predict)"
+      }
     }
   ],
   "topics": [

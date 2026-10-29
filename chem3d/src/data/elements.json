@@ -1,5 +1,5 @@
 {
-  "$comment": "بيانات العناصر المستخدمة في Chem3D. Electronegativity (Pauling scale), electron configuration, atomic mass and CPK colour: PubChem Periodic Table REST data (NIH). Covalent radii: Cordero et al. 2008. van der Waals radii: Bondi 1964, or Mantina et al. 2009 where Bondi gives no value (see vdwSource). Valence electrons for main-group elements: group number for groups 1-2, group number minus 10 for groups 13-18.",
+  "$comment": "بيانات العناصر المستخدمة في Chem3D. Electronegativity (Pauling scale), electron configuration, atomic mass and CPK colour: PubChem Periodic Table REST data (NIH). Covalent radii: Cordero et al. 2008. van der Waals radii: Bondi 1964, or Mantina et al. 2009 where Bondi gives no value (see vdwSource). Valence electrons for main-group elements: group number for groups 1-2, group number minus 10 for groups 13-18. Nb (group 5, needed for NbBr5 from the textbook table) has 5 valence electrons (5s1 4d4); its van der Waals radius is the PubChem value (Los Alamos National Laboratory), used only for the space-filling view.",
   "sources": {
     "electronegativity": "pubchem-periodic-table",
     "electronConfiguration": "pubchem-periodic-table",
@@ -314,6 +314,24 @@
       "vdwRadiusPm": 202,
       "vdwSource": "bondi1964",
       "color": "#5CB8D1"
+    },
+    {
+      "symbol": "Nb",
+      "atomicNumber": 41,
+      "name": {
+        "ar": "نيوبيوم",
+        "en": "Niobium"
+      },
+      "group": 5,
+      "period": 5,
+      "valenceElectrons": 5,
+      "electronConfiguration": "[Kr]5s1 4d4",
+      "atomicMass": 92.90637,
+      "electronegativity": 1.6,
+      "covalentRadiusPm": 164,
+      "vdwRadiusPm": 207,
+      "vdwSource": "pubchem-pt",
+      "color": "#73C2C9"
     },
     {
       "symbol": "Sb",

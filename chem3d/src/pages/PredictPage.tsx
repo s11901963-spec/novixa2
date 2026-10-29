@@ -222,6 +222,11 @@ export function PredictPage() {
             </table>
           </div>
           {hasEstimate && main && m.experimental && <p className="text-sm text-muted">{t('pr.estimateNote', { diff: Math.abs(est - main.value).toFixed(1) })}</p>}
+          {hasEstimate && main && m.experimental && m.textbook && m.textbook.angles.some((b) => Math.abs(est - b) < 0.6 && Math.abs(b - main.value) > 0.5) && (
+            <p className="rounded-lg bg-warn-soft px-3 py-2 text-sm text-warn" data-testid="predict-book-note">
+              {t('book.estimateBook', { value: `${est}°`, measured: `${Number(main.value.toFixed(2))}°` })}
+            </p>
+          )}
           {m.experimental && (
             <p className="text-xs text-muted">
               {t('common.sources')}: <RefCite ids={m.experimental.sources} />

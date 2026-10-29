@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react';
 import { analysisOf } from '../chem/questions';
 import type { ElectronGeometryId } from '../chem/types';
+import { BookTable } from '../components/library/BookTable';
 import { Badge, Card } from '../components/ui/controls';
 import { Axe, Formula, formulaText } from '../components/ui/Formula';
 import { MoleculeThumb } from '../components/ui/MoleculeThumb';
@@ -37,6 +38,10 @@ export function LibraryPage() {
     <div className="gutter mx-auto max-w-7xl py-6">
       <h1 className="text-2xl font-bold">{t('lib.title')}</h1>
       <p className="mt-1 max-w-3xl text-muted">{t('lib.intro', { n: dataset.molecules.length })}</p>
+
+      <div className="mt-4">
+        <BookTable />
+      </div>
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('lib.search')} aria-label={t('lib.search')} className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm sm:max-w-xs" data-testid="library-search" />
@@ -102,6 +107,7 @@ export function LibraryPage() {
                         <Axe axe={v.axe} />
                       </Badge>
                       {m.experimental && <Badge tone="ok">{t('lib.hasExp')}</Badge>}
+                      {m.textbook && <Badge tone="lp">{t('lib.book')}</Badge>}
                     </div>
                     <span className="mt-auto text-sm font-semibold text-accent">{t('common.openInLab')} {lang === 'ar' ? '←' : '→'}</span>
                   </div>

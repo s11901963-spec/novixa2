@@ -1,5 +1,5 @@
 {
-  "$comment": "بيانات الجزيئات في Chem3D. يحسب المحرك الكيميائي كل شيء (الإلكترونات، لويس، VSEPR، التهجين) من الحقول central/ligands/charge فقط. الحقل reference تصنيف مرجعي من الأدبيات يُستخدم في الاختبارات للتحقق من المحرك. الحقل experimental قيم مقاسة للجزيء المعزول في الطور الغازي منقولة من NIST CCCBDB مع المصدر الأصلي الذي تستشهد به. لإضافة جزيء: أضف عنصرًا جديدًا بنفس البنية؛ المخطط في src/data/schema.ts يتحقق من صحة البيانات عند التشغيل وفي الاختبارات.",
+  "$comment": "بيانات الجزيئات في Chem3D. يحسب المحرك الكيميائي كل شيء (الإلكترونات، لويس، VSEPR، التهجين) من الحقول central/ligands/charge فقط. الحقل reference تصنيف مرجعي من الأدبيات يُستخدم في الاختبارات للتحقق من المحرك. الحقل experimental قيم مقاسة للجزيء المعزول في الطور الغازي منقولة من NIST CCCBDB مع المصدر الأصلي الذي تستشهد به. لإضافة جزيء: أضف عنصرًا جديدًا بنفس البنية؛ المخطط في src/data/schema.ts يتحقق من صحة البيانات عند التشغيل وفي الاختبارات. الحقل textbook (اختياري) ينقل صف الجدول 6-4 من الكتاب المقرر كما طُبع (ص 142)، ليُقارن بما يحسبه المحرك وبالقيم المقيسة؛ لا يُستعمل في أي حساب.",
   "molecules": [
     {
       "id": "becl2",
@@ -22,7 +22,8 @@
         "hybridization": "sp",
         "sources": [
           "openstax-7-6",
-          "openstax-8-2"
+          "openstax-8-2",
+          "course-textbook"
         ]
       },
       "experimental": {
@@ -68,7 +69,24 @@
             "rundleLewis1952"
           ]
         }
-      ]
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 1,
+        "totalPairs": 2,
+        "sharedPairs": 2,
+        "lonePairs": 0,
+        "hybridization": "sp",
+        "geometry": "linear",
+        "shape": {
+          "ar": "خطي",
+          "en": "Linear"
+        },
+        "angles": [
+          180
+        ]
+      }
     },
     {
       "id": "bf3",
@@ -131,6 +149,94 @@
       ]
     },
     {
+      "id": "alcl3",
+      "formula": "AlCl3",
+      "charge": 0,
+      "name": {
+        "ar": "ثلاثي كلوريد الألومنيوم",
+        "en": "Aluminium trichloride"
+      },
+      "category": "core",
+      "central": "Al",
+      "ligands": [
+        "Cl",
+        "Cl",
+        "Cl"
+      ],
+      "reference": {
+        "axe": "AX3",
+        "electronGeometry": "trigonal-planar",
+        "molecularGeometry": "trigonal-planar",
+        "hybridization": "sp2",
+        "sources": [
+          "course-textbook",
+          "openstax-7-6"
+        ]
+      },
+      "experimental": {
+        "phase": "gas",
+        "pointGroup": "D3h",
+        "bondLengths": [
+          {
+            "ligand": "Cl",
+            "value": 2.06
+          }
+        ],
+        "angles": [
+          {
+            "label": "Cl–Al–Cl",
+            "value": 120,
+            "basis": "symmetry"
+          }
+        ],
+        "angleParams": {},
+        "sources": [
+          "cccbdb",
+          "landolt1976"
+        ]
+      },
+      "notes": [
+        {
+          "id": "alcl3-monomer",
+          "text": {
+            "ar": "القيم المقيسة هنا للجزيء الأحادي AlCl3 (D3h، طول الرابطة Al–Cl ‏2.06 Å). في الطور الغازي يوجد كلوريد الألومنيوم أيضًا على هيئة ثنائي Al2Cl6 تحيط فيه أربع ذرات Cl بكل ذرة Al.",
+            "en": "The measured values are for the AlCl3 monomer (D3h, Al–Cl 2.06 Å). In the gas phase aluminium chloride also exists as the dimer Al2Cl6, in which four Cl atoms surround each Al."
+          },
+          "sources": [
+            "cccbdb",
+            "landolt1976"
+          ]
+        },
+        {
+          "id": "alcl3-incomplete-octet",
+          "text": {
+            "ar": "يحيط بالألومنيوم في الجزيء الأحادي ستة إلكترونات فقط (ثمانية ناقصة)، كما في BF3.",
+            "en": "In the monomer aluminium is surrounded by only six electrons (an incomplete octet), as in BF3."
+          },
+          "sources": [
+            "openstax-7-3"
+          ]
+        }
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 2,
+        "totalPairs": 3,
+        "sharedPairs": 3,
+        "lonePairs": 0,
+        "hybridization": "sp2",
+        "geometry": "trigonal-planar",
+        "shape": {
+          "ar": "مثلث مستو",
+          "en": "Trigonal planar"
+        },
+        "angles": [
+          120
+        ]
+      }
+    },
+    {
       "id": "ch4",
       "formula": "CH4",
       "charge": 0,
@@ -153,7 +259,8 @@
         "hybridization": "sp3",
         "sources": [
           "openstax-7-6",
-          "openstax-8-2"
+          "openstax-8-2",
+          "course-textbook"
         ]
       },
       "experimental": {
@@ -190,7 +297,24 @@
             "cccbdb"
           ]
         }
-      ]
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 3,
+        "totalPairs": 4,
+        "sharedPairs": 4,
+        "lonePairs": 0,
+        "hybridization": "sp3",
+        "geometry": "tetrahedral",
+        "shape": {
+          "ar": "رباعي الأوجه منتظم",
+          "en": "Tetrahedral"
+        },
+        "angles": [
+          109.5
+        ]
+      }
     },
     {
       "id": "nh3",
@@ -277,7 +401,8 @@
         "molecularGeometry": "trigonal-pyramidal",
         "hybridization": "sp3",
         "sources": [
-          "openstax-7-6"
+          "openstax-7-6",
+          "course-textbook"
         ]
       },
       "experimental": {
@@ -306,6 +431,18 @@
       },
       "notes": [
         {
+          "id": "ph3-textbook",
+          "text": {
+            "ar": "يذكر الكتاب المقرر (الجدول 6-4) لـ PH3 زاوية 107.3°، أما القيمة المقيسة في الطور الغازي فهي 93.3°. يتفق الاثنان على الشكل (مثلثي هرمي) وعلى أن الزاوية أقل من 109.5°، لكن 107.3° قريبة من زاوية NH3 المقيسة (106.7°) لا من PH3؛ لذلك يعتمد التطبيق القيمة المقيسة ويذكر قيمة الكتاب للمقارنة.",
+            "en": "The course textbook (Table 6-4) gives 107.3° for PH3, while the measured gas-phase angle is 93.3°. Both agree on the shape (trigonal pyramidal) and on an angle below 109.5°, but 107.3° is close to the measured NH3 angle (106.7°), not to PH3; the app therefore uses the measured value and lists the textbook value for comparison."
+          },
+          "sources": [
+            "course-textbook",
+            "cccbdb",
+            "herzberg1966"
+          ]
+        },
+        {
           "id": "ph3-small-angle",
           "text": {
             "ar": "الزاوية المقاسة 93.3° أصغر بكثير من زاوية NH3. نموذج VSEPR يتنبأ فقط بأنها أقل من 109.5°، ولا يفسر وحده هذا الفرق الكبير. تعزو الدراسات النظرية ذلك إلى أن أفلاك 3p أكثر امتدادًا من 3s فيضعف التهجين في عناصر الدورة الثالثة وما بعدها؛ لذلك فوصف الفوسفور هنا بأنه sp³ تبسيط تعليمي.",
@@ -316,7 +453,24 @@
             "kaupp2007"
           ]
         }
-      ]
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 4,
+        "totalPairs": 4,
+        "sharedPairs": 3,
+        "lonePairs": 1,
+        "hybridization": "sp3",
+        "geometry": "trigonal-pyramidal",
+        "shape": {
+          "ar": "مثلثي هرمي",
+          "en": "Trigonal pyramidal"
+        },
+        "angles": [
+          107.3
+        ]
+      }
     },
     {
       "id": "h2o",
@@ -339,7 +493,8 @@
         "hybridization": "sp3",
         "sources": [
           "openstax-7-6",
-          "openstax-8-2"
+          "openstax-8-2",
+          "course-textbook"
         ]
       },
       "experimental": {
@@ -379,7 +534,24 @@
             "hoyBunker1979"
           ]
         }
-      ]
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 5,
+        "totalPairs": 4,
+        "sharedPairs": 2,
+        "lonePairs": 2,
+        "hybridization": "sp3",
+        "geometry": "bent",
+        "shape": {
+          "ar": "منحن",
+          "en": "Bent"
+        },
+        "angles": [
+          104.5
+        ]
+      }
     },
     {
       "id": "pcl5",
@@ -481,6 +653,74 @@
           ]
         }
       ]
+    },
+    {
+      "id": "nbbr5",
+      "formula": "NbBr5",
+      "charge": 0,
+      "name": {
+        "ar": "خماسي بروميد النيوبيوم",
+        "en": "Niobium pentabromide"
+      },
+      "category": "core",
+      "central": "Nb",
+      "ligands": [
+        "Br",
+        "Br",
+        "Br",
+        "Br",
+        "Br"
+      ],
+      "reference": {
+        "axe": "AX5",
+        "electronGeometry": "trigonal-bipyramidal",
+        "molecularGeometry": "trigonal-bipyramidal",
+        "hybridization": "sp3d",
+        "sources": [
+          "course-textbook"
+        ]
+      },
+      "notes": [
+        {
+          "id": "nbbr5-transition-metal",
+          "text": {
+            "ar": "النيوبيوم عنصر انتقالي (المجموعة 5) يستعمل إلكترونات تكافئه الخمسة كلها في الروابط مع البروم، فلا تبقى عليه إلكترونات d غير رابطة (حالة d⁰)؛ لذلك يطبّق الكتاب والتطبيق نموذج VSEPR ويتوقعان شكل ثنائي الهرم المثلثي. لكن النموذج ليس موثوقًا دائمًا لمركبات d⁰، فبعضها يتخذ أشكالًا لا يتوقعها.",
+            "en": "Niobium is a transition metal (group 5) that uses all five valence electrons in its bonds to bromine, leaving no nonbonding d electrons (d⁰); so the textbook and the app apply VSEPR and predict a trigonal bipyramid. The model is not always reliable for d⁰ compounds, however: some adopt shapes it does not predict."
+          },
+          "sources": [
+            "course-textbook",
+            "kaupp2001"
+          ]
+        },
+        {
+          "id": "nbbr5-no-data",
+          "text": {
+            "ar": "لم نجد قيمًا مقيسة موثقة لجزيء NbBr5 المعزول في المصادر التي تحققنا منها (NIST CCCBDB لا يتضمنه)، لذلك يُعرض الشكل المثالي فقط.",
+            "en": "We found no verified measured geometry for the isolated NbBr5 molecule in the sources we checked (NIST CCCBDB does not include it), so only the ideal shape is shown."
+          },
+          "sources": [
+            "cccbdb"
+          ]
+        }
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 6,
+        "totalPairs": 5,
+        "sharedPairs": 5,
+        "lonePairs": 0,
+        "hybridization": "sp3d",
+        "geometry": "trigonal-bipyramidal",
+        "shape": {
+          "ar": "ثنائي الهرم مثلثي (السداسي الأوجه)",
+          "en": "Trigonal bipyramidal"
+        },
+        "angles": [
+          90,
+          120
+        ]
+      }
     },
     {
       "id": "sf4",
@@ -723,7 +963,8 @@
         "hybridization": "sp3d2",
         "sources": [
           "openstax-7-6",
-          "openstax-8-2"
+          "openstax-8-2",
+          "course-textbook"
         ]
       },
       "experimental": {
@@ -765,7 +1006,24 @@
             "kutzelnigg1984"
           ]
         }
-      ]
+      ],
+      "textbook": {
+        "table": "6-4",
+        "page": 142,
+        "order": 7,
+        "totalPairs": 6,
+        "sharedPairs": 6,
+        "lonePairs": 0,
+        "hybridization": "sp3d2",
+        "geometry": "octahedral",
+        "shape": {
+          "ar": "ثماني الأوجه منتظم",
+          "en": "Octahedral"
+        },
+        "angles": [
+          90
+        ]
+      }
     },
     {
       "id": "co2",

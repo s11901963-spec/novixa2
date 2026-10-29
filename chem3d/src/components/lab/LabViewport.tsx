@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { mainAngle } from '../../chem/steps';
 import { dataset } from '../../data';
-import { useT } from '../../i18n';
+import { useLang, useT } from '../../i18n';
 import { useLab, type ViewMode } from '../../state/lab';
 import { useSettings, type DisplayToggles } from '../../state/settings';
 import { Segmented, ToggleChip } from '../ui/controls';
@@ -23,6 +23,7 @@ const SCREEN_LEWIS = {
 
 export function LabViewport({ model }: { model: LabModel }) {
   const t = useT();
+  const lang = useLang();
   const viewMode = useLab((s) => s.viewMode);
   const setViewMode = useLab((s) => s.setViewMode);
   const setGeometryMode = useLab((s) => s.setGeometryMode);
@@ -64,7 +65,7 @@ export function LabViewport({ model }: { model: LabModel }) {
     { key: 'autoRotate', label: t('lab.toggle.autoRotate') },
   ];
 
-  const expSource = experimental ? experimental.sources.map((id) => dataset.references.get(id)).filter(Boolean).map((r) => shortCitation(r!)).join('، ') : '';
+  const expSource = experimental ? experimental.sources.map((id) => dataset.references.get(id)).filter(Boolean).map((r) => shortCitation(r!, lang)).join('، ') : '';
   const ariaLabel = `${formulaText(model.formula, model.charge)}${v && !mystery ? ` — ${t(`mg.${v.molecularGeometry}`)}` : ''}`;
 
   return (

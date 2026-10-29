@@ -25,7 +25,11 @@ export function analyze(spec: MoleculeSpec): Analysis {
     return fail({ code: 'too-many-ligands', severity: 'error', params: { count: spec.ligands.length } });
   }
   if (spec.central === 'H') return fail({ code: 'h-central', severity: 'error', params: {} });
-  if (!SUPPORTED_CENTRAL_GROUPS.has(getElement(spec.central).group)) {
+  const centralGroup = getElement(spec.central).group;
+  // d-block centres (only Nb, for NbBr5 in the textbook table) are accepted when every
+  // valence electron is used in bonding (d⁰); this is checked after the Lewis structure.
+  const transition = centralGroup >= 3 && centralGroup <= 12;
+  if (!SUPPORTED_CENTRAL_GROUPS.has(centralGroup) && !transition) {
     return fail({ code: 'unsupported-central', severity: 'error', params: { element: spec.central } });
   }
   for (const l of spec.ligands) {
@@ -48,6 +52,12 @@ export function analyze(spec: MoleculeSpec): Analysis {
     });
   }
   const lewis = built.result;
+  if (transition) {
+    if (lewis.centralLoneElectrons > 0) {
+      return { spec, ok: false, lewis, issues: [...issues, { code: 'transition-metal-dn', severity: 'error', params: { element: spec.central } }] };
+    }
+    issues.push({ code: 'transition-metal', severity: 'warning', params: { element: spec.central } });
+  }
 
   const x = spec.ligands.length;
   const e = lewis.centralLoneElectrons / 2;

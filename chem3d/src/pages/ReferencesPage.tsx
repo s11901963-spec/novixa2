@@ -21,9 +21,11 @@ function FullReference({ r }: { r: ReferenceData }) {
   const t = useT();
   const href = refHref(r);
   return (
-    <div className="flex flex-col gap-1.5 text-sm" dir="ltr" lang="en">
+    <div className="flex flex-col gap-1.5 text-sm" dir={r.label ? 'auto' : 'ltr'} lang={r.label ? undefined : 'en'}>
       <div className="text-fg">
-        <span>{r.authors.join(', ')}</span> ({r.year}). <span className="font-semibold">{r.title}</span>
+        {r.authors.length > 0 && <span>{r.authors.join(', ')} </span>}
+        {r.year && <span>({r.year}). </span>}
+        <span className="font-semibold">{r.title}</span>
         {r.container && <span className="italic">. {r.container}</span>}
         {r.volume && <span>, {r.volume}</span>}
         {r.issue && <span>({r.issue})</span>}
@@ -51,8 +53,8 @@ export function ReferencesPage() {
   const refs = useMemo(() => {
     const s = filter.trim().toLowerCase();
     return [...dataset.references.values()]
-      .filter((r) => !s || `${r.title} ${r.authors.join(' ')} ${r.container ?? ''} ${r.year}`.toLowerCase().includes(s))
-      .sort((a, b) => a.year - b.year);
+      .filter((r) => !s || `${r.title} ${r.authors.join(' ')} ${r.container ?? ''} ${r.year ?? ''}`.toLowerCase().includes(s))
+      .sort((a, b) => (a.year ?? 0) - (b.year ?? 0));
   }, [filter]);
 
   return (
@@ -131,7 +133,7 @@ export function ReferencesPage() {
             <li key={r.id} id={`ref-${r.id}`} className="rounded-xl border border-line bg-surface p-3">
               <div className="mb-1 flex flex-wrap items-center gap-2 text-xs text-muted">
                 <Badge>{t(`ref.type.${r.type}`)}</Badge>
-                <bdi dir="ltr">{shortCitation(r)}</bdi>
+                <bdi dir={r.label ? undefined : 'ltr'}>{shortCitation(r, lang)}</bdi>
               </div>
               <FullReference r={r} />
             </li>

@@ -1,10 +1,11 @@
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { buildSceneModel } from '../chem/geometry';
-import { generateSession, isCorrect, scoreFor, analysisOf, type Level, type Question } from '../chem/questions';
+import { generateSession, isCorrect, scoreFor, analysisOf, type Level, type Question, type Topic } from '../chem/questions';
 import { randomSeed } from '../chem/random';
-import { answerText, promptText, renderLabel } from '../components/challenge/render';
+import { answerText, promptText, renderLabel, textParams } from '../components/challenge/render';
+import { OrbitalBoxes } from '../components/electrons/OrbitalBoxes';
 import { diagnosisMessage } from '../components/lab/messages';
-import { Badge, Button, Card } from '../components/ui/controls';
+import { Badge, Button, Card, Segmented } from '../components/ui/controls';
 import { Feedback } from '../components/ui/Feedback';
 import { RefCite } from '../components/ui/RefCite';
 import { MoleculeViewer } from '../components/viewer/MoleculeViewer';
@@ -64,7 +65,10 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
     const attempts = state.attempts + 1;
     let message = '';
     if (!ok) {
-      if (q.diagnose && q.moleculeId) {
+      const specific = q.feedback?.(String(answer));
+      if (specific && isKey(specific.key)) {
+        message = t(specific.key, textParams(specific.params, lang));
+      } else if (q.diagnose && q.moleculeId) {
         const d = q.diagnose(String(answer));
         message = diagnosisMessage(t, d, analysisOf(dataset.moleculesById.get(q.moleculeId)!));
       } else if (q.type === 'element-valence') {
@@ -87,7 +91,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
     }
   };
 
-  const explanation = q.explanation && isKey(q.explanation.key) ? t(q.explanation.key, q.explanation.params) : '';
+  const explanation = q.explanation && isKey(q.explanation.key) ? t(q.explanation.key, textParams(q.explanation.params, lang)) : '';
 
   function elementValenceMessage(n: number, symbol: string): string {
     const e = getElement(symbol);
@@ -112,6 +116,12 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
         {promptText(q, t, lang)}
       </h2>
       {q.kind === 'multi' && <p className="mt-1 text-sm text-muted">{t('ch.selectAll')}</p>}
+
+      {q.figure?.t === 'boxes' && (
+        <div className="mt-3 overflow-x-auto rounded-xl border border-line bg-surface-2 p-3" data-testid="question-figure">
+          <OrbitalBoxes boxes={q.figure.boxes} ariaLabel={t('ec.rep.boxes')} size="sm" />
+        </div>
+      )}
 
       {q.show3dFirst && q.moleculeId && (
         <div className="mt-3">
@@ -162,7 +172,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
                   data-testid={`option-${o.id}`}
                 >
                   {q.kind === 'multi' && <span aria-hidden className="me-2">{selected ? '☑' : '☐'}</span>}
-                  {renderLabel(o.label, t)}
+                  {renderLabel(o.label, t, lang)}
                 </button>
               );
             })}
@@ -200,7 +210,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
               ) : state.failed ? (
                 <span>
                   {state.feedback.message && <span className="block">{state.feedback.message}</span>}
-                  <span className="mt-1 block font-semibold">{t('ch.outOfAttempts', { answer: answerText(q, t) })}</span>
+                  <span className="mt-1 block font-semibold">{t('ch.outOfAttempts', { answer: answerText(q, t, lang) })}</span>
                 </span>
               ) : (
                 state.feedback.message || t('ch.tryAgain')
@@ -244,15 +254,16 @@ export function ChallengesPage() {
   const lang = useLang();
   const sessions = useHistory((s) => s.sessions);
   const addSession = useHistory((s) => s.addSession);
-  const [run, setRun] = useState<{ level: Level; seed: number; questions: Question[]; startedAt: number } | null>(null);
+  const [topic, setTopic] = useState<Topic>('shapes');
+  const [run, setRun] = useState<{ level: Level; topic: Topic; seed: number; questions: Question[]; startedAt: number } | null>(null);
   const [states, setStates] = useState<QState[]>([]);
   const [index, setIndex] = useState(0);
   const [finished, setFinished] = useState<{ at: number } | null>(null);
 
-  const start = (level: Level) => {
+  const start = (level: Level, which: Topic = topic) => {
     const seed = randomSeed();
-    const questions = generateSession(level, seed, COUNT);
-    setRun({ level, seed, questions, startedAt: Date.now() });
+    const questions = generateSession(level, seed, COUNT, which);
+    setRun({ level, topic: which, seed, questions, startedAt: Date.now() });
     setStates(questions.map(() => ({ attempts: 0, hintUsed: false, solved: false, failed: false, points: 0 })));
     setIndex(0);
     setFinished(null);
@@ -265,7 +276,7 @@ export function ChallengesPage() {
     setFinished({ at });
     const records: ChallengeQuestionRecord[] = run.questions.map((q, i) => ({
       prompt: promptText(q, t, lang),
-      answer: answerText(q, t),
+      answer: answerText(q, t, lang),
       correct: states[i].solved,
       attempts: states[i].attempts,
       hints: states[i].hintUsed ? 1 : 0,
@@ -274,6 +285,7 @@ export function ChallengesPage() {
     addSession({
       id: uid(),
       level: run.level,
+      topic: run.topic,
       seed: run.seed,
       startedAt: run.startedAt,
       finishedAt: at,
@@ -290,16 +302,28 @@ export function ChallengesPage() {
       <div className="gutter mx-auto max-w-5xl py-6">
         <h1 className="text-2xl font-bold">{t('ch.title')}</h1>
         <p className="mt-2 max-w-2xl text-muted">{t('ch.intro')}</p>
-        <div className="mt-5 grid gap-4 md:grid-cols-3">
+        <div className="mt-4 flex flex-wrap items-center gap-3">
+          <span className="text-sm font-semibold">{t('ch.topic')}</span>
+          <Segmented
+            label={t('ch.topic')}
+            value={topic}
+            onChange={setTopic}
+            options={[
+              { value: 'shapes', label: t('ch.topic.shapes') },
+              { value: 'electrons', label: t('ch.topic.electrons') },
+            ]}
+          />
+        </div>
+        <div className="mt-5 grid gap-4 md:grid-cols-3" data-testid={`levels-${topic}`}>
           {([1, 2, 3] as Level[]).map((level) => {
-            const best = sessions.filter((s) => s.level === level).reduce<number | null>((b, s) => (b === null || s.score > b ? s.score : b), null);
+            const best = sessions.filter((s) => s.level === level && (s.topic ?? 'shapes') === topic).reduce<number | null>((b, s) => (b === null || s.score > b ? s.score : b), null);
             return (
               <Card key={level} className="flex flex-col gap-3 p-5" as="article">
                 <div className="flex items-center justify-between">
                   <h2 className="text-xl font-bold">{t(`ch.level.${level}`)}</h2>
                   <Badge tone={level === 1 ? 'ok' : level === 2 ? 'accent' : 'lp'}>{t('ch.questions', { n: COUNT })}</Badge>
                 </div>
-                <p className="flex-1 text-sm text-muted">{t(`ch.level.${level}.desc`)}</p>
+                <p className="flex-1 text-sm text-muted">{t(topic === 'electrons' ? `ch.elevel.${level}.desc` : `ch.level.${level}.desc`)}</p>
                 {best !== null && <p className="text-sm">{t('ch.best', { score: best })}</p>}
                 <Button onClick={() => start(level)} data-testid={`start-level-${level}`}>
                   {t('ch.start')}
@@ -321,7 +345,9 @@ export function ChallengesPage() {
       <div className="gutter mx-auto max-w-3xl py-6" data-testid="challenge-result">
         <Card className="p-5">
           <h1 className="text-2xl font-bold">{t('ch.result.title')}</h1>
-          <p className="mt-1 text-muted">{t(`ch.level.${run.level}`)}</p>
+          <p className="mt-1 text-muted">
+            {t(`ch.topic.${run.topic}`)} · {t(`ch.level.${run.level}`)}
+          </p>
           <div className="mt-4 grid gap-3 sm:grid-cols-3">
             <div className="rounded-xl bg-accent-soft p-3">
               <div className="text-sm text-muted">{t('common.score')}</div>
@@ -342,13 +368,13 @@ export function ChallengesPage() {
                   <span className="shrink-0">{states[i].solved ? '✅' : '❌'}</span>
                 </div>
                 <div className="mt-1 text-muted">
-                  {t('common.expected')}: {answerText(q, t)} · {t('ch.earned', { n: states[i].points })}
+                  {t('common.expected')}: {answerText(q, t, lang)} · {t('ch.earned', { n: states[i].points })}
                 </div>
               </li>
             ))}
           </ol>
           <div className="mt-5 flex flex-wrap gap-2">
-            <Button onClick={() => start(run.level)}>{t('ch.result.again')}</Button>
+            <Button onClick={() => start(run.level, run.topic)}>{t('ch.result.again')}</Button>
             <Button variant="secondary" onClick={() => setRun(null)}>
               {t('ch.result.levels')}
             </Button>
@@ -363,7 +389,7 @@ export function ChallengesPage() {
     <div className="gutter mx-auto max-w-3xl py-6" data-testid="challenge-run">
       <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
         <h1 className="text-xl font-bold">
-          {t('ch.title')} · {t(`ch.level.${run.level}`)}
+          {t(`ch.topic.${run.topic}`)} · {t(`ch.level.${run.level}`)}
         </h1>
         <div className="flex items-center gap-2 text-sm">
           <Badge tone="accent">

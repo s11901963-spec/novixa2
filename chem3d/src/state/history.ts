@@ -14,6 +14,8 @@ export interface ChallengeQuestionRecord {
 export interface ChallengeSession {
   id: string;
   level: 1 | 2 | 3;
+  /** Missing in sessions saved before topics existed (they were all molecular shapes). */
+  topic?: 'shapes' | 'electrons';
   seed: number;
   startedAt: number;
   finishedAt: number;

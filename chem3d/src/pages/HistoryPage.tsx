@@ -91,7 +91,7 @@ export function HistoryPage() {
                     <details className="rounded-xl border border-line bg-surface p-3">
                       <summary className="flex cursor-pointer flex-wrap items-center justify-between gap-2 text-sm">
                         <span className="font-semibold">
-                          {t(`ch.level.${s.level}`)} · <span className="tabular">{s.score}</span>/<span className="tabular">{s.maxScore}</span>
+                          {t(`ch.topic.${s.topic ?? 'shapes'}`)} · {t(`ch.level.${s.level}`)} · <span className="tabular">{s.score}</span>/<span className="tabular">{s.maxScore}</span>
                         </span>
                         <span className="text-muted">
                           {t('ch.result.accuracy', { n: s.firstTryCorrect, total: s.total })} · {fmt.format(s.finishedAt)}

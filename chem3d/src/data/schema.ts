@@ -94,6 +94,21 @@ export const moleculeSchema = z.object({
     })
     .optional(),
   experimental: experimentalSchema.optional(),
+  /** The row of the course textbook's Table 6-4, copied as printed (compared with the engine, never used in calculations). */
+  textbook: z
+    .object({
+      table: z.string().min(1),
+      page: z.number().int().positive(),
+      order: z.number().int().positive(),
+      totalPairs: z.number().int().min(2).max(6),
+      sharedPairs: z.number().int().min(1).max(6),
+      lonePairs: z.number().int().min(0).max(4),
+      hybridization: z.enum(HYBRIDIZATIONS),
+      geometry: z.enum(MOLECULAR_GEOMETRIES),
+      shape: localized,
+      angles: z.array(z.number().gt(0).lte(180)).min(1),
+    })
+    .optional(),
   notes: z.array(
     z.object({
       id: z.string(),
@@ -107,24 +122,29 @@ export const moleculesFileSchema = z.object({
   molecules: z.array(moleculeSchema).min(1),
 });
 
-export const referenceSchema = z.object({
-  id: z.string().min(1),
-  type: z.enum(['article', 'book', 'textbook', 'database']),
-  authors: z.array(z.string()).min(1),
-  title: z.string().min(1),
-  container: z.string().optional(),
-  volume: z.string().optional(),
-  issue: z.string().optional(),
-  pages: z.string().optional(),
-  year: z.number().int().min(1800).max(2100),
-  doi: z.string().regex(/^10\.\d{4,9}\/\S+$/).optional(),
-  url: z.string().url().optional(),
-  verification: z.object({
-    status: z.enum(['verified', 'cited', 'needs-review']),
-    scope: z.enum(['metadata', 'abstract', 'page', 'cited']),
-    method: z.string().min(1),
-  }),
-});
+export const referenceSchema = z
+  .object({
+    id: z.string().min(1),
+    type: z.enum(['article', 'book', 'textbook', 'school-textbook', 'database']),
+    // Empty only for a source whose authors are unknown (the course textbook pages); it then needs a label.
+    authors: z.array(z.string()),
+    /** Short citation label, used instead of "Author year". */
+    label: localized.optional(),
+    title: z.string().min(1),
+    container: z.string().optional(),
+    volume: z.string().optional(),
+    issue: z.string().optional(),
+    pages: z.string().optional(),
+    year: z.number().int().min(1800).max(2100).optional(),
+    doi: z.string().regex(/^10\.\d{4,9}\/\S+$/).optional(),
+    url: z.string().url().optional(),
+    verification: z.object({
+      status: z.enum(['verified', 'cited', 'needs-review']),
+      scope: z.enum(['metadata', 'abstract', 'page', 'cited']),
+      method: z.string().min(1),
+    }),
+  })
+  .refine((r) => r.authors.length > 0 || !!r.label, { message: 'a reference without authors needs a label' });
 
 export const topicSchema = z.object({
   id: z.string(),
@@ -149,7 +169,23 @@ export const referencesFileSchema = z.object({
   projectMethods: z.array(projectMethodSchema),
 });
 
+export const atomSchema = z.object({
+  z: z.number().int().min(1).max(118),
+  symbol: z.string().regex(/^[A-Z][a-z]?$/),
+  name: localized,
+  // Ground-state configuration exactly as NIST ASD prints it, e.g. "[Ar].3d5.4s".
+  groundState: z.string().regex(/^(\[[A-Z][a-z]?\]\.)?\d[spdf]\d*(\.\d[spdf]\d*)*$/),
+});
+
+export const atomsFileSchema = z.object({
+  source: z.string().min(1),
+  retrievedOn: z.string().min(1),
+  query: z.string().url(),
+  atoms: z.array(atomSchema).min(1),
+});
+
 export type LocalizedText = z.infer<typeof localized>;
+export type AtomData = z.infer<typeof atomSchema>;
 export type ElementData = z.infer<typeof elementSchema>;
 export type MoleculeData = z.infer<typeof moleculeSchema>;
 export type ExperimentalData = z.infer<typeof experimentalSchema>;
