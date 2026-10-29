@@ -7,7 +7,7 @@ import type { AngleSignatureId, ElectronGeometryId, MolecularGeometryId } from '
 import { diagnosisMessage } from '../components/lab/messages';
 import { Button, Card } from '../components/ui/controls';
 import { Feedback } from '../components/ui/Feedback';
-import { Formula, Ltr } from '../components/ui/Formula';
+import { Deg, Formula, Ltr } from '../components/ui/Formula';
 import { RefCite } from '../components/ui/RefCite';
 import { MoleculeViewer } from '../components/viewer/MoleculeViewer';
 import { dataset } from '../data';
@@ -201,7 +201,7 @@ export function PredictPage() {
                   <td className="px-3 py-2">
                     {m.experimental && main ? (
                       <>
-                        <Ltr className="font-mono">{main.label}</Ltr> <span className="tabular font-semibold">{main.value.toFixed(2)}°</span>
+                        <Ltr className="font-mono">{main.label}</Ltr> <Deg value={main.value} className="font-semibold" />
                       </>
                     ) : (
                       <span className="text-muted">{t('pr.noExp')}</span>
@@ -211,9 +211,11 @@ export function PredictPage() {
                 {hasEstimate && main && (
                   <tr className="border-t border-line">
                     <td className="px-3 py-2">{t('pr.estimateRow')}</td>
-                    <td className="px-3 py-2 tabular">{est}°</td>
+                    <td className="px-3 py-2">
+                      <Deg value={est} />
+                    </td>
                     <td className="px-3 py-2 text-muted">{t(`sig.${v.angleSignature}`)}</td>
-                    <td className="px-3 py-2 tabular">{m.experimental ? `${main.value.toFixed(2)}°` : t('pr.noExp')}</td>
+                    <td className="px-3 py-2">{m.experimental ? <Deg value={main.value} /> : t('pr.noExp')}</td>
                   </tr>
                 )}
               </tbody>

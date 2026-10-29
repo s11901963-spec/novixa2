@@ -58,7 +58,9 @@ export function ReferencesPage() {
   return (
     <div className="gutter mx-auto max-w-5xl py-6" data-testid="references-page">
       <h1 className="text-2xl font-bold">{t('ref.title')}</h1>
-      <p className="mt-2 max-w-3xl leading-7 text-muted">{t('ref.intro', { date: dataset.checkedOn })}</p>
+      <p className="mt-2 max-w-3xl leading-7 text-muted">
+        {t('ref.intro', { date: new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en', { dateStyle: 'long', numberingSystem: 'latn', timeZone: 'UTC' }).format(new Date(`${dataset.checkedOn}T00:00:00Z`)) })}
+      </p>
       <p className="mt-2 max-w-3xl rounded-xl border border-warn/40 bg-warn-soft px-3 py-2 text-sm">{t('ref.bookNote')}</p>
 
       <section className="mt-6">

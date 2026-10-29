@@ -222,3 +222,13 @@ h3 {
   background: rgba(124, 155, 255, 0.95);
   color: #08101f;
 }
+
+/* Paints the band above a sticky header when the page runs under a phone's status bar. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0 0 auto;
+  height: env(safe-area-inset-top, 0px);
+  z-index: 60;
+  background: var(--surface);
+}

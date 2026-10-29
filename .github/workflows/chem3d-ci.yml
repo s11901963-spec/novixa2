@@ -1,0 +1,36 @@
+name: Chem3D CI
+
+on:
+  push:
+    paths: ['chem3d/**', '.github/workflows/chem3d-*.yml']
+  pull_request:
+    paths: ['chem3d/**', '.github/workflows/chem3d-*.yml']
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: chem3d
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: chem3d/package-lock.json
+      - run: npm ci
+      - name: Unit tests
+        run: npm test
+      - name: Type check and build
+        run: npm run build
+      - name: Install Playwright
+        run: npm i --no-save playwright && npx playwright install --with-deps chromium
+      - name: End-to-end smoke test
+        run: npm run test:e2e
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: chem3d-e2e-screenshots
+          path: chem3d/e2e-artifacts
+          if-no-files-found: ignore

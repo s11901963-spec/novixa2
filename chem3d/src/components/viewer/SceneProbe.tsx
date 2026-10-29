@@ -26,6 +26,9 @@ export function SceneProbe({ target }: { target: RefObject<HTMLElement | null> }
     atoms.sort((a, b) => a.index - b.index);
     const moved = atoms.some((a, i) => !last.current[i] || last.current[i].distanceTo(a.pos) > 1e-4);
     last.current = atoms.map((a) => a.pos.clone());
+    // The model itself reports when every atom has reached its target position.
+    const root = scene.getObjectByName('molecule-root');
+    const converged = root?.userData.converged === true;
     const angles: number[] = [];
     const c = atoms[0]?.pos;
     if (c) {
@@ -44,7 +47,8 @@ export function SceneProbe({ target }: { target: RefObject<HTMLElement | null> }
       .sort((a, b) => Number(a) - Number(b))
       .join(',');
     el.dataset.renderedCentralLonePairs = String(centralLonePairs);
-    el.dataset.settled = String(!moved);
+    el.dataset.settled = String(converged && !moved);
+    el.dataset.renderedFor = String(root?.userData.modelKey ?? '');
   });
   return null;
 }

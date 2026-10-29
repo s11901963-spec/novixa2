@@ -1,7 +1,7 @@
 import { covalentBondLength } from '../../chem/geometry';
 import { useLang, useT } from '../../i18n';
 import { Badge } from '../ui/controls';
-import { Axe, Formula, hybridizationText, Ltr } from '../ui/Formula';
+import { Axe, Deg, Formula, hybridizationText, Ltr } from '../ui/Formula';
 import { RefCite } from '../ui/RefCite';
 import { LewisDiagram } from '../viewer/LewisDiagram';
 import type { LabModel } from './useLabModel';
@@ -58,15 +58,14 @@ export function NotesPanel({ model }: { model: LabModel }) {
                   return (
                     <tr key={ia.kind} className="border-t border-line">
                       <td className="px-3 py-2">{t(`angleKind.${ia.kind}`)}</td>
-                      <td className="px-3 py-2 tabular">
-                        {ia.relation === 'less-than' ? '< ' : ia.relation === 'approx' ? '≈ ' : ''}
-                        {ia.value.toFixed(ia.value % 1 ? 2 : 0)}°
+                      <td className="px-3 py-2">
+                        <Deg value={ia.value} prefix={ia.relation === 'less-than' ? '< ' : ia.relation === 'approx' ? '≈ ' : ''} />
                       </td>
                       <td className="px-3 py-2">
                         {measured && measured.length ? (
                           measured.map((m) => (
                             <div key={m.label}>
-                              <Ltr className="font-mono">{m.label}</Ltr>: <span className="tabular font-semibold">{m.value}°</span>{' '}
+                              <Ltr className="font-mono">{m.label}</Ltr>: <Deg value={m.value} digits={3} className="font-semibold" />{' '}
                               <span className="text-xs text-muted">({t(`notes.basis.${m.basis}`)})</span>
                             </div>
                           ))

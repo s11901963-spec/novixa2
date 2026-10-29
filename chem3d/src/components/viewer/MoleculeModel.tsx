@@ -25,6 +25,8 @@ export interface MoleculeModelProps {
   lonePairLabel: string;
   /** DOM overlay that receives the screen-space labels. */
   labelContainer: HTMLElement | null;
+  /** Identifies what is drawn; read back by the scene probe. */
+  modelKey: string;
 }
 
 const Y = new THREE.Vector3(0, 1, 0);
@@ -70,6 +72,7 @@ export function MoleculeModel(props: MoleculeModelProps) {
   const arcLines = useRef<Line2[]>([]);
   const labelPos = useRef(new THREE.Vector3());
   const [hovered, setHovered] = useState<number | null>(null);
+  const rootRef = useRef<THREE.Group>(null);
 
   // Keep the animated positions array aligned with the atoms; new atoms grow out of the centre.
   if (current.current.length !== n) {
@@ -129,11 +132,18 @@ export function MoleculeModel(props: MoleculeModelProps) {
     const t = state.clock.elapsedTime;
     const k = reduceMotion ? 1 : 1 - Math.pow(0.002, Math.min(dt, 0.1));
     const cur = current.current;
+    let converged = !mystery;
     for (let i = 0; i < n; i++) {
       const target = mystery && i > 0 ? mysteryPosition(i, n, t, tmpA) : targets[i];
       cur[i].lerp(target, k);
+      if (cur[i].distanceToSquared(target) > 1e-10) converged = false;
+      else if (!mystery) cur[i].copy(target);
       atomGroups.current[i]?.position.copy(cur[i]);
       layer?.place(`atom-${i}`, cur[i], state.camera, state.size.width, state.size.height);
+    }
+    if (rootRef.current) {
+      rootRef.current.userData.converged = converged;
+      rootRef.current.userData.modelKey = props.modelKey;
     }
     // bonds
     scene.bonds.forEach((b, i) => {
@@ -244,7 +254,7 @@ export function MoleculeModel(props: MoleculeModelProps) {
   }, [hovered, mystery]);
 
   return (
-    <group>
+    <group ref={rootRef} name="molecule-root">
       {scene.atoms.map((a, i) => {
         const r = radii[i];
         const color = mystery && i > 0 ? SCREEN_COLORS.mystery : getElement(a.element).color;

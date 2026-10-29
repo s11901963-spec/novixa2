@@ -181,7 +181,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
                   onUpdate({ ...state, hintUsed: true });
                 }}
               >
-                {t('ch.hintCost', { n: Math.round(q.points * 0.3) })}
+                {t('ch.hintCost', { n: q.points - scoreFor(q, 1, true) })}
               </Button>
             )}
           </div>

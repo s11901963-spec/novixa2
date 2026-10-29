@@ -143,6 +143,7 @@ export const en: Record<TranslationKey, string> = {
   'lab.camera.front': 'Front',
   'lab.camera.top': 'Top',
   'lab.camera.side': 'Side',
+  'lab.options': 'Display options',
   'lab.why': 'Why this shape?',
   'lab.why.title': 'Domain repulsion (illustration)',
   'lab.why.body': 'Each electron domain is a point on a sphere; the points repel until they settle into the arrangement with the least repulsion: the electron geometry. The VSEPR rule for lone-pair positions (equatorial in a trigonal bipyramid, opposite each other in an octahedron) is then applied; that rule comes from the references, not from this analogy. The analogy is simplified and is not a physical simulation.',

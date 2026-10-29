@@ -70,3 +70,13 @@ export function Axe({ axe }: { axe: string }) {
 export function hybridizationText(h: string): string {
   return { sp: 'sp', sp2: 'sp²', sp3: 'sp³', sp3d: 'sp³d', sp3d2: 'sp³d²' }[h] ?? h;
 }
+
+/** A value in degrees, kept left-to-right so the ° sign stays after the number in Arabic text. */
+export function Deg({ value, digits = 2, prefix = '', className = '' }: { value: number; digits?: number; prefix?: string; className?: string }) {
+  return (
+    <bdi dir="ltr" className={`tabular whitespace-nowrap ${className}`}>
+      {prefix}
+      {Number(value.toFixed(digits))}°
+    </bdi>
+  );
+}

@@ -40,6 +40,7 @@ export function LabViewport({ model }: { model: LabModel }) {
   const [demoSettled, setDemoSettled] = useState(false);
   const [resIdx, setResIdx] = useState(0);
   const [showCounts, setShowCounts] = useState(false);
+  const [showOptions, setShowOptions] = useState(false);
   const { analysis, scene, experimental } = model;
   const v = analysis.vsepr;
   const mystery = solveMode && !shapeRevealed;
@@ -67,7 +68,7 @@ export function LabViewport({ model }: { model: LabModel }) {
   const ariaLabel = `${formulaText(model.formula, model.charge)}${v && !mystery ? ` — ${t(`mg.${v.molecularGeometry}`)}` : ''}`;
 
   return (
-    <section className="relative isolate flex min-h-[58vh] flex-col overflow-hidden rounded-2xl border border-screen-line bg-screen text-screen-fg lg:min-h-0" data-testid="lab-viewport" aria-label={t('lab.title')}>
+    <section className="relative isolate flex min-h-[66vh] flex-col overflow-hidden rounded-2xl border border-screen-line bg-screen text-screen-fg lg:min-h-0" data-testid="lab-viewport" aria-label={t('lab.title')}>
       <MoleculeViewer
         className="absolute inset-0"
         scene={analysis.ok ? scene : null}
@@ -117,12 +118,27 @@ export function LabViewport({ model }: { model: LabModel }) {
 
       {/* summary */}
       {analysis.ok && v && viewMode !== 'lewis' && !whyOpen && (
-        <div className="pointer-events-none relative z-10 mx-2.5 flex max-w-[min(100%,340px)] flex-col gap-1 self-start rounded-xl bg-screen-2/80 px-3 py-2 text-sm backdrop-blur-sm" data-testid="viewport-summary">
-          <div className="text-lg font-bold">
-            <Formula formula={model.formula} charge={model.charge} />
+        <div className="pointer-events-none relative z-10 mx-2.5 flex max-w-[min(100%,340px)] flex-col gap-1 self-start rounded-xl bg-screen-2/80 px-3 py-1.5 text-sm backdrop-blur-sm md:py-2" data-testid="viewport-summary">
+          <div className="flex flex-wrap items-baseline gap-x-2">
+            <span className="text-lg font-bold">
+              <Formula formula={model.formula} charge={model.charge} />
+            </span>
+            {!mystery && (
+              <span className="text-screen-muted md:hidden">
+                {t(`mg.${v.molecularGeometry}`)}
+                {main && (
+                  <>
+                    {' · '}
+                    <bdi dir="ltr" className="tabular font-mono">
+                      {main.value.toFixed(1)}°
+                    </bdi>
+                  </>
+                )}
+              </span>
+            )}
           </div>
           {!mystery ? (
-            <>
+            <div className="hidden flex-col gap-1 md:flex">
               <div>
                 <span className="text-screen-muted">{t('lab.summary.axe')}: </span>
                 <Axe axe={v.axe} />
@@ -136,11 +152,14 @@ export function LabViewport({ model }: { model: LabModel }) {
               {main && (
                 <div>
                   <span className="text-screen-muted">{t('lab.summary.angle')}: </span>
-                  <Ltr className="font-mono">{main.label}</Ltr> <span className="tabular font-mono font-semibold">{main.value.toFixed(2)}°</span>
+                  <Ltr className="font-mono">{main.label}</Ltr>{' '}
+                  <bdi dir="ltr" className="tabular font-mono font-semibold">
+                    {main.value.toFixed(2)}°
+                  </bdi>
                 </div>
               )}
               <div className="text-xs text-screen-muted">{model.geometryMode === 'experimental' ? t('lab.geom.expNote', { source: expSource }) : experimental ? t('lab.geom.idealNote') : t('lab.geom.noExp')}</div>
-            </>
+            </div>
           ) : (
             <div className="text-screen-muted">{t('lab.hiddenShapeHint')}</div>
           )}
@@ -212,19 +231,40 @@ export function LabViewport({ model }: { model: LabModel }) {
 
       {/* bottom toolbar */}
       <div className="absolute inset-x-0 bottom-0 z-10 flex flex-col gap-1.5 bg-gradient-to-t from-screen via-screen/85 to-transparent p-2.5 pt-6">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {viewMode !== 'lewis' &&
-            toggles.map((tg) => (
+        {viewMode !== 'lewis' && (
+          <div className={`${showOptions ? 'flex' : 'hidden'} flex-wrap items-center gap-1.5 rounded-xl bg-screen-2/95 p-2 md:flex md:bg-transparent md:p-0`} id="display-options">
+            {toggles.map((tg) => (
               <ToggleChip key={tg.key} pressed={display[tg.key]} onToggle={() => toggle(tg.key)} swatch={tg.swatch}>
                 {tg.label}
               </ToggleChip>
             ))}
-        </div>
+            {(['front', 'top', 'side'] as const).map((p) => (
+              <button key={p} type="button" onClick={() => cameraTo(p)} className="rounded-lg border border-screen-line bg-screen-2/80 px-2.5 py-1 text-[13px] text-screen-fg hover:bg-white/10 md:hidden">
+                {t(`lab.camera.${p}`)}
+              </button>
+            ))}
+          </div>
+        )}
         <div className="flex flex-wrap items-center gap-1.5">
           {viewMode !== 'lewis' && (
             <>
+              <button
+                type="button"
+                onClick={() => setShowOptions((o) => !o)}
+                aria-expanded={showOptions}
+                aria-controls="display-options"
+                className="rounded-lg border border-screen-line bg-screen-2/80 px-2.5 py-1 text-[13px] font-semibold text-screen-fg md:hidden"
+              >
+                {t('lab.options')}
+              </button>
               {(['reset', 'front', 'top', 'side'] as const).map((p) => (
-                <button key={p} type="button" onClick={() => cameraTo(p)} className="rounded-lg border border-screen-line bg-screen-2/80 px-2.5 py-1 text-[13px] text-screen-fg hover:bg-white/10" data-testid={`camera-${p}`}>
+                <button
+                  key={p}
+                  type="button"
+                  onClick={() => cameraTo(p)}
+                  className={`rounded-lg border border-screen-line bg-screen-2/80 px-2.5 py-1 text-[13px] text-screen-fg hover:bg-white/10 ${p === 'reset' ? '' : 'hidden md:inline-block'}`}
+                  data-testid={`camera-${p}`}
+                >
                   {t(`lab.camera.${p}`)}
                 </button>
               ))}

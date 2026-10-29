@@ -63,6 +63,25 @@ export function LewisDiagram({ structure, charge, selectedAtom, onSelectAtom, sh
     return [dx * L, dy * L];
   };
 
+  // Directions already used around each atom (bonds and lone pairs) → free spot for the formal charge.
+  const terminalLpSlots = (i: number, count: number) => {
+    const out = angleOf.get(i)!;
+    return count === 1 ? [out] : count === 2 ? [out + 90, out - 90] : [out, out + 90, out - 90];
+  };
+  const occupied = (i: number): number[] =>
+    i === 0
+      ? [...layout.bonds.slice(0, x), ...layout.lps.slice(0, e)]
+      : [angleOf.get(i)! + 180, ...terminalLpSlots(i, structure.atoms[i].lonePairs).slice(0, structure.atoms[i].lonePairs)];
+  const angDist = (a: number, b: number) => {
+    const d = Math.abs((((a - b) % 360) + 360) % 360);
+    return Math.min(d, 360 - d);
+  };
+  const freeAngle = (i: number) => {
+    const occ = occupied(i);
+    const candidates = [45, 135, 315, 225, ...Array.from({ length: 24 }, (_, k) => k * 15)];
+    return candidates.reduce((best, c) => (Math.min(...occ.map((o) => angDist(c, o)), 360) > Math.min(...occ.map((o) => angDist(best, o)), 360) ? c : best), candidates[0]);
+  };
+
   // Bounding box for the viewBox
   const pts = structure.atoms.map((_, i) => pos(i));
   const pad = 46;
@@ -105,9 +124,7 @@ export function LewisDiagram({ structure, charge, selectedAtom, onSelectAtom, sh
       {/* terminal lone pairs */}
       {structure.atoms.slice(1).map((atom) => {
         const [ax, ay] = pos(atom.index);
-        const out = angleOf.get(atom.index)!;
-        const slots = atom.lonePairs === 1 ? [out] : atom.lonePairs === 2 ? [out + 90, out - 90] : [out, out + 90, out - 90];
-        return slots.slice(0, atom.lonePairs).map((a, j) => {
+        return terminalLpSlots(atom.index, atom.lonePairs).slice(0, atom.lonePairs).map((a, j) => {
           const [dx, dy] = dir(a);
           return <DotPair key={`t${atom.index}-${j}`} x={ax + dx * 25} y={ay + dy * 25} angle={a} color={colors.terminalLp} />;
         });
@@ -136,14 +153,19 @@ export function LewisDiagram({ structure, charge, selectedAtom, onSelectAtom, sh
             <text x={ax} y={ay} dy="0.36em" textAnchor="middle" fontSize={atom.element.length > 1 ? 21 : 24} fontWeight={600} fill={colors.text} style={{ fontFamily: 'var(--font-mono)' }}>
               {atom.element}
             </text>
-            {atom.formalCharge !== 0 && (
+            {atom.formalCharge !== 0 && (() => {
+              const [fx, fy] = dir(freeAngle(atom.index));
+              const cx = ax + fx * 27;
+              const cy = ay + fy * 27;
+              return (
               <g>
-                <circle cx={ax + 17} cy={ay - 17} r={8.5} fill="none" stroke={colors.text} strokeWidth={1.4} />
-                <text x={ax + 17} y={ay - 17} dy="0.35em" textAnchor="middle" fontSize={atom.formalCharge > 0 ? 13 : 15} fill={colors.text} style={{ fontFamily: 'var(--font-mono)' }}>
+                <circle cx={cx} cy={cy} r={7.5} fill="none" stroke={colors.text} strokeWidth={1.4} />
+                <text x={cx} y={cy} dy="0.35em" textAnchor="middle" fontSize={atom.formalCharge > 0 ? 13 : 15} fill={colors.text} style={{ fontFamily: 'var(--font-mono)' }}>
                   {Math.abs(atom.formalCharge) === 1 ? (atom.formalCharge > 0 ? '+' : '−') : chargeLabel(atom.formalCharge)}
                 </text>
               </g>
-            )}
+              );
+            })()}
             {showCounts && (
               <text x={ax} y={ay + 34} textAnchor="middle" fontSize={11} fill={colors.muted} style={{ fontFamily: 'var(--font-mono)' }}>
                 {atom.electronCount}e⁻

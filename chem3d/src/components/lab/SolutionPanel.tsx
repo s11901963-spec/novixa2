@@ -20,7 +20,7 @@ import { useHistory } from '../../state/history';
 import { useLab } from '../../state/lab';
 import { Badge, Button, Segmented } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
-import { Axe, Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
+import { Axe, Deg, Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
 import { Tex } from '../ui/Tex';
 import { diagnosisMessage } from './messages';
 import type { LabModel } from './useLabModel';
@@ -93,7 +93,7 @@ function ResultView({ step }: { step: SolutionStep }) {
           </span>
           {r.measured && (
             <span className="text-muted">
-              <span className="tabular font-mono font-semibold text-fg">{r.measured.value.toFixed(2)}°</span>{' '}
+              <Deg value={r.measured.value} className="font-mono font-semibold text-fg" />{' '}
               {t(r.measured.fromExperiment ? 'step.bond-angle.measuredExp' : 'step.bond-angle.measuredIdeal', { label: r.measured.label })}
             </span>
           )}

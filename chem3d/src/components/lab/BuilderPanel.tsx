@@ -24,7 +24,7 @@ function ElementTile({ symbol, active, onClick, label }: { symbol: string; activ
     >
       <span className="h-1.5 w-6 rounded-full" style={{ background: e.color }} aria-hidden />
       <span className="mt-0.5 font-mono text-base font-semibold leading-tight">{symbol}</span>
-      <span className="text-[10px] text-muted tabular">{e.valenceElectrons}e⁻</span>
+      <bdi dir="ltr" className="text-[10px] text-muted tabular">{e.valenceElectrons}e⁻</bdi>
     </button>
   );
 }

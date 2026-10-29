@@ -48,6 +48,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
   const display = { ...settings.display, ...props.display };
   const reduceMotion = settings.reduceMotion || (typeof window !== 'undefined' && window.matchMedia?.('(prefers-reduced-motion: reduce)').matches);
   const radius = (props.scene?.radius ?? 2) * SCALE;
+  const sceneKey = `${props.moleculeKey}|${props.scene?.mode ?? 'none'}|${props.mystery ? 'hidden' : 'shown'}`;
 
   const fallback = (
     <div className="flex h-full items-center justify-center p-6 text-center text-sm text-screen-muted">{t('lab.webglError')}</div>
@@ -59,6 +60,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
       className={`overflow-hidden bg-screen ${props.className ?? 'relative'}`}
       data-testid="molecule-viewer"
       data-molecule={props.moleculeKey}
+      data-scene-key={sceneKey}
       data-mode={props.mode}
       data-mystery={String(!!props.mystery)}
       role="img"
@@ -91,6 +93,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
                   reduceMotion={!!reduceMotion}
                   lonePairLabel={t('lab.legend.lonePair')}
                   labelContainer={labelLayer}
+                  modelKey={sceneKey}
                 />
               )
             )}

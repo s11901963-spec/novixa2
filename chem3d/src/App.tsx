@@ -11,6 +11,9 @@ const HistoryPage = lazy(() => import('./pages/HistoryPage').then((m) => ({ defa
 const ReferencesPage = lazy(() => import('./pages/ReferencesPage').then((m) => ({ default: m.ReferencesPage })));
 const PreferencesPage = lazy(() => import('./pages/PreferencesPage').then((m) => ({ default: m.PreferencesPage })));
 
+// A host page (e.g. an embedding viewer) may set data-theme itself; "system" restores that value.
+const hostTheme = typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') : null;
+
 function useDocumentSettings() {
   const lang = useSettings((s) => s.lang);
   const theme = useSettings((s) => s.theme);
@@ -21,9 +24,16 @@ function useDocumentSettings() {
   }, [lang]);
   useEffect(() => {
     const root = document.documentElement;
-    if (theme === 'system') root.removeAttribute('data-theme');
-    else root.setAttribute('data-theme', theme);
+    if (theme !== 'system') root.setAttribute('data-theme', theme);
+    else if (hostTheme) root.setAttribute('data-theme', hostTheme);
+    else root.removeAttribute('data-theme');
   }, [theme]);
+}
+
+function systemIsDark() {
+  const attr = document.documentElement.getAttribute('data-theme');
+  if (attr) return attr === 'dark';
+  return !!window.matchMedia?.('(prefers-color-scheme: dark)').matches;
 }
 
 function Logo() {
@@ -53,7 +63,7 @@ function Header({ route }: { route: Route }) {
   const theme = useSettings((s) => s.theme);
   const setTheme = useSettings((s) => s.setTheme);
   const [menu, setMenu] = useState(false);
-  const isDark = theme === 'dark' || (theme === 'system' && window.matchMedia?.('(prefers-color-scheme: dark)').matches);
+  const isDark = theme === 'dark' || (theme === 'system' && systemIsDark());
   useEffect(() => setMenu(false), [route]);
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
