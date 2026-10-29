@@ -58,7 +58,7 @@ export function MoleculePicker({ model }: { model: LabModel }) {
         {open && (
           <div className="absolute start-0 top-full z-40 mt-1.5 w-[min(92vw,360px)] rounded-2xl border border-line bg-surface p-2 shadow-xl">
             <input
-              autoFocus
+              autoFocus={typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: fine)').matches}
               value={q}
               onChange={(e) => setQ(e.target.value)}
               placeholder={t('lab.search')}

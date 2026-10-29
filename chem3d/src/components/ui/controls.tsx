@@ -32,7 +32,7 @@ export function Segmented<T extends string>({
             disabled={o.disabled}
             title={o.title}
             onClick={() => onChange(o.value)}
-            className={`rounded-[10px] font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed ${
+            className={`rounded-[10px] font-medium transition-colors disabled:opacity-40 disabled:cursor-not-allowed pointer-coarse:min-h-10 ${
               size === 'sm' ? 'px-2.5 py-1 text-[13px]' : 'px-3.5 py-1.5 text-sm'
             } ${
               active
@@ -76,7 +76,7 @@ export function ToggleChip({
       type="button"
       aria-pressed={pressed}
       onClick={onToggle}
-      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[13px] font-medium transition-colors ${pressed ? on : off}`}
+      className={`inline-flex items-center gap-1.5 rounded-full border px-2.5 py-1 text-[13px] font-medium transition-colors pointer-coarse:min-h-10 pointer-coarse:px-3 ${pressed ? on : off}`}
     >
       {swatch && <span aria-hidden className="h-2.5 w-2.5 rounded-full" style={{ background: swatch }} />}
       {children}
@@ -115,7 +115,7 @@ export function Button({
       onClick={onClick}
       disabled={disabled}
       title={title}
-      className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition disabled:opacity-45 disabled:cursor-not-allowed ${styles} ${className}`}
+      className={`inline-flex items-center justify-center gap-2 rounded-xl border px-4 py-2 text-sm font-semibold transition active:scale-[0.98] disabled:opacity-45 disabled:cursor-not-allowed pointer-coarse:min-h-11 ${styles} ${className}`}
       {...rest}
     >
       {children}

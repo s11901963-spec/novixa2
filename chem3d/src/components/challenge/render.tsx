@@ -5,6 +5,37 @@ import { getAtom } from '../../data/atoms';
 import { isKey, type TFunction } from '../../i18n';
 import type { Lang } from '../../state/settings';
 import { Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
+import { ShapeIcon } from '../ui/ShapeIcon';
+
+const range = (a: number, b: number) => Array.from({ length: b - a + 1 }, (_, i) => a + i);
+
+/** How a number answer is entered by touch: angle dial, quick-pick chips, or the keypad. */
+export function numberInputFor(q: Question): { angle: true } | { angle?: false; chips?: number[]; negative?: boolean } {
+  switch (q.type) {
+    case 'ideal-angle':
+      return { angle: true };
+    case 'element-valence':
+    case 'bonding-pairs':
+      return { chips: range(1, 8) };
+    case 'central-lp':
+      return { chips: range(0, 4) };
+    case 'formal-charge':
+      return { chips: range(-2, 2), negative: true };
+    case 'ec-dots':
+      return { chips: range(0, 8) };
+    case 'ec-capacity':
+      return { chips: [2, 6, 10, 14] };
+    case 'ec-orbitals':
+      return { chips: [1, 3, 5, 7] };
+    case 'ec-unpaired':
+    case 'ec-unpaired-d':
+      return { chips: range(0, 7) };
+    case 'ec-sublevel':
+      return { chips: range(1, 14) };
+    default:
+      return {};
+  }
+}
 
 const molFormula = (id: string) => {
   const m = dataset.moleculesById.get(id);
@@ -67,9 +98,19 @@ export function renderLabel(label: Label, t: TFunction, lang: Lang = 'ar'): Reac
       return isKey(label.key) ? t(label.key, params) : label.key;
     }
     case 'mg':
-      return t(`mg.${label.id}`);
+      return (
+        <span className="flex items-center gap-2">
+          <ShapeIcon shape={label.id} kind="mg" size={34} />
+          {t(`mg.${label.id}`)}
+        </span>
+      );
     case 'eg':
-      return t(`eg.${label.id}`);
+      return (
+        <span className="flex items-center gap-2">
+          <ShapeIcon shape={label.id} kind="eg" size={34} />
+          {t(`eg.${label.id}`)}
+        </span>
+      );
     case 'sig':
       return t(`sig.${label.id}`);
     case 'hyb':

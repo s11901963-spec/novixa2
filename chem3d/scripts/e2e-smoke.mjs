@@ -215,7 +215,62 @@ try {
   check(await page.locator('[role=status]').first().isVisible(), 'electron question gets instant feedback');
   await page.screenshot({ path: `${out}/challenge-electrons.png` });
 
-  console.log('10. Language switch');
+  console.log('10. Touch screen (phone): everything by tapping');
+  const phone = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const tp = await phone.newPage();
+  tp.on('pageerror', (e) => errors.push(e.message));
+  await tp.goto(`${base}#lab`, { waitUntil: 'networkidle' });
+  await tp.waitForSelector('[data-testid=view-controls-toggle]', { timeout: 15000 });
+  const cam = () => tp.$eval('[data-testid=molecule-viewer]', (el) => ({ az: Number(el.dataset.cameraAzimuth), dist: Number(el.dataset.cameraDistance) }));
+  await tp.waitForTimeout(1500);
+  check((await tp.$eval('[data-testid=view-controls]', (el) => el.dataset.open)) === 'false', 'phone: view buttons start folded so they do not cover the molecule');
+  await tp.tap('[data-testid=view-controls-toggle]');
+  const c0 = await cam();
+  await tp.tap('[data-testid=view-rotate-right]');
+  await tp.tap('[data-testid=view-rotate-right]');
+  await tp.tap('[data-testid=view-zoom-in]');
+  await tp.waitForTimeout(900);
+  const c1 = await cam();
+  const turned = Math.abs(((c1.az - c0.az + 540) % 360) - 180);
+  check(Math.abs(turned - 30) < 3, `rotate buttons turn the model (${c0.az}° → ${c1.az}°)`);
+  check(c1.dist < c0.dist - 0.3, `zoom button brings the camera closer (${c0.dist} → ${c1.dist})`);
+  await tp.getByRole('radio', { name: /حل بنفسك/ }).tap();
+  await tp.tap('[data-testid=pad-valence-key-8]');
+  await tp.tap('[data-testid=check-valence]');
+  check(await tp.locator('[data-testid=practice-step-valence] [role=status]').first().innerText().then((x) => x.includes('✅')), 'number pad: NH₃ valence 8 entered by tapping → ✅');
+  await tp.tap('[data-testid=pad-bonding-chip-3]');
+  await tp.tap('[data-testid=check-bonding]');
+  check(await tp.locator('[data-testid=practice-step-bonding] [role=status]').first().innerText().then((x) => x.includes('✅')), 'quick-pick button: 3 bonding pairs → ✅');
+  await tp.screenshot({ path: `${out}/touch-lab.png`, fullPage: true });
+
+  await tp.goto(`${base}#predict`, { waitUntil: 'networkidle' });
+  await tp.waitForSelector('[data-testid=predict-eg]', { timeout: 15000 });
+  await tp.tap('[data-testid=predict-eg-tetrahedral]');
+  await tp.tap('[data-testid=predict-mg-bent]');
+  await tp.tap('[data-testid=predict-angle-lt109]');
+  if (await tp.$('[data-testid=predict-estimate]')) await tp.tap('[data-testid="predict-estimate-preset-104.5"]');
+  await tp.tap('[data-testid=predict-reveal]');
+  check(await tp.isVisible('[data-testid=predict-results]'), 'predict: shapes and angle chosen by tapping, then revealed');
+  await tp.screenshot({ path: `${out}/touch-predict.png`, fullPage: true });
+
+  await tp.goto(`${base}#electrons`, { waitUntil: 'networkidle' });
+  await tp.waitForSelector('[data-testid=electrons-page]', { timeout: 15000 });
+  await tp.getByRole('radio', { name: /تدرّب|Practise/ }).tap();
+  await tp.tap('[data-testid=pt-Al]');
+  await tp.tap('[data-testid=ec-kbd-noble-core-Ne]');
+  for (const sub of ['3s', '3p']) await tp.tap(`[data-testid=ec-kbd-noble-sub-${sub}]`);
+  await tp.tap('[data-testid=ec-kbd-noble-count-1]');
+  await tp.tap('[data-testid=ec-check-noble]');
+  check((await tp.$eval('[data-testid=ec-feedback-noble]', (el) => el.dataset.correct)) === 'true', `electron keyboard: [Ne] 3s² 3p¹ for Al by tapping → ✅ (${(await tp.inputValue('[data-testid=ec-input-noble]')).trim()})`);
+  await tp.screenshot({ path: `${out}/touch-electrons.png`, fullPage: true });
+
+  await tp.goto(`${base}#preferences`, { waitUntil: 'networkidle' });
+  await tp.waitForSelector('[data-testid=preferences-page]', { timeout: 15000 });
+  await tp.getByRole('radio', { name: 'كبير جدًا' }).tap();
+  check((await tp.evaluate(() => document.documentElement.style.fontSize)) === '125%', 'text size setting enlarges the whole interface');
+  await phone.close();
+
+  console.log('11. Language switch');
   await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
   await page.click('[data-testid=lang-toggle]');
   check((await page.evaluate(() => document.documentElement.dir)) === 'ltr', 'English switches the page to left-to-right');

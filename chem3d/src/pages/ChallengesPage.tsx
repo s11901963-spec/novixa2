@@ -1,8 +1,10 @@
-import { useEffect, useMemo, useRef, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { buildSceneModel } from '../chem/geometry';
 import { generateSession, isCorrect, scoreFor, analysisOf, type Level, type Question, type Topic } from '../chem/questions';
 import { randomSeed } from '../chem/random';
-import { answerText, promptText, renderLabel, textParams } from '../components/challenge/render';
+import { answerText, numberInputFor, promptText, renderLabel, textParams } from '../components/challenge/render';
+import { AngleDial } from '../components/ui/AngleDial';
+import { NumberPad } from '../components/ui/NumberPad';
 import { OrbitalBoxes } from '../components/electrons/OrbitalBoxes';
 import { diagnosisMessage } from '../components/lab/messages';
 import { Badge, Button, Card, Segmented } from '../components/ui/controls';
@@ -49,14 +51,11 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
   const [multi, setMulti] = useState<string[]>([]);
   const [showHint, setShowHint] = useState(false);
   const done = state.solved || state.failed;
-  const inputRef = useRef<HTMLInputElement>(null);
-
   useEffect(() => {
     setDraft('');
     setMulti([]);
     setShowHint(false);
-    if (q.kind === 'number') inputRef.current?.focus({ preventScroll: true });
-  }, [q.uid, q.kind]);
+  }, [q.uid]);
 
   const submit = () => {
     const answer = q.kind === 'multi' ? multi : draft;
@@ -136,22 +135,33 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
           if (!done) submit();
         }}
       >
-        {q.kind === 'number' && (
-          <input
-            ref={inputRef}
-            type="number"
-            inputMode="decimal"
-            step="any"
-            dir="ltr"
-            disabled={done}
-            value={draft}
-            onChange={(e) => setDraft(e.target.value)}
-            placeholder={t('common.enterNumber')}
-            aria-label={promptText(q, t, lang)}
-            className="w-40 rounded-lg border border-line bg-surface px-3 py-2 text-base tabular"
-            data-testid="answer-number"
-          />
-        )}
+        {q.kind === 'number' &&
+          (() => {
+            const how = numberInputFor(q);
+            return how.angle ? (
+              <div className="flex flex-col gap-1.5">
+                <p className="text-sm text-muted">{t('ch.pickAngle')}</p>
+                <AngleDial value={draft === '' ? null : Number(draft)} onChange={(v) => setDraft(String(v))} label={promptText(q, t, lang)} disabled={done} testId="answer-angle" />
+              </div>
+            ) : (
+              <div className="flex flex-col gap-1.5">
+                {how.chips && <p className="text-sm text-muted">{t('ch.pickNumber')}</p>}
+                <NumberPad
+                  value={draft}
+                  onChange={setDraft}
+                  label={promptText(q, t, lang)}
+                  chips={how.chips}
+                  negative={how.negative}
+                  min={how.negative ? -9 : 0}
+                  max={500}
+                  disabled={done}
+                  onSubmit={() => !done && submit()}
+                  inputTestId="answer-number"
+                  testId="answer-pad"
+                />
+              </div>
+            );
+          })()}
         {q.kind !== 'number' && (
           <div role={q.kind === 'single' ? 'radiogroup' : 'group'} aria-label={promptText(q, t, lang)} className="grid gap-2 sm:grid-cols-2">
             {q.options!.map((o) => {

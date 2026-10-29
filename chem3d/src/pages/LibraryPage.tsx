@@ -2,7 +2,8 @@ import { useMemo, useState } from 'react';
 import { analysisOf } from '../chem/questions';
 import type { ElectronGeometryId } from '../chem/types';
 import { BookTable } from '../components/library/BookTable';
-import { Badge, Card } from '../components/ui/controls';
+import { Badge, Card, Segmented } from '../components/ui/controls';
+import { ShapeIcon } from '../components/ui/ShapeIcon';
 import { Axe, Formula, formulaText } from '../components/ui/Formula';
 import { MoleculeThumb } from '../components/ui/MoleculeThumb';
 import { dataset } from '../data';
@@ -33,7 +34,6 @@ export function LibraryPage() {
     });
   }, [q, cat, eg, lp]);
 
-  const selectCls = 'rounded-lg border border-line bg-surface px-2.5 py-2 text-sm';
   return (
     <div className="gutter mx-auto max-w-7xl py-6">
       <h1 className="text-2xl font-bold">{t('lib.title')}</h1>
@@ -45,34 +45,53 @@ export function LibraryPage() {
 
       <div className="mt-4 flex flex-wrap items-end gap-3">
         <input value={q} onChange={(e) => setQ(e.target.value)} placeholder={t('lib.search')} aria-label={t('lib.search')} className="min-w-0 flex-1 rounded-lg border border-line bg-surface px-3 py-2 text-sm sm:max-w-xs" data-testid="library-search" />
-        <label className="flex flex-col gap-1 text-xs text-muted">
+        <div className="flex flex-col gap-1 text-xs text-muted">
           {t('lib.filter.category')}
-          <select value={cat} onChange={(e) => setCat(e.target.value as typeof cat)} className={selectCls}>
-            <option value="all">{t('lib.filter.all')}</option>
-            <option value="core">{t('category.core')}</option>
-            <option value="extended">{t('category.extended')}</option>
-            <option value="ion">{t('category.ion')}</option>
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-muted">
-          {t('lib.filter.eg')}
-          <select value={eg} onChange={(e) => setEg(e.target.value as typeof eg)} className={selectCls}>
-            <option value="all">{t('lib.filter.all')}</option>
-            {ELECTRON_GEOMETRIES.map((g) => (
-              <option key={g} value={g}>
-                {t(`eg.${g}`)}
-              </option>
-            ))}
-          </select>
-        </label>
-        <label className="flex flex-col gap-1 text-xs text-muted">
+          <Segmented
+            size="sm"
+            label={t('lib.filter.category')}
+            value={cat}
+            onChange={setCat}
+            options={[
+              { value: 'all', label: t('lib.filter.all') },
+              { value: 'core', label: t('category.core') },
+              { value: 'extended', label: t('category.extended') },
+              { value: 'ion', label: t('category.ion') },
+            ]}
+          />
+        </div>
+        <div className="flex flex-col gap-1 text-xs text-muted">
           {t('lib.filter.lp')}
-          <select value={lp} onChange={(e) => setLp(e.target.value as typeof lp)} className={selectCls}>
-            <option value="any">{t('lib.filter.lp.any')}</option>
-            <option value="yes">{t('lib.filter.lp.yes')}</option>
-            <option value="no">{t('lib.filter.lp.no')}</option>
-          </select>
-        </label>
+          <Segmented
+            size="sm"
+            label={t('lib.filter.lp')}
+            value={lp}
+            onChange={setLp}
+            options={[
+              { value: 'any', label: t('lib.filter.lp.any') },
+              { value: 'yes', label: t('lib.filter.lp.yes') },
+              { value: 'no', label: t('lib.filter.lp.no') },
+            ]}
+          />
+        </div>
+        <div className="flex basis-full flex-col gap-1 text-xs text-muted">
+          {t('lib.filter.eg')}
+          <div role="radiogroup" aria-label={t('lib.filter.eg')} className="flex flex-wrap gap-1.5">
+            {(['all', ...ELECTRON_GEOMETRIES] as const).map((g) => (
+              <button
+                key={g}
+                type="button"
+                role="radio"
+                aria-checked={eg === g}
+                onClick={() => setEg(g)}
+                className={`flex min-h-10 items-center gap-1.5 rounded-xl border px-2.5 text-[13px] pointer-coarse:min-h-12 ${eg === g ? 'border-accent bg-accent-soft font-semibold text-accent' : 'border-line bg-surface text-fg hover:bg-surface-2'}`}
+              >
+                {g !== 'all' && <ShapeIcon shape={g} kind="eg" size={26} />}
+                {g === 'all' ? t('lib.filter.all') : t(`eg.${g}`)}
+              </button>
+            ))}
+          </div>
+        </div>
         <span className="text-sm text-muted">{t('lib.count', { n: items.length })}</span>
       </div>
 

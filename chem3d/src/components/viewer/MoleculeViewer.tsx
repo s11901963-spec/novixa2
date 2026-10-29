@@ -11,6 +11,7 @@ import { Lights } from './Lights';
 import { MoleculeModel } from './MoleculeModel';
 import { RepulsionDemo } from './RepulsionDemo';
 import { SceneProbe } from './SceneProbe';
+import { CameraCommands, ViewControls, type CameraHandle } from './ViewControls';
 
 class GlBoundary extends Component<{ fallback: ReactNode; children: ReactNode }, { failed: boolean }> {
   state = { failed: false };
@@ -36,6 +37,8 @@ export interface MoleculeViewerProps {
   className?: string;
   children?: ReactNode;
   ariaLabel: string;
+  /** On-screen rotate/zoom/full-screen buttons (default on). */
+  controls?: boolean;
 }
 
 /** The 3D canvas (three.js via react-three-fiber) with orbit controls and camera presets. */
@@ -43,6 +46,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
   const t = useT();
   const settings = useSettings();
   const hostRef = useRef<HTMLDivElement>(null);
+  const cameraHandle = useRef<CameraHandle | null>(null);
   const [labelLayer, setLabelLayer] = useState<HTMLDivElement | null>(null);
   const [gl] = useState(webglAvailable);
   const display = { ...settings.display, ...props.display };
@@ -63,7 +67,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
       data-scene-key={sceneKey}
       data-mode={props.mode}
       data-mystery={String(!!props.mystery)}
-      role="img"
+      role="group"
       aria-label={props.ariaLabel}
     >
       {gl ? (
@@ -99,6 +103,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
             )}
             <OrbitControls makeDefault enableDamping dampingFactor={0.08} minDistance={2.5} maxDistance={40} autoRotate={display.autoRotate && !props.demo} autoRotateSpeed={1.2} />
             <CameraRig radius={props.demo ? 2.6 : radius} preset={props.camera?.preset ?? 'reset'} nonce={props.camera?.nonce ?? 0} instant={!!reduceMotion} />
+            <CameraCommands handle={cameraHandle} instant={!!reduceMotion} />
             <SceneProbe target={hostRef} />
           </Canvas>
         </GlBoundary>
@@ -106,6 +111,7 @@ export function MoleculeViewer(props: MoleculeViewerProps) {
         fallback
       )}
       <div ref={setLabelLayer} className="pointer-events-none absolute inset-0 isolate overflow-hidden" aria-hidden />
+      {gl && settings.viewButtons && props.controls !== false && !props.demo && <ViewControls handle={cameraHandle} host={hostRef} />}
       {props.children}
     </div>
   );

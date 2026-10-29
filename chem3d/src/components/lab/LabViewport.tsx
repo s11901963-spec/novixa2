@@ -285,7 +285,8 @@ export function LabViewport({ model }: { model: LabModel }) {
               )}
             </>
           )}
-          <span className="ms-auto hidden text-xs text-screen-muted md:inline">{t('lab.dragHint')}</span>
+          <span className="ms-auto hidden text-xs text-screen-muted md:pointer-fine:inline">{t('lab.dragHint')}</span>
+          <span className="ms-auto hidden basis-full text-xs text-screen-muted pointer-coarse:inline">{t('touch.gestureHint')}</span>
         </div>
       </div>
     </section>

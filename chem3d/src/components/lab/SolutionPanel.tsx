@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
+import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import {
   diagnoseAngle,
   diagnoseBondingPairs,
@@ -21,6 +21,8 @@ import { useLab } from '../../state/lab';
 import { Badge, Button, Segmented } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
 import { Axe, Deg, Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
+import { NumberPad } from '../ui/NumberPad';
+import { ShapeIcon } from '../ui/ShapeIcon';
 import { Tex } from '../ui/Tex';
 import { diagnosisMessage } from './messages';
 import type { LabModel } from './useLabModel';
@@ -151,6 +153,9 @@ type QKind = 'number' | 'choice';
 interface PracticeQuestion {
   id: StepId;
   kind: QKind;
+  /** Quick-pick values for number questions (touch); none means the keypad is shown. */
+  chips?: number[];
+  negative?: boolean;
   options?: string[];
   optionLabel?: (o: string) => ReactNode;
   check: (answer: string) => Diagnosis;
@@ -161,27 +166,35 @@ interface PracticeQuestion {
 function buildQuestions(a: Analysis, t: TFunction): PracticeQuestion[] {
   const v = a.vsepr!;
   const l = a.lewis!;
-  const num = (id: StepId, fn: (n: number, a: Analysis) => Diagnosis, expected: number, fmt = (n: number) => String(n)): PracticeQuestion => ({
+  const range = (a0: number, b0: number) => Array.from({ length: b0 - a0 + 1 }, (_, i) => a0 + i);
+  const num = (id: StepId, fn: (n: number, a: Analysis) => Diagnosis, expected: number, chips?: number[], fmt = (n: number) => String(n)): PracticeQuestion => ({
     id,
     kind: 'number',
+    chips,
+    negative: id === 'formal-charge',
     check: (s) => fn(Number(s), a),
     expected: () => fmt(expected),
     answerLabel: (s) => s,
   });
   const qs: PracticeQuestion[] = [
     num('valence', diagnoseValence, l.valence.total),
-    num('bonding', diagnoseBondingPairs, l.bondingElectrons / 2),
-    num('central-lp', diagnoseCentralLonePairs, v.lonePairs),
+    num('bonding', diagnoseBondingPairs, l.bondingElectrons / 2, range(1, 8)),
+    num('central-lp', diagnoseCentralLonePairs, v.lonePairs, range(0, 4)),
   ];
   if (a.spec.charge !== 0 || l.structure.atoms[0].formalCharge !== 0) {
-    qs.push(num('formal-charge', (n, an) => diagnoseFormalCharge(n, an, 0), l.structure.atoms[0].formalCharge, signed));
+    qs.push(num('formal-charge', (n, an) => diagnoseFormalCharge(n, an, 0), l.structure.atoms[0].formalCharge, range(-2, 2), signed));
   }
-  qs.push(num('steric-number', diagnoseStericNumber, v.stericNumber));
+  qs.push(num('steric-number', diagnoseStericNumber, v.stericNumber, range(2, 6)));
   qs.push({
     id: 'electron-geometry',
     kind: 'choice',
     options: [...ELECTRON_GEOMETRIES],
-    optionLabel: (o) => t(`eg.${o}` as never),
+    optionLabel: (o) => (
+      <span className="flex items-center gap-1.5">
+        <ShapeIcon shape={o} kind="eg" size={30} />
+        {t(`eg.${o}` as never)}
+      </span>
+    ),
     check: (s) => diagnoseElectronGeometry(s as ElectronGeometryId, a),
     expected: () => t(`eg.${v.electronGeometry}`),
     answerLabel: (s) => t(`eg.${s}` as never),
@@ -190,7 +203,12 @@ function buildQuestions(a: Analysis, t: TFunction): PracticeQuestion[] {
     id: 'molecular-geometry',
     kind: 'choice',
     options: [...MOLECULAR_GEOMETRIES],
-    optionLabel: (o) => t(`mg.${o}` as never),
+    optionLabel: (o) => (
+      <span className="flex items-center gap-1.5">
+        <ShapeIcon shape={o} kind="mg" size={30} />
+        {t(`mg.${o}` as never)}
+      </span>
+    ),
     check: (s) => diagnoseMolecularGeometry(s as MolecularGeometryId, a),
     expected: () => t(`mg.${v.molecularGeometry}`),
     answerLabel: (s) => t(`mg.${s}` as never),
@@ -238,10 +256,6 @@ interface QState {
 
 function QuestionInput({ q, state, onDraft, onCheck, onReveal, central }: { q: PracticeQuestion; state: QState; onDraft: (v: string) => void; onCheck: () => void; onReveal: () => void; central: string }) {
   const t = useT();
-  const inputRef = useRef<HTMLInputElement>(null);
-  useEffect(() => {
-    if (q.kind === 'number') inputRef.current?.focus({ preventScroll: true });
-  }, [q.kind]);
   const id = `practice-${q.id}`;
   return (
     <form
@@ -255,17 +269,17 @@ function QuestionInput({ q, state, onDraft, onCheck, onReveal, central }: { q: P
         {t(`practice.q.${q.id}` as never, { central })}
       </label>
       {q.kind === 'number' ? (
-        <input
-          id={id}
-          ref={inputRef}
-          type="number"
-          inputMode="numeric"
-          step="1"
+        <NumberPad
+          inputId={id}
           value={state.draft}
-          onChange={(e) => onDraft(e.target.value)}
-          placeholder={t('common.enterNumber')}
-          className="w-36 rounded-lg border border-line bg-surface px-3 py-2 text-base tabular focus:border-accent"
-          dir="ltr"
+          onChange={onDraft}
+          onSubmit={() => state.draft !== '' && onCheck()}
+          label={t(`practice.q.${q.id}` as never, { central })}
+          chips={q.chips}
+          negative={q.negative}
+          min={q.negative ? -4 : 0}
+          max={q.id === 'valence' ? 200 : 12}
+          testId={`pad-${q.id}`}
         />
       ) : (
         <div id={id} role="radiogroup" aria-label={t(`practice.q.${q.id}` as never, { central })} className="flex flex-wrap gap-1.5">
@@ -276,7 +290,7 @@ function QuestionInput({ q, state, onDraft, onCheck, onReveal, central }: { q: P
               role="radio"
               aria-checked={state.draft === o}
               onClick={() => onDraft(o)}
-              className={`rounded-lg border px-2.5 py-1.5 text-[13px] transition-colors ${
+              className={`min-h-10 rounded-xl border px-2.5 py-1.5 text-[13px] transition-colors active:scale-[0.98] pointer-coarse:min-h-12 pointer-coarse:text-sm ${
                 state.draft === o ? 'border-accent bg-accent-soft font-semibold text-accent' : 'border-line bg-surface hover:bg-surface-2'
               }`}
             >

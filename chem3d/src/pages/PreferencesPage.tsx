@@ -71,9 +71,34 @@ export function PreferencesPage() {
             ))}
           </div>
         </Field>
+        <Field label={t('pref.touch')}>
+          <div className="flex flex-col gap-3">
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-sm">{t('pref.textSize')}</span>
+              <Segmented
+                label={t('pref.textSize')}
+                value={s.textSize}
+                onChange={s.setTextSize}
+                options={[
+                  { value: 'normal', label: t('pref.textSize.normal') },
+                  { value: 'large', label: t('pref.textSize.large') },
+                  { value: 'xlarge', label: t('pref.textSize.xlarge') },
+                ]}
+              />
+            </div>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-5 w-5" checked={s.viewButtons} onChange={(e) => s.setViewButtons(e.target.checked)} />
+              {t('pref.viewButtons')}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-5 w-5" checked={s.haptics} onChange={(e) => s.setHaptics(e.target.checked)} />
+              {t('pref.haptics')}
+            </label>
+          </div>
+        </Field>
         <Field label={t('pref.motion')}>
           <label className="flex items-center gap-2 text-sm">
-            <input type="checkbox" checked={s.reduceMotion} onChange={(e) => s.setReduceMotion(e.target.checked)} />
+            <input type="checkbox" className="h-5 w-5" checked={s.reduceMotion} onChange={(e) => s.setReduceMotion(e.target.checked)} />
             {t('pref.motion.reduce')}
           </label>
         </Field>

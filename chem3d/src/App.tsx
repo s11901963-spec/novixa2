@@ -15,9 +15,16 @@ const PreferencesPage = lazy(() => import('./pages/PreferencesPage').then((m) =>
 // A host page (e.g. an embedding viewer) may set data-theme itself; "system" restores that value.
 const hostTheme = typeof document !== 'undefined' ? document.documentElement.getAttribute('data-theme') : null;
 
+const TEXT_SCALE = { normal: '', large: '112.5%', xlarge: '125%' } as const;
+
 function useDocumentSettings() {
   const lang = useSettings((s) => s.lang);
   const theme = useSettings((s) => s.theme);
+  const textSize = useSettings((s) => s.textSize);
+  useEffect(() => {
+    // The UI is sized in rem, so the root font size scales every page.
+    document.documentElement.style.fontSize = TEXT_SCALE[textSize] ?? '';
+  }, [textSize]);
   useEffect(() => {
     const root = document.documentElement;
     root.lang = lang;

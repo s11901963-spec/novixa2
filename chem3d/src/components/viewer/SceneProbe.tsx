@@ -10,6 +10,7 @@ import * as THREE from 'three';
  */
 export function SceneProbe({ target }: { target: RefObject<HTMLElement | null> }) {
   const scene = useThree((s) => s.scene);
+  const camera = useThree((s) => s.camera);
   const frame = useRef(0);
   const last = useRef<THREE.Vector3[]>([]);
   useFrame(() => {
@@ -49,6 +50,9 @@ export function SceneProbe({ target }: { target: RefObject<HTMLElement | null> }
     el.dataset.renderedCentralLonePairs = String(centralLonePairs);
     el.dataset.settled = String(converged && !moved);
     el.dataset.renderedFor = String(root?.userData.modelKey ?? '');
+    // Camera azimuth (degrees around the vertical axis) and distance, for the touch-control tests.
+    el.dataset.cameraAzimuth = THREE.MathUtils.radToDeg(Math.atan2(camera.position.x, camera.position.z)).toFixed(1);
+    el.dataset.cameraDistance = camera.position.length().toFixed(2);
   });
   return null;
 }

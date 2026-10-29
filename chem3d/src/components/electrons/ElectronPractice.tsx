@@ -19,6 +19,7 @@ import { useHistory } from '../../state/history';
 import { Badge, Button, Card } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
 import { RefCite } from '../ui/RefCite';
+import { ConfigKeyboard } from './ConfigKeyboard';
 import { ConfigText } from './ConfigText';
 import { DotSymbol } from './DotSymbol';
 import { electronMessage, type ElectronTask } from './messages';
@@ -177,6 +178,8 @@ export function ElectronPractice({ z }: { z: number }) {
               {t('ec.practice.preview')} {preview(full)}
             </p>
           )}
+          <p className="text-xs text-muted">{t('ec.kbd.help')}</p>
+          <ConfigKeyboard value={full} onChange={setFull} mode="full" testId="ec-kbd-full" />
         </TaskCard>
 
         <TaskCard
@@ -210,6 +213,7 @@ export function ElectronPractice({ z }: { z: number }) {
               {t('ec.practice.preview')} {preview(noble)}
             </p>
           )}
+          <ConfigKeyboard value={noble} onChange={setNoble} mode="noble" testId="ec-kbd-noble" />
         </TaskCard>
 
         <TaskCard

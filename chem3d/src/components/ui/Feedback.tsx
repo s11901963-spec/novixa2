@@ -1,9 +1,16 @@
-import type { ReactNode } from 'react';
+import { useEffect, type ReactNode } from 'react';
 import { useT } from '../../i18n';
+import { useSettings } from '../../state/settings';
 
 /** ✅ / ❌ feedback with the specific explanation and the rule that applies. */
 export function Feedback({ correct, message, rule, children }: { correct: boolean; message: ReactNode; rule?: ReactNode; children?: ReactNode }) {
   const t = useT();
+  const haptics = useSettings((s) => s.haptics);
+  const key = typeof message === 'string' ? message : '';
+  // A short buzz for ✅, a double buzz for ❌ (phones and tablets that support vibration).
+  useEffect(() => {
+    if (haptics && typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(correct ? 25 : [40, 60, 40]);
+  }, [correct, key, haptics]);
   return (
     <div
       role="status"

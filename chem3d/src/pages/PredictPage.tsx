@@ -8,7 +8,9 @@ import { diagnosisMessage } from '../components/lab/messages';
 import { Button, Card } from '../components/ui/controls';
 import { Feedback } from '../components/ui/Feedback';
 import { Deg, Formula, Ltr } from '../components/ui/Formula';
+import { AngleDial } from '../components/ui/AngleDial';
 import { RefCite } from '../components/ui/RefCite';
+import { ShapeIcon } from '../components/ui/ShapeIcon';
 import { MoleculeViewer } from '../components/viewer/MoleculeViewer';
 import { dataset } from '../data';
 import { ELECTRON_GEOMETRIES, MOLECULAR_GEOMETRIES } from '../data/schema';
@@ -17,26 +19,30 @@ import { useHistory } from '../state/history';
 
 const ANGLES: AngleSignatureId[] = ['a180', 'a120', 'lt120', 'approx120', 'a109', 'lt109', 'a90-120-180', 'lt90-lt120', 'lt90', 'a90-180'];
 
-function Select<T extends string>({ id, label, value, onChange, options, render, disabled }: { id: string; label: string; value: T | ''; onChange: (v: T) => void; options: readonly T[]; render: (v: T) => string; disabled?: boolean }) {
+function ChoiceGrid<T extends string>({ id, label, value, onChange, options, render, icon, disabled }: { id: string; label: string; value: T | ''; onChange: (v: T) => void; options: readonly T[]; render: (v: T) => string; icon?: 'mg' | 'eg'; disabled?: boolean }) {
   return (
-    <label htmlFor={id} className="flex flex-col gap-1.5 text-sm font-semibold">
-      {label}
-      <select
-        id={id}
-        value={value}
-        disabled={disabled}
-        onChange={(e) => onChange(e.target.value as T)}
-        className="rounded-lg border border-line bg-surface px-3 py-2 text-sm font-normal"
-        data-testid={id}
-      >
-        <option value="">—</option>
+    <fieldset className="flex flex-col gap-1.5" data-testid={id} data-value={value}>
+      <legend className="mb-1 text-sm font-semibold">{label}</legend>
+      <div role="radiogroup" aria-label={label} className={`grid gap-1.5 ${icon ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-3 lg:grid-cols-2'}`}>
         {options.map((o) => (
-          <option key={o} value={o}>
-            {render(o)}
-          </option>
+          <button
+            key={o}
+            type="button"
+            role="radio"
+            aria-checked={value === o}
+            disabled={disabled}
+            onClick={() => onChange(o)}
+            className={`flex min-h-11 items-center gap-2 rounded-xl border px-2.5 py-1.5 text-start text-[13px] leading-5 transition-colors active:scale-[0.98] disabled:opacity-60 pointer-coarse:min-h-12 ${
+              value === o ? 'border-accent bg-accent-soft font-semibold text-accent' : 'border-line bg-surface hover:bg-surface-2'
+            }`}
+            data-testid={`${id}-${o}`}
+          >
+            {icon && <ShapeIcon shape={o} kind={icon} size={30} />}
+            <span>{render(o)}</span>
+          </button>
         ))}
-      </select>
-    </label>
+      </div>
+    </fieldset>
   );
 }
 
@@ -140,16 +146,16 @@ export function PredictPage() {
         </div>
 
         <Card className="flex flex-col gap-4 p-4">
-          <Select id="predict-eg" label={t('pr.eg')} value={eg} onChange={setEg} options={ELECTRON_GEOMETRIES} render={(o) => t(`eg.${o}`)} disabled={revealed} />
-          <Select id="predict-mg" label={t('pr.mg')} value={mg} onChange={setMg} options={MOLECULAR_GEOMETRIES} render={(o) => t(`mg.${o}`)} disabled={revealed} />
-          <Select id="predict-angle" label={t('pr.angle')} value={angle} onChange={setAngle} options={ANGLES} render={(o) => t(`sig.${o}`)} disabled={revealed} />
+          <ChoiceGrid id="predict-eg" label={t('pr.eg')} value={eg} onChange={setEg} options={ELECTRON_GEOMETRIES} render={(o) => t(`eg.${o}`)} icon="eg" disabled={revealed} />
+          <ChoiceGrid id="predict-mg" label={t('pr.mg')} value={mg} onChange={setMg} options={MOLECULAR_GEOMETRIES} render={(o) => t(`mg.${o}`)} icon="mg" disabled={revealed} />
+          <ChoiceGrid id="predict-angle" label={t('pr.angle')} value={angle} onChange={setAngle} options={ANGLES} render={(o) => t(`sig.${o}`)} disabled={revealed} />
           {main && (
-            <label className="flex flex-col gap-1.5 text-sm font-semibold">
-              <span>
-                {t('pr.estimate')} <Ltr className="font-mono font-normal">{main.label}</Ltr>
+            <div className="flex flex-col gap-1.5">
+              <span className="text-sm font-semibold">
+                {t('pr.angleDial')} <Ltr className="font-mono font-normal">{main.label}</Ltr>
               </span>
-              <input type="number" step="any" dir="ltr" disabled={revealed} value={estimate} onChange={(e) => setEstimate(e.target.value)} className="w-36 rounded-lg border border-line bg-surface px-3 py-2 text-sm font-normal tabular" />
-            </label>
+              <AngleDial value={estimate === '' ? null : Number(estimate)} onChange={(v) => setEstimate(String(v))} label={`${t('pr.estimate')} ${main.label}`} disabled={revealed} testId="predict-estimate" />
+            </div>
           )}
           {warn && <p className="text-sm text-warn">{t('pr.needAll')}</p>}
           {!revealed ? (
