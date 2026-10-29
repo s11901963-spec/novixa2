@@ -332,29 +332,46 @@ try {
   await tp.tap('[data-testid=check-bonding]');
   check(await tp.locator('[data-testid=practice-step-bonding] [role=status]').first().innerText().then((x) => x.includes('✅')), 'quick-pick button: 3 bonding pairs → ✅');
   await tp.screenshot({ path: `${out}/touch-lab.png`, fullPage: true });
-  // Bend the molecule with a finger: drag an H atom of NH₃ in the 3D view.
+  // Touching the model in another tab points to the tab where a finger changes the angle.
   await tp.tap('[data-testid=view-controls-fold]');
   await tp.tap('[data-testid=camera-reset]');
-  await tp.tap('[data-testid=mtab-angle]');
+  const stageBox = await tp.locator('[data-testid=molecule-viewer]').boundingBox();
+  await tp.touchscreen.tap(stageBox.x + 24, stageBox.y + stageBox.height / 2);
+  await tp.waitForSelector('[data-testid=angle-tab-nudge]', { timeout: 5000 });
+  await tp.tap('[data-testid=angle-tab-nudge]');
+  check((await tp.getAttribute('[data-testid=mtab-angle]', 'aria-selected')) === 'true', 'phone: touching the model offers «change the angle», one tap opens it');
   await tp.waitForSelector('[data-testid=angle-live]', { timeout: 15000 });
   await tp.waitForTimeout(1500);
   await tp.waitForFunction(() => {
     const d = document.querySelector('[data-testid=molecule-viewer]')?.dataset;
     return !!d && d.renderedFor === d.sceneKey && d.settled === 'true';
   });
+  const liveNow = () => tp.$eval('[data-testid=angle-live]', (el) => ({ value: Number(el.dataset.value), live: el.dataset.live }));
+  check((await tp.$$('[data-label-key^="grab-"]')).length === 3, 'phone: the three H atoms that can be dragged are circled');
+  // Bend with a finger, pressing beside the H atom rather than exactly on it.
   const touch = await phone.newCDPSession(tp);
   const th = await tp.locator('[data-label-key="atom-1"]').boundingBox();
-  const a0 = Number(await tp.$eval('[data-testid=angle-live]', (el) => el.dataset.value));
+  const a0 = (await liveNow()).value;
   const az0 = (await cam()).az;
-  const tx = th.x + th.width / 2;
-  const ty = th.y + th.height / 2;
+  const tx = th.x + th.width / 2 + 26;
+  const ty = th.y + th.height / 2 + 6;
   await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: tx, y: ty }] });
   for (let k = 1; k <= 10; k++) await touch.send('Input.dispatchTouchEvent', { type: 'touchMove', touchPoints: [{ x: tx, y: ty + 5 * k }] });
   await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   await tp.waitForTimeout(600);
-  const a1 = await tp.$eval('[data-testid=angle-live]', (el) => ({ value: Number(el.dataset.value), live: el.dataset.live }));
+  const a1 = await liveNow();
   const az1 = (await cam()).az;
-  check(a1.value < a0 - 2 && Math.abs(az1 - az0) < 2 && (a1.live === 'ok' || a1.live === 'bad'), `phone: dragging an H atom with a finger bends NH₃ (${a0}° → ${a1.value}°, ${a1.live === 'ok' ? '✅' : '❌'}) without turning the view`);
+  check(a1.value < a0 - 2 && Math.abs(az1 - az0) < 2 && (a1.live === 'ok' || a1.live === 'bad'), `phone: a finger beside an H atom grabs it and bends NH₃ (${a0}° → ${a1.value}°, ${a1.live === 'ok' ? '✅' : '❌'}) without turning the view`);
+  check((await tp.$$('[data-label-key^="grab-"]')).length === 0, 'phone: the circles go away once the student has bent the molecule');
+  await tp.tap('[data-testid=angle-live-plus]');
+  const a2 = (await liveNow()).value;
+  check(Math.abs(a2 - (a1.value + 0.5)) < 1e-6, `phone: + on the model adds 0.5° (${a1.value}° → ${a2}°)`);
+  const mb = await tp.locator('[data-testid=angle-live-minus]').boundingBox();
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ x: mb.x + mb.width / 2, y: mb.y + mb.height / 2 }] });
+  await tp.waitForTimeout(1100);
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  const a3 = (await liveNow()).value;
+  check(a3 <= a2 - 2, `phone: holding − on the model keeps closing the angle (${a2}° → ${a3}°)`);
   await tp.screenshot({ path: `${out}/touch-bend.png`, fullPage: true });
 
   await tp.goto(`${base}#predict`, { waitUntil: 'networkidle' });

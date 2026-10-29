@@ -40,6 +40,16 @@ export class LabelLayer {
     if (el && el.textContent !== text) el.textContent = text;
   }
 
+  /** Square size in pixels (for markers drawn around an atom). */
+  setSize(key: string, px: number) {
+    const el = this.items.get(key);
+    const v = `${Math.round(px)}px`;
+    if (el && el.style.width !== v) {
+      el.style.width = v;
+      el.style.height = v;
+    }
+  }
+
   place(key: string, world: THREE.Vector3, camera: THREE.Camera, width: number, height: number) {
     const el = this.items.get(key);
     if (!el) return;

@@ -4,6 +4,7 @@ import * as THREE from 'three';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { useT } from '../../i18n';
 import { DraggablePanel } from '../ui/DraggablePanel';
+import { useRepeat } from '../ui/useRepeat';
 
 export interface CameraHandle {
   /** Orbit the camera by the given degrees (azimuth around the vertical axis, elevation). */
@@ -63,35 +64,6 @@ export function CameraCommands({ handle, instant }: { handle: MutableRefObject<C
     if (Math.abs(p.zoom - 1) < 1e-4) p.zoom = 1;
   });
   return null;
-}
-
-/** Press-and-hold repeat for touch buttons; keyboard activation fires once. */
-function useRepeat() {
-  const timers = useRef<{ start?: number; tick?: number }>({});
-  const stop = () => {
-    window.clearTimeout(timers.current.start);
-    window.clearInterval(timers.current.tick);
-    timers.current = {};
-  };
-  useEffect(() => stop, []);
-  return (fn: () => void) => ({
-    onPointerDown: (e: React.PointerEvent) => {
-      if (e.button !== 0) return;
-      fn();
-      stop();
-      timers.current.start = window.setTimeout(() => {
-        timers.current.tick = window.setInterval(fn, 90);
-      }, 380);
-    },
-    onPointerUp: stop,
-    onPointerLeave: stop,
-    onPointerCancel: stop,
-    // A click from the keyboard has detail 0; pointer clicks were handled on pointer-down.
-    onClick: (e: React.MouseEvent) => {
-      if (e.detail === 0) fn();
-    },
-    onContextMenu: (e: React.MouseEvent) => e.preventDefault(),
-  });
 }
 
 function Btn({ label, children, className = '', ...rest }: { label: string; children: ReactNode; className?: string } & React.ButtonHTMLAttributes<HTMLButtonElement>) {

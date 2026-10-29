@@ -7,6 +7,7 @@ import { useLab, type ViewMode } from '../../state/lab';
 import { useSettings, type DisplayToggles } from '../../state/settings';
 import { Segmented, ToggleChip } from '../ui/controls';
 import { DraggablePanel } from '../ui/DraggablePanel';
+import { useRepeat } from '../ui/useRepeat';
 import { Axe, Formula, formulaText, Ltr } from '../ui/Formula';
 import { shortCitation } from '../ui/RefCite';
 import { SCREEN_COLORS } from '../viewer/constants';
@@ -52,6 +53,10 @@ export function LabViewport({ model }: { model: LabModel }) {
   const v = analysis.vsepr;
   const mystery = tab === 'practice' && !shapeRevealed;
   const setAngleTry = useLab((s) => s.setAngleTry);
+  const setTab = useLab((s) => s.setTab);
+  // Someone touching the model in another tab is pointed to the tab where touch changes the angle.
+  const [tabNudge, setTabNudge] = useState(false);
+  const nudgedOnce = useRef(false);
   const angleLive = useSettings((s) => s.angleLive);
   const challenge = useAngleChallenge(model);
   const [bentOnce, setBentOnce] = useState(false);
@@ -59,6 +64,10 @@ export function LabViewport({ model }: { model: LabModel }) {
   // "Change the angle yourself" in the model: drag an outer atom, the angle follows the finger.
   const ex = model.explorer;
   const bending = tab === 'angle' && model.exploring && !!ex && viewMode !== 'lewis' && !whyOpen;
+  const haptics = useSettings((s) => s.haptics);
+  const buzz = (ms: number) => {
+    if (haptics && typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(ms);
+  };
   const bendInfo = useMemo(() => {
     if (!bending || !ex || !analysis.ok) return null;
     const positionsFor = (th: number) => buildSceneModel(analysis, { mode: model.geometryMode, experimental, layout: ex.layout(th) }).atoms.map((a) => a.position);
@@ -72,21 +81,32 @@ export function LabViewport({ model }: { model: LabModel }) {
       step: 0.5,
       positionsFor,
       movable,
+      hint: !bentOnce,
       onChange: (th) => {
         setAngleTry(th);
         setBentOnce(true);
       },
+      onGrab: () => buzz(12),
     };
     return { config, atom: movable.length ? analysis.spec.ligands[movable[0] - 1] : null };
-  }, [bending, ex, analysis, model.geometryMode, experimental, setAngleTry]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [bending, ex, analysis, model.geometryMode, experimental, setAngleTry, bentOnce, haptics]);
+  // − / + on the model itself (hold to keep changing): reads the newest value on every repeat.
+  const repeat = useRepeat();
+  const nudge = (d: number) => {
+    if (!ex) return;
+    const cur = useLab.getState().angleTry ?? ex.start;
+    setAngleTry(Math.min(ex.max, Math.max(ex.min, Math.round((cur + d) * 2) / 2)));
+    setBentOnce(true);
+  };
   const live = bending && challenge ? (angleLive ? (challenge.hit ? 'ok' : 'bad') : 'off') : null;
   // A short buzz on phones the moment the angle becomes right.
-  const haptics = useSettings((s) => s.haptics);
   const wasLive = useRef(live);
   useEffect(() => {
-    if (live === 'ok' && wasLive.current === 'bad' && haptics && typeof navigator !== 'undefined' && 'vibrate' in navigator) navigator.vibrate(25);
+    if (live === 'ok' && wasLive.current === 'bad') buzz(25);
     wasLive.current = live;
-  }, [live, haptics]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [live]);
   const main = scene ? mainAngle(scene) : undefined;
   const resonance = analysis.lewis?.resonance ?? [];
   const structure = resonance[Math.min(resIdx, resonance.length - 1)];
@@ -118,7 +138,32 @@ export function LabViewport({ model }: { model: LabModel }) {
 
   return (
     <section className="flex min-h-0 flex-col overflow-hidden rounded-2xl border border-screen-line bg-screen text-screen-fg" data-testid="lab-viewport" aria-label={t('lab.title')}>
-      <div ref={stage} className={`relative isolate flex-1 lg:min-h-0 ${tab === 'angle' ? 'min-h-[36vh]' : tab === 'practice' ? 'min-h-[42vh]' : 'min-h-[50vh]'}`}>
+      <div
+        ref={stage}
+        className={`relative isolate flex-1 lg:min-h-0 ${tab === 'angle' ? 'min-h-[46vh]' : tab === 'practice' ? 'min-h-[42vh]' : 'min-h-[50vh]'}`}
+        onPointerDownCapture={(e) => {
+          if (tab === 'angle' || nudgedOnce.current || !ex || viewMode === 'lewis' || whyOpen || (e.target as HTMLElement).tagName !== 'CANVAS') return;
+          nudgedOnce.current = true;
+          setTabNudge(true);
+          window.setTimeout(() => setTabNudge(false), 6000);
+        }}
+      >
+        {tabNudge && tab !== 'angle' && (
+          <div className="pointer-events-none absolute inset-x-0 top-14 z-30 flex justify-center px-3">
+            <button
+              type="button"
+              className="pointer-events-auto rounded-full bg-accent px-4 py-2 text-sm font-bold text-accent-fg shadow-lg pointer-coarse:min-h-11"
+              onClick={() => {
+                setTabNudge(false);
+                setTab('angle');
+              }}
+              data-testid="angle-tab-nudge"
+            >
+              <span aria-hidden>📐 </span>
+              {t('angle.tabNudge')}
+            </button>
+          </div>
+        )}
         <MoleculeViewer
           className="absolute inset-0"
           scene={analysis.ok ? scene : null}
@@ -154,20 +199,43 @@ export function LabViewport({ model }: { model: LabModel }) {
             />
           </div>
           {live && challenge ? (
-            // Right or wrong, live, while the angle changes.
+            // Right or wrong, live, while the angle changes; − / + change it right here on the model.
             <div className="flex flex-col items-end gap-1" data-testid="angle-live" data-live={live} data-value={challenge.value}>
-              <span
-                className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold shadow-lg transition-colors pointer-coarse:py-1.5 ${
-                  live === 'ok' ? 'bg-[#22c55e] text-[#04210f]' : live === 'bad' ? 'bg-[#f05252] text-white' : 'bg-[#ffc44d] text-[#1d1300]'
-                }`}
-                aria-label={live === 'off' ? `${t('angle.yourAngle')} ${challenge.value}°` : t('angle.live.aria', { value: challenge.value, verdict: live === 'ok' ? t('angle.live.ok') : t('angle.live.bad') })}
-              >
-                <span aria-hidden>{live === 'ok' ? '✅' : live === 'bad' ? '❌' : '📐'}</span>
-                {live !== 'off' && <span>{live === 'ok' ? t('angle.live.ok') : t('angle.live.bad')}</span>}
-                <bdi dir="ltr" className="tabular font-mono">
-                  {challenge.value.toFixed(1)}°
-                </bdi>
-              </span>
+              <div dir="ltr" className="pointer-events-auto flex items-center gap-1.5">
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-screen-line bg-screen-2/90 text-xl font-bold text-screen-fg shadow-lg select-none active:scale-95 active:bg-white/25 pointer-coarse:h-11 pointer-coarse:w-11"
+                  aria-label={t('angle.nudge.down')}
+                  title={t('angle.nudge.down')}
+                  data-testid="angle-live-minus"
+                  {...repeat(() => nudge(-0.5))}
+                >
+                  −
+                </button>
+                <span
+                  dir={lang === 'ar' ? 'rtl' : 'ltr'}
+                  className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-bold shadow-lg transition-colors pointer-coarse:py-2 ${
+                    live === 'ok' ? 'bg-[#22c55e] text-[#04210f]' : live === 'bad' ? 'bg-[#f05252] text-white' : 'bg-[#ffc44d] text-[#1d1300]'
+                  }`}
+                  aria-label={live === 'off' ? `${t('angle.yourAngle')} ${challenge.value}°` : t('angle.live.aria', { value: challenge.value, verdict: live === 'ok' ? t('angle.live.ok') : t('angle.live.bad') })}
+                >
+                  <span aria-hidden>{live === 'ok' ? '✅' : live === 'bad' ? '❌' : '📐'}</span>
+                  {live !== 'off' && <span>{live === 'ok' ? t('angle.live.ok') : t('angle.live.bad')}</span>}
+                  <bdi dir="ltr" className="tabular font-mono">
+                    {challenge.value.toFixed(1)}°
+                  </bdi>
+                </span>
+                <button
+                  type="button"
+                  className="flex h-9 w-9 items-center justify-center rounded-full border border-screen-line bg-screen-2/90 text-xl font-bold text-screen-fg shadow-lg select-none active:scale-95 active:bg-white/25 pointer-coarse:h-11 pointer-coarse:w-11"
+                  aria-label={t('angle.nudge.up')}
+                  title={t('angle.nudge.up')}
+                  data-testid="angle-live-plus"
+                  {...repeat(() => nudge(0.5))}
+                >
+                  +
+                </button>
+              </div>
               {!bentOnce && bendInfo?.atom && (
                 <span className="rounded-full bg-screen-2/90 px-2.5 py-0.5 text-xs text-screen-fg shadow" data-testid="angle-drag-hint">
                   <span aria-hidden>👆 </span>
@@ -352,7 +420,7 @@ export function LabViewport({ model }: { model: LabModel }) {
               )}
             </>
           )}
-          <span className="ms-auto hidden text-xs text-screen-muted md:pointer-fine:inline">{t('lab.dragHint')}</span>
+          <span className="ms-auto hidden text-xs text-screen-muted md:pointer-fine:inline">{bending ? t('angle.mouseHint') : t('lab.dragHint')}</span>
         </div>
         {viewMode !== 'lewis' && showOptions && (
           <div className="flex flex-wrap items-center gap-1.5" id="display-options">
@@ -363,7 +431,7 @@ export function LabViewport({ model }: { model: LabModel }) {
             ))}
           </div>
         )}
-        <span className="hidden text-xs text-screen-muted pointer-coarse:inline">{t('touch.gestureHint')}</span>
+        <span className="hidden text-xs text-screen-muted pointer-coarse:inline">{bending ? t('angle.touchHint') : t('touch.gestureHint')}</span>
       </div>
     </section>
   );

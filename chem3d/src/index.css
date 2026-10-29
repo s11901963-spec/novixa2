@@ -210,6 +210,28 @@ h3 {
   user-select: none;
   font-variant-numeric: tabular-nums;
 }
+/* Atoms that can be dragged to change the angle (shown until the first change). */
+.grab-ring {
+  border-radius: 999px;
+  border: 2px dashed rgba(255, 196, 77, 0.95);
+  animation: grab-pulse 1.6s ease-out infinite;
+}
+@keyframes grab-pulse {
+  0% {
+    box-shadow: 0 0 0 0 rgba(255, 196, 77, 0.55);
+  }
+  70% {
+    box-shadow: 0 0 0 14px rgba(255, 196, 77, 0);
+  }
+  100% {
+    box-shadow: 0 0 0 0 rgba(255, 196, 77, 0);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .grab-ring {
+    animation: none;
+  }
+}
 .angle-label.is-ok {
   background: rgba(34, 197, 94, 0.95);
   color: #04210f;

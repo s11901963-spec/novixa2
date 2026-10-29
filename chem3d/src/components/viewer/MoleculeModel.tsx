@@ -21,7 +21,11 @@ export interface BendConfig {
   positionsFor: (theta: number) => [number, number, number][];
   /** Atoms that move when the angle changes (the ones that can be grabbed). */
   movable: number[];
+  /** Pulsing circles around the atoms that can be grabbed. */
+  hint: boolean;
   onChange: (theta: number) => void;
+  /** An atom was grabbed (e.g. for a short vibration). */
+  onGrab?: () => void;
 }
 
 export interface MoleculeModelProps {
@@ -96,8 +100,13 @@ export function MoleculeModel(props: MoleculeModelProps) {
   const rootRef = useRef<THREE.Group>(null);
   const dragging = useRef(false);
   const bent = useRef(false);
-  const { camera, gl, controls } = useThree();
+  const gl = useThree((s) => s.gl);
+  const getThree = useThree((s) => s.get);
   const bend = props.bend && !mystery ? props.bend : null;
+  const bendRef = useRef(bend);
+  bendRef.current = bend;
+  const radiiRef = useRef<number[]>([]);
+  const [coarse] = useState(() => typeof window !== 'undefined' && !!window.matchMedia?.('(pointer: coarse)').matches);
 
   // Keep the animated positions array aligned with the atoms; new atoms grow out of the centre.
   if (current.current.length !== n) {
@@ -171,9 +180,10 @@ export function MoleculeModel(props: MoleculeModelProps) {
       const tn = toneOf(a.kind);
       defs.push({ key: `angle-${i}`, text: '', className: `angle-label${tn ? ` is-${tn}` : ''}` });
     });
+    if (bend?.hint) bend.movable.forEach((i) => defs.push({ key: `grab-${i}`, text: '', className: 'grab-ring' }));
     return defs;
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [scene, labelMode, selectedAtom, lang, mystery, mode, lonePairs, shownAngles, props.lonePairLabel, toneKind, tone]);
+  }, [scene, labelMode, selectedAtom, lang, mystery, mode, lonePairs, shownAngles, props.lonePairLabel, toneKind, tone, bend?.hint, bend?.movable]);
   useEffect(() => layer?.sync(labelDefs), [layer, labelDefs]);
 
   useFrame((state, dt) => {
@@ -189,6 +199,19 @@ export function MoleculeModel(props: MoleculeModelProps) {
       else if (!mystery) cur[i].copy(target);
       atomGroups.current[i]?.position.copy(cur[i]);
       layer?.place(`atom-${i}`, cur[i], state.camera, state.size.width, state.size.height);
+    }
+    // circles around the atoms that can be grabbed, a little larger than the atom on screen
+    const b = bendRef.current;
+    if (b?.hint && layer) {
+      const right = tmpB.set(1, 0, 0).applyQuaternion(state.camera.quaternion);
+      for (const i of b.movable) {
+        if (!cur[i]) continue;
+        const p = tmpA.copy(cur[i]).project(state.camera);
+        const q = tmpC.copy(cur[i]).addScaledVector(right, radii[i] ?? 0.3).project(state.camera);
+        const rPx = Math.hypot(((q.x - p.x) / 2) * state.size.width, ((q.y - p.y) / 2) * state.size.height);
+        layer.setSize(`grab-${i}`, Math.max(coarse ? 56 : 40, 2 * rPx + 16));
+        layer.place(`grab-${i}`, cur[i], state.camera, state.size.width, state.size.height);
+      }
     }
     if (rootRef.current) {
       rootRef.current.userData.converged = converged;
@@ -298,77 +321,114 @@ export function MoleculeModel(props: MoleculeModelProps) {
   };
 
   /**
-   * Dragging a bonded atom: every candidate angle gives a position for that atom; the angle whose
-   * on-screen position is nearest to the finger wins. Works from any camera direction and for
-   * every shape family. Atoms that do not move in the family (e.g. axial ones) just rotate the view.
+   * Bending by touch or mouse. A press near an atom that moves with the angle grabs it (a
+   * fingertip-sized circle on screen, so small atoms such as H are easy to catch); a press anywhere
+   * else turns the view as usual. While dragging, every candidate angle gives a position for that
+   * atom and the angle whose on-screen position is nearest the finger wins, so it works from any
+   * viewpoint. Listens on window in the capture phase, before the orbit controls, so they can be
+   * paused for the drag.
    */
-  const onAtomDown = (i: number) => (e: ThreeEvent<PointerEvent>) => {
-    bent.current = false;
-    if (!bend || !bend.movable.includes(i)) return;
-    e.stopPropagation();
-    const thetas: number[] = [];
-    for (let th = bend.min; th <= bend.max + 1e-9; th += bend.step) thetas.push(Math.round(th * 100) / 100);
-    const cands = thetas.map((th) => ({ th, pos: toV(bend.positionsFor(th)[i]) }));
+  radiiRef.current = radii;
+  const bendActive = !!bend;
+  useEffect(() => {
+    if (!bendActive) return;
     const el = gl.domElement;
-    const rect0 = el.getBoundingClientRect();
-    const screen = (v: THREE.Vector3, rect: DOMRect) => {
-      const p = tmpA.copy(v).project(camera);
+    const toScreen = (v: THREE.Vector3, rect: DOMRect, cam: THREE.Camera): [number, number] => {
+      const p = tmpA.copy(v).project(cam);
       return [((p.x + 1) / 2) * rect.width, ((1 - p.y) / 2) * rect.height];
     };
-    // Start from the angle shown now, and keep the point where the atom was grabbed under the finger.
-    const atomNow = current.current[i];
-    let last = cands.reduce((b, c) => (c.pos.distanceToSquared(atomNow) < b.pos.distanceToSquared(atomNow) ? c : b)).th;
-    const [ax, ay] = screen(atomNow, rect0);
-    const offX = e.nativeEvent.clientX - rect0.left - ax;
-    const offY = e.nativeEvent.clientY - rect0.top - ay;
-    const id = e.pointerId;
-    const orbit = controls as unknown as { enabled: boolean } | null;
-    if (orbit) orbit.enabled = false;
-    dragging.current = true;
-    try {
-      el.setPointerCapture(id);
-    } catch {
-      // not an active pointer (synthetic event): window listeners still follow it
-    }
-    const pick = (ev: PointerEvent) => {
-      if (ev.pointerId !== id) return;
+    const startBend = (i: number, down: PointerEvent, rect0: DOMRect) => {
+      const b = bendRef.current!;
+      const { camera: cam, controls } = getThree();
+      const thetas: number[] = [];
+      for (let th = b.min; th <= b.max + 1e-9; th += b.step) thetas.push(Math.round(th * 100) / 100);
+      const cands = thetas.map((th) => ({ th, pos: toV(b.positionsFor(th)[i]) }));
+      // Start from the angle shown now, and keep the point where the atom was grabbed under the finger.
+      const atomNow = current.current[i];
+      let last = cands.reduce((m, c) => (c.pos.distanceToSquared(atomNow) < m.pos.distanceToSquared(atomNow) ? c : m)).th;
+      const [ax, ay] = toScreen(atomNow, rect0, cam);
+      const offX = down.clientX - rect0.left - ax;
+      const offY = down.clientY - rect0.top - ay;
+      const id = down.pointerId;
+      const orbit = controls as unknown as { enabled: boolean } | null;
+      if (orbit) orbit.enabled = false;
+      dragging.current = true;
+      setHovered(i);
+      b.onGrab?.();
+      try {
+        el.setPointerCapture(id);
+      } catch {
+        // not an active pointer (synthetic event): the window listeners still follow it
+      }
+      const pick = (ev: PointerEvent) => {
+        if (ev.pointerId !== id) return;
+        const rect = el.getBoundingClientRect();
+        const px = ev.clientX - rect.left - offX;
+        const py = ev.clientY - rect.top - offY;
+        let best = last;
+        let bestD = Infinity;
+        for (const c of cands) {
+          const [sx, sy] = toScreen(c.pos, rect, cam);
+          const d = (sx - px) ** 2 + (sy - py) ** 2;
+          if (d < bestD) {
+            bestD = d;
+            best = c.th;
+          }
+        }
+        if (best !== last) {
+          bent.current = true;
+          last = best;
+          b.onChange(best);
+        }
+      };
+      let done = false;
+      const end = (ev: PointerEvent) => {
+        if (done || ev.pointerId !== id) return;
+        done = true;
+        window.removeEventListener('pointermove', pick, true);
+        window.removeEventListener('pointerup', end, true);
+        window.removeEventListener('pointercancel', end, true);
+        el.removeEventListener('lostpointercapture', end);
+        dragging.current = false;
+        if (orbit) orbit.enabled = true;
+        setHovered(null);
+        document.body.style.cursor = '';
+      };
+      window.addEventListener('pointermove', pick, true);
+      window.addEventListener('pointerup', end, true);
+      window.addEventListener('pointercancel', end, true);
+      el.addEventListener('lostpointercapture', end);
+      document.body.style.cursor = 'grabbing';
+    };
+    const onDown = (ev: PointerEvent) => {
+      if (ev.target !== el) return;
+      bent.current = false;
+      const b = bendRef.current;
+      if (!b || dragging.current || (ev.pointerType === 'mouse' && ev.button !== 0)) return;
+      const cam = getThree().camera;
       const rect = el.getBoundingClientRect();
-      const px = ev.clientX - rect.left - offX;
-      const py = ev.clientY - rect.top - offY;
-      let best = last;
-      let bestD = Infinity;
-      for (const c of cands) {
-        const [sx, sy] = screen(c.pos, rect);
-        const d = (sx - px) ** 2 + (sy - py) ** 2;
-        if (d < bestD) {
-          bestD = d;
-          best = c.th;
+      const px = ev.clientX - rect.left;
+      const py = ev.clientY - rect.top;
+      const right = tmpB.set(1, 0, 0).applyQuaternion(cam.quaternion);
+      let grab = -1;
+      let nearest = Infinity;
+      for (const i of b.movable) {
+        const c = current.current[i];
+        if (!c) continue;
+        const [sx, sy] = toScreen(c, rect, cam);
+        const [rx, ry] = toScreen(tmpC.copy(c).addScaledVector(right, radiiRef.current[i] ?? 0.3), rect, cam);
+        const reach = Math.max(ev.pointerType === 'mouse' ? 20 : 44, Math.hypot(rx - sx, ry - sy) + 10);
+        const d = Math.hypot(sx - px, sy - py);
+        if (d <= reach && d < nearest) {
+          nearest = d;
+          grab = i;
         }
       }
-      if (best !== last) {
-        bent.current = true;
-        last = best;
-        bend.onChange(best);
-      }
+      if (grab >= 0) startBend(grab, ev, rect);
     };
-    let done = false;
-    const end = (ev: PointerEvent) => {
-      if (done || ev.pointerId !== id) return;
-      done = true;
-      window.removeEventListener('pointermove', pick, true);
-      window.removeEventListener('pointerup', end, true);
-      window.removeEventListener('pointercancel', end, true);
-      el.removeEventListener('lostpointercapture', end);
-      dragging.current = false;
-      if (orbit) orbit.enabled = true;
-      document.body.style.cursor = '';
-    };
-    window.addEventListener('pointermove', pick, true);
-    window.addEventListener('pointerup', end, true);
-    window.addEventListener('pointercancel', end, true);
-    el.addEventListener('lostpointercapture', end);
-    document.body.style.cursor = 'grabbing';
-  };
+    window.addEventListener('pointerdown', onDown, true);
+    return () => window.removeEventListener('pointerdown', onDown, true);
+  }, [bendActive, gl, getThree]);
 
   useEffect(() => {
     if (dragging.current) return;
@@ -392,7 +452,6 @@ export function MoleculeModel(props: MoleculeModelProps) {
               scale={r}
               userData={{ atomIndex: i, element: a.element }}
               onClick={onAtomClick(i)}
-              onPointerDown={onAtomDown(i)}
               onPointerOver={(e) => {
                 e.stopPropagation();
                 setHovered(i);
@@ -408,22 +467,6 @@ export function MoleculeModel(props: MoleculeModelProps) {
                 emissiveIntensity={isSel ? 0.55 : hovered === i ? 0.3 : 0}
               />
             </mesh>
-            {bend?.movable.includes(i) && (
-              // Invisible, larger target so a fingertip can grab small atoms such as H.
-              <mesh
-                scale={Math.max(r * 1.9, 0.55)}
-                onClick={onAtomClick(i)}
-                onPointerDown={onAtomDown(i)}
-                onPointerOver={(e) => {
-                  e.stopPropagation();
-                  setHovered(i);
-                }}
-                onPointerOut={() => setHovered((h) => (h === i ? null : h))}
-              >
-                <sphereGeometry args={[1, 16, 12]} />
-                <meshBasicMaterial transparent opacity={0} depthWrite={false} colorWrite={false} />
-              </mesh>
-            )}
             {isSel && (
               <mesh scale={r * 1.22}>
                 <sphereGeometry args={[1, 32, 20]} />
