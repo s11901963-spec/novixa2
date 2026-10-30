@@ -117,7 +117,7 @@ function Header({ route }: { route: Route }) {
           >
             <span aria-hidden>{isDark ? '☀' : '☾'}</span>
           </button>
-          <button type="button" className="rounded-lg border border-line px-2.5 py-1.5 text-sm font-semibold xl:hidden" aria-expanded={menu} aria-controls="mobile-nav" onClick={() => setMenu((m) => !m)}>
+          <button type="button" className="rounded-lg border border-line px-2.5 py-1.5 text-sm font-semibold xl:hidden" aria-expanded={menu} aria-controls="mobile-nav" onClick={() => setMenu((m) => !m)} data-testid="menu-toggle">
             {t('nav.menu')}
           </button>
         </div>
@@ -125,7 +125,7 @@ function Header({ route }: { route: Route }) {
       {menu && (
         <nav id="mobile-nav" aria-label={t('nav.menu')} className="gutter grid grid-cols-2 gap-1 border-t border-line bg-surface pb-3 pt-2 sm:grid-cols-4 xl:hidden">
           {NAV.map((r) => (
-            <a key={r} href={`#${r}`} aria-current={route === r ? 'page' : undefined} className={`rounded-lg px-3 py-2 text-sm font-medium ${route === r ? 'bg-accent-soft text-accent' : 'text-fg hover:bg-surface-2'}`}>
+            <a key={r} href={`#${r}`} aria-current={route === r ? 'page' : undefined} className={`rounded-lg px-3 py-2 text-sm font-medium ${route === r ? 'bg-accent-soft text-accent' : 'text-fg hover:bg-surface-2'}`} data-testid={`mnav-${r}`}>
               {t(`nav.${r}`)}
             </a>
           ))}

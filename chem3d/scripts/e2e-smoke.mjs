@@ -408,6 +408,40 @@ try {
   await page.click('[data-testid=lang-toggle]');
   check((await page.evaluate(() => document.documentElement.dir)) === 'rtl', 'Arabic switches back to right-to-left');
 
+  console.log('14. Menu links stay inside the app, even when a viewer adds a <base> (htmlpreview.github.io does)');
+  const addBase = (pg) =>
+    pg.evaluate(() => {
+      const b = document.createElement('base');
+      b.href = 'https://raw.example.org/repo/docs/index.html';
+      document.head.prepend(b);
+    });
+  await page.goto(`${base}#lab`, { waitUntil: 'networkidle' });
+  await page.waitForSelector('[data-testid=molecule-viewer]');
+  const doc = page.url().split('#')[0];
+  await addBase(page);
+  const visited = [];
+  for (const r of ['challenges', 'library', 'electrons', 'predict', 'history', 'references', 'preferences', 'lab']) {
+    await page.click(`[data-testid=nav-${r}]`);
+    await page.waitForFunction((h) => location.hash === h, `#${r}`, { timeout: 5000 }).catch(() => {});
+    if (page.url() === `${doc}#${r}`) visited.push(r);
+  }
+  check(visited.length === 8, `every menu link stays in the app with a foreign <base> (${visited.join(', ')})`);
+  await page.click('[data-testid=nav-challenges]');
+  check(await page.locator('[data-testid=start-level-1]').isVisible({ timeout: 10000 }).catch(() => false), 'the challenges page opens (no page source shown)');
+  await page.click('footer a[href="#references"]');
+  check(page.url() === `${doc}#references`, 'the footer link stays in the app too');
+  const phone2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const tp2 = await phone2.newPage();
+  tp2.on('pageerror', (e) => errors.push(e.message));
+  await tp2.goto(`${base}#lab`, { waitUntil: 'networkidle' });
+  await tp2.waitForSelector('[data-testid=molecule-viewer]');
+  await addBase(tp2);
+  await tp2.tap('[data-testid=menu-toggle]');
+  await tp2.tap('[data-testid=mnav-challenges]');
+  await tp2.waitForSelector('[data-testid=start-level-1]', { timeout: 10000 }).catch(() => {});
+  check(tp2.url() === `${doc}#challenges` && (await tp2.isVisible('[data-testid=start-level-1]')), 'phone: «التحديات» in the menu opens the challenges inside the app');
+  await phone2.close();
+
   check(errors.length === 0, `no page errors${errors.length ? `: ${errors.slice(0, 3).join(' | ')}` : ''}`);
 } catch (e) {
   failures.push(String(e));
