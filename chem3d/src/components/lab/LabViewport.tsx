@@ -13,6 +13,7 @@ import { shortCitation } from '../ui/RefCite';
 import { SCREEN_COLORS } from '../viewer/constants';
 import { LewisDiagram } from '../viewer/LewisDiagram';
 import type { BendConfig } from '../viewer/MoleculeModel';
+import { AngleDemo } from './AngleDemo';
 import { MoleculeViewer } from '../viewer/MoleculeViewer';
 import { useAngleChallenge } from './useAngleChallenge';
 import type { LabModel } from './useLabModel';
@@ -56,7 +57,12 @@ export function LabViewport({ model }: { model: LabModel }) {
   const setTab = useLab((s) => s.setTab);
   // Someone touching the model in another tab is pointed to the tab where touch changes the angle.
   const [tabNudge, setTabNudge] = useState(false);
-  const nudgedOnce = useRef(false);
+  const nudgedAt = useRef(0);
+  // "Show me how" on the model, and the screen position of atoms it needs.
+  const [demoOn, setDemoOn] = useState(false);
+  const probe = useRef<((atom: number) => { x: number; y: number } | null) | null>(null);
+  const minusBtn = useRef<HTMLButtonElement>(null);
+  const plusBtn = useRef<HTMLButtonElement>(null);
   const angleLive = useSettings((s) => s.angleLive);
   const challenge = useAngleChallenge(model);
   const [bentOnce, setBentOnce] = useState(false);
@@ -87,6 +93,7 @@ export function LabViewport({ model }: { model: LabModel }) {
         setBentOnce(true);
       },
       onGrab: () => buzz(12),
+      probe,
     };
     return { config, atom: movable.length ? analysis.spec.ligands[movable[0] - 1] : null };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -142,12 +149,26 @@ export function LabViewport({ model }: { model: LabModel }) {
         ref={stage}
         className={`relative isolate flex-1 lg:min-h-0 ${tab === 'angle' ? 'min-h-[46vh]' : tab === 'practice' ? 'min-h-[42vh]' : 'min-h-[50vh]'}`}
         onPointerDownCapture={(e) => {
-          if (tab === 'angle' || nudgedOnce.current || !ex || viewMode === 'lewis' || whyOpen || (e.target as HTMLElement).tagName !== 'CANVAS') return;
-          nudgedOnce.current = true;
+          if (tab === 'angle' || Date.now() - nudgedAt.current < 20000 || !ex || viewMode === 'lewis' || whyOpen || (e.target as HTMLElement).tagName !== 'CANVAS') return;
+          nudgedAt.current = Date.now();
           setTabNudge(true);
           window.setTimeout(() => setTabNudge(false), 6000);
         }}
       >
+        {demoOn && bending && bendInfo && challenge && (
+          <AngleDemo
+            stage={stage}
+            probe={probe}
+            atoms={bendInfo.config.movable}
+            atomName={bendInfo.atom ?? ''}
+            min={bendInfo.config.min}
+            max={bendInfo.config.max}
+            target={challenge.goal}
+            minus={minusBtn}
+            plus={plusBtn}
+            onDone={() => setDemoOn(false)}
+          />
+        )}
         {tabNudge && tab !== 'angle' && (
           <div className="pointer-events-none absolute inset-x-0 top-14 z-30 flex justify-center px-3">
             <button
@@ -207,6 +228,7 @@ export function LabViewport({ model }: { model: LabModel }) {
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-screen-line bg-screen-2/90 text-xl font-bold text-screen-fg shadow-lg select-none active:scale-95 active:bg-white/25 pointer-coarse:h-11 pointer-coarse:w-11"
                   aria-label={t('angle.nudge.down')}
                   title={t('angle.nudge.down')}
+                  ref={minusBtn}
                   data-testid="angle-live-minus"
                   {...repeat(() => nudge(-0.5))}
                 >
@@ -230,6 +252,7 @@ export function LabViewport({ model }: { model: LabModel }) {
                   className="flex h-9 w-9 items-center justify-center rounded-full border border-screen-line bg-screen-2/90 text-xl font-bold text-screen-fg shadow-lg select-none active:scale-95 active:bg-white/25 pointer-coarse:h-11 pointer-coarse:w-11"
                   aria-label={t('angle.nudge.up')}
                   title={t('angle.nudge.up')}
+                  ref={plusBtn}
                   data-testid="angle-live-plus"
                   {...repeat(() => nudge(0.5))}
                 >
@@ -241,6 +264,16 @@ export function LabViewport({ model }: { model: LabModel }) {
                   <span aria-hidden>👆 </span>
                   {t('angle.dragHint', { atom: bendInfo.atom })}
                 </span>
+              )}
+              {!bentOnce && bendInfo?.atom && (
+                <button
+                  type="button"
+                  className="pointer-events-auto rounded-full bg-accent px-3 py-1 text-xs font-bold text-accent-fg shadow-lg pointer-coarse:min-h-10 pointer-coarse:px-4 pointer-coarse:text-sm"
+                  onClick={() => setDemoOn(true)}
+                  data-testid="angle-demo-start"
+                >
+                  {t('angle.demo.button')}
+                </button>
               )}
             </div>
           ) : (
@@ -380,6 +413,37 @@ export function LabViewport({ model }: { model: LabModel }) {
 
       {/* toolbar under the view */}
       <div className="flex flex-col gap-1.5 border-t border-screen-line bg-screen-2/60 p-2.5">
+        {bending && ex && challenge && (
+          // The simplest way on a phone: a slider right under the model.
+          <label className="flex items-center gap-2.5 text-sm text-screen-fg">
+            <span className="shrink-0 font-semibold">{t('angle.slider')}</span>
+            <input
+              type="range"
+              min={ex.min}
+              max={ex.max}
+              step={0.5}
+              value={challenge.value}
+              onChange={(e) => {
+                setAngleTry(Number(e.target.value));
+                setBentOnce(true);
+              }}
+              className="h-8 min-w-0 flex-1 cursor-pointer accent-[#ffc44d] pointer-coarse:h-11"
+              aria-valuetext={`${challenge.value}°`}
+              data-testid="angle-slider"
+            />
+            <bdi dir="ltr" className="w-14 shrink-0 text-center font-mono font-semibold tabular">
+              {challenge.value.toFixed(1)}°
+            </bdi>
+            <button
+              type="button"
+              className="shrink-0 rounded-lg border border-accent/60 bg-accent/25 px-2.5 py-1 text-[13px] font-semibold text-screen-fg hover:bg-accent/40 pointer-coarse:min-h-10"
+              onClick={() => setDemoOn(true)}
+              data-testid="angle-demo-start-toolbar"
+            >
+              {t('angle.demo.button')}
+            </button>
+          </label>
+        )}
         <div className="flex flex-wrap items-center gap-1.5">
           {viewMode !== 'lewis' && (
             <>

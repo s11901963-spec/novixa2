@@ -140,15 +140,6 @@ try {
   const live = () => page.$eval('[data-testid=angle-live]', (el) => ({ live: el.dataset.live, value: Number(el.dataset.value) }));
   const arcLabel = () => page.$eval('[data-label-key="angle-0"]', (el) => el.className);
   check((await live()).live === 'bad' && (await page.isVisible('[data-testid=angle-drag-hint]')), 'the model shows ❌ for 120° and invites the student to drag an atom');
-  await rendered();
-  const selectedBefore = await page.$$eval('.atom-label.is-selected', (els) => els.length);
-  const h1 = await page.locator('[data-label-key="atom-1"]').boundingBox();
-  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2);
-  await page.mouse.down();
-  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2 + 45, { steps: 9 });
-  await page.mouse.up();
-  const bentTo = Number(await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value));
-  check(bentTo < 118 && (await live()).value === bentTo, `dragging an H atom in the 3D model closes the umbrella (120° → ${bentTo}°), the protractor follows`);
   const shows = (deg) =>
     page.waitForFunction(
       (a) => {
@@ -158,6 +149,17 @@ try {
       deg,
       { timeout: 15000 },
     );
+  // The model glides to the flat start shape first; grab the atom where it ends up.
+  await shows(120);
+  await rendered();
+  const selectedBefore = await page.$$eval('.atom-label.is-selected', (els) => els.length);
+  const h1 = await page.locator('[data-label-key="atom-1"]').boundingBox();
+  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2);
+  await page.mouse.down();
+  await page.mouse.move(h1.x + h1.width / 2, h1.y + h1.height / 2 + 45, { steps: 9 });
+  await page.mouse.up();
+  const bentTo = Number(await page.$eval('[data-testid=angle-try]', (el) => el.dataset.value));
+  check(bentTo < 118 && (await live()).value === bentTo, `dragging an H atom in the 3D model closes the umbrella (120° → ${bentTo}°), the protractor follows`);
   const tryAngle = async (deg) => {
     await page.click(`[data-testid="angle-try-preset-${deg}"]`);
     await shows(deg);
@@ -372,6 +374,54 @@ try {
   await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
   const a3 = (await liveNow()).value;
   check(a3 <= a2 - 2, `phone: holding − on the model keeps closing the angle (${a2}° → ${a3}°)`);
+  // Two fingers on two atoms open or close the angle; the view does not zoom.
+  await tp.tap('[data-testid=chip-h2o]');
+  await tp.waitForTimeout(1500);
+  await tp.waitForFunction(() => {
+    const d = document.querySelector('[data-testid=molecule-viewer]')?.dataset;
+    return !!d && d.renderedFor === d.sceneKey && d.settled === 'true';
+  });
+  const w0 = await liveNow();
+  const d0 = (await cam()).dist;
+  const f1 = await tp.locator('[data-label-key="atom-1"]').boundingBox();
+  const f2 = await tp.locator('[data-label-key="atom-2"]').boundingBox();
+  const q1 = { x: f1.x + f1.width / 2, y: f1.y + f1.height / 2 };
+  const q2 = { x: f2.x + f2.width / 2, y: f2.y + f2.height / 2 };
+  const mid = { x: (q1.x + q2.x) / 2, y: (q1.y + q2.y) / 2 + 40 };
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...q1, id: 1 }] });
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchStart', touchPoints: [{ ...q1, id: 1 }, { ...q2, id: 2 }] });
+  for (let k = 1; k <= 12; k++) {
+    const f = (k / 12) * 0.55;
+    await touch.send('Input.dispatchTouchEvent', {
+      type: 'touchMove',
+      touchPoints: [
+        { x: q1.x + (mid.x - q1.x) * f, y: q1.y + (mid.y - q1.y) * f, id: 1 },
+        { x: q2.x + (mid.x - q2.x) * f, y: q2.y + (mid.y - q2.y) * f, id: 2 },
+      ],
+    });
+  }
+  await touch.send('Input.dispatchTouchEvent', { type: 'touchEnd', touchPoints: [] });
+  await tp.waitForTimeout(600);
+  const w1 = await liveNow();
+  const d1 = (await cam()).dist;
+  check(w1.value < w0.value - 20 && Math.abs(d1 - d0) < 0.5, `phone: two fingers on the two H atoms of H₂O close the angle (${w0.value}° → ${w1.value}°) without zooming (${d0} → ${d1})`);
+  await tp.locator('[data-testid=angle-slider]').fill('130');
+  check((await liveNow()).value === 130, 'phone: the slider under the model sets the angle (130°)');
+  // "Show me how": a hand drags an atom, uses two fingers, taps − and +, then puts the angle back.
+  await tp.tap('[data-testid=angle-demo-start-toolbar]');
+  await tp.waitForSelector('[data-testid=angle-demo]');
+  const demoAngles = new Set();
+  const steps = new Set();
+  let maxHands = 0;
+  for (let i = 0; i < 80 && (await tp.$('[data-testid=angle-demo]')); i++) {
+    demoAngles.add((await liveNow()).value);
+    maxHands = Math.max(maxHands, await tp.locator('[data-testid=angle-demo-hand]').count());
+    const cap = await tp.locator('[data-testid=angle-demo-caption]').textContent().catch(() => '');
+    if (cap) steps.add(cap.trim().slice(0, 2));
+    await tp.waitForTimeout(150);
+  }
+  const restored = (await liveNow()).value;
+  check(steps.size === 4 && maxHands === 2 && demoAngles.size > 4 && restored === 130, `phone: «وريني كيف» shows 4 steps with one and two hands, really moves the model (${demoAngles.size} angles), then puts it back (${restored}°)`);
   await tp.screenshot({ path: `${out}/touch-bend.png`, fullPage: true });
 
   await tp.goto(`${base}#predict`, { waitUntil: 'networkidle' });
@@ -427,7 +477,8 @@ try {
   }
   check(visited.length === 8, `every menu link stays in the app with a foreign <base> (${visited.join(', ')})`);
   await page.click('[data-testid=nav-challenges]');
-  check(await page.locator('[data-testid=start-level-1]').isVisible({ timeout: 10000 }).catch(() => false), 'the challenges page opens (no page source shown)');
+  const challengesShown = await page.waitForSelector('[data-testid=start-level-1]', { state: 'visible', timeout: 10000 }).then(() => true, () => false);
+  check(challengesShown && page.url() === `${doc}#challenges`, 'the challenges page opens (no page source shown)');
   await page.click('footer a[href="#references"]');
   check(page.url() === `${doc}#references`, 'the footer link stays in the app too');
   const phone2 = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
