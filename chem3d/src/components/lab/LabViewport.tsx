@@ -7,6 +7,7 @@ import { useLab, type ViewMode } from '../../state/lab';
 import { useSettings, type DisplayToggles } from '../../state/settings';
 import { Segmented, ToggleChip } from '../ui/controls';
 import { DraggablePanel } from '../ui/DraggablePanel';
+import { useCue } from '../ui/useCue';
 import { useRepeat } from '../ui/useRepeat';
 import { Axe, Formula, formulaText, Ltr } from '../ui/Formula';
 import { shortCitation } from '../ui/RefCite';
@@ -107,10 +108,19 @@ export function LabViewport({ model }: { model: LabModel }) {
     setBentOnce(true);
   };
   const live = bending && challenge ? (angleLive ? (challenge.hit ? 'ok' : 'bad') : 'off') : null;
-  // A short buzz on phones the moment the angle becomes right.
+  // The moment the angle becomes right: a short buzz on phones, the chime and «إجابة صحيحة»
+  // (at most every few seconds, so moving around the right value does not keep repeating it).
+  const play = useCue();
   const wasLive = useRef(live);
+  const saidAt = useRef(0);
   useEffect(() => {
-    if (live === 'ok' && wasLive.current === 'bad') buzz(25);
+    if (live === 'ok' && wasLive.current === 'bad') {
+      buzz(25);
+      if (!demoOn && Date.now() - saidAt.current > 4000) {
+        saidAt.current = Date.now();
+        play('correct');
+      }
+    }
     wasLive.current = live;
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [live]);

@@ -20,6 +20,7 @@ import { useHistory } from '../../state/history';
 import { useLab } from '../../state/lab';
 import { Badge, Button } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
+import { useCue } from '../ui/useCue';
 import { Axe, Deg, Formula, formulaText, hybridizationText, Ltr } from '../ui/Formula';
 import { NumberPad } from '../ui/NumberPad';
 import { ShapeIcon } from '../ui/ShapeIcon';
@@ -313,6 +314,7 @@ function QuestionInput({ q, state, onDraft, onCheck, onReveal, central }: { q: P
 
 function Practice({ model }: { model: LabModel }) {
   const t = useT();
+  const play = useCue();
   const revealShape = useLab((s) => s.revealShape);
   const restart = useLab((s) => s.restartPractice);
   const addPractice = useHistory((s) => s.addPractice);
@@ -377,10 +379,13 @@ function Practice({ model }: { model: LabModel }) {
               central={analysis.spec.central}
               onDraft={(v) => update(q.id, { draft: v })}
               onCheck={() => check(q)}
-              onReveal={() => update(q.id, { status: 'revealed', firstAnswer: st.firstAnswer })}
+              onReveal={() => {
+                play('attention', false);
+                update(q.id, { status: 'revealed', firstAnswer: st.firstAnswer });
+              }}
             />
             {st.lastDiag && !st.lastDiag.correct && (
-              <Feedback correct={false} message={diagnosisMessage(t, st.lastDiag, analysis)}>
+              <Feedback key={st.attempts} correct={false} message={diagnosisMessage(t, st.lastDiag, analysis)}>
                 <div className="mt-1.5 text-xs text-muted">{t('practice.tryAgainHint')}</div>
               </Feedback>
             )}

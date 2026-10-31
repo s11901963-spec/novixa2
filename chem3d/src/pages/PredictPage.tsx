@@ -7,6 +7,7 @@ import type { AngleSignatureId, ElectronGeometryId, MolecularGeometryId } from '
 import { diagnosisMessage } from '../components/lab/messages';
 import { Button, Card } from '../components/ui/controls';
 import { Feedback } from '../components/ui/Feedback';
+import { useCue } from '../components/ui/useCue';
 import { Deg, Formula, Ltr } from '../components/ui/Formula';
 import { AngleDial } from '../components/ui/AngleDial';
 import { RefCite } from '../components/ui/RefCite';
@@ -53,6 +54,7 @@ function pickRandom(includeIons: boolean, avoid?: string) {
 
 export function PredictPage() {
   const t = useT();
+  const play = useCue();
   const lang = useLang();
   const addPrediction = useHistory((s) => s.addPrediction);
   const [includeIons, setIncludeIons] = useState(false);
@@ -100,6 +102,7 @@ export function PredictPage() {
     setRevealed(true);
     const r = { eg: diagnoseElectronGeometry(eg, a), mg: diagnoseMolecularGeometry(mg, a), angle: diagnoseAngle(angle, a) };
     const score = [r.eg, r.mg, r.angle].filter((d) => d.correct).length * 10;
+    play(score === 30 ? 'correct' : 'wrong', score === 30 ? undefined : t('pr.sound.partial', { n: score / 10 }));
     setTotal((x) => x + score);
     setStreak((s) => (score === 30 ? s + 1 : 0));
     addPrediction({ formula: m.formula, score, egCorrect: r.eg.correct, mgCorrect: r.mg.correct, angleCorrect: r.angle.correct });
@@ -174,7 +177,7 @@ export function PredictPage() {
           <h2 className="text-lg font-bold">{t('pr.roundScore', { n: roundScore })}</h2>
           <div className="grid gap-3 md:grid-cols-3">
             {(['eg', 'mg', 'angle'] as const).map((k) => (
-              <Feedback key={k} correct={results[k].correct} message={results[k].correct ? t(k === 'eg' ? 'diag.correct.electron-geometry' : k === 'mg' ? 'diag.correct.molecular-geometry' : 'diag.correct.bond-angle') : diagnosisMessage(t, results[k], a)} />
+              <Feedback key={k} silent correct={results[k].correct} message={results[k].correct ? t(k === 'eg' ? 'diag.correct.electron-geometry' : k === 'mg' ? 'diag.correct.molecular-geometry' : 'diag.correct.bond-angle') : diagnosisMessage(t, results[k], a)} />
             ))}
           </div>
           <div className="overflow-x-auto rounded-xl border border-line">

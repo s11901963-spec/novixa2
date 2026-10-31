@@ -33,6 +33,10 @@ interface SettingsState {
   viewButtons: boolean;
   /** Colour the angle green/red on the model while it is being changed. */
   angleLive: boolean;
+  /** Tones for right / wrong / attention. */
+  sound: boolean;
+  /** The verdict spoken by the device's voice ("إجابة صحيحة"). */
+  voice: boolean;
   setLang: (l: Lang) => void;
   setTheme: (t: ThemePref) => void;
   setLighting: (l: Lighting) => void;
@@ -43,6 +47,8 @@ interface SettingsState {
   setHaptics: (v: boolean) => void;
   setViewButtons: (v: boolean) => void;
   setAngleLive: (v: boolean) => void;
+  setSound: (v: boolean) => void;
+  setVoice: (v: boolean) => void;
   toggle: (key: keyof DisplayToggles) => void;
   reset: () => void;
 }
@@ -70,6 +76,8 @@ const defaults = {
   haptics: true,
   viewButtons: true,
   angleLive: true,
+  sound: true,
+  voice: true,
 };
 
 export const useSettings = create<SettingsState>()(
@@ -86,6 +94,8 @@ export const useSettings = create<SettingsState>()(
       setHaptics: (haptics) => set({ haptics }),
       setViewButtons: (viewButtons) => set({ viewButtons }),
       setAngleLive: (angleLive) => set({ angleLive }),
+      setSound: (sound) => set({ sound }),
+      setVoice: (voice) => set({ voice }),
       toggle: (key) => set((s) => ({ display: { ...s.display, [key]: !s.display[key] } })),
       reset: () => set({ ...defaults, display: { ...DEFAULT_DISPLAY } }),
     }),
@@ -93,7 +103,7 @@ export const useSettings = create<SettingsState>()(
       name: 'chem3d.settings',
       version: 1,
       storage: safeStorage,
-      partialize: ({ lang, theme, lighting, renderStyle, labelMode, reduceMotion, display, textSize, haptics, viewButtons, angleLive }) => ({
+      partialize: ({ lang, theme, lighting, renderStyle, labelMode, reduceMotion, display, textSize, haptics, viewButtons, angleLive, sound, voice }) => ({
         lang,
         theme,
         lighting,
@@ -105,6 +115,8 @@ export const useSettings = create<SettingsState>()(
         haptics,
         viewButtons,
         angleLive,
+        sound,
+        voice,
       }),
     },
   ),

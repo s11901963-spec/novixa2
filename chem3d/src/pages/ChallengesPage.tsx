@@ -9,6 +9,7 @@ import { OrbitalBoxes } from '../components/electrons/OrbitalBoxes';
 import { diagnosisMessage } from '../components/lab/messages';
 import { Badge, Button, Card, Segmented } from '../components/ui/controls';
 import { Feedback } from '../components/ui/Feedback';
+import { useCue } from '../components/ui/useCue';
 import { RefCite } from '../components/ui/RefCite';
 import { MoleculeViewer } from '../components/viewer/MoleculeViewer';
 import { dataset, getElement } from '../data';
@@ -46,6 +47,7 @@ function MiniViewer({ moleculeId, mystery = false }: { moleculeId: string; myste
 
 function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q: Question; index: number; total: number; state: QState; onUpdate: (s: QState) => void; onNext: () => void; isLast: boolean }) {
   const t = useT();
+  const play = useCue();
   const lang = useLang();
   const [draft, setDraft] = useState<string>('');
   const [multi, setMulti] = useState<string[]>([]);
@@ -197,6 +199,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
               <Button
                 variant="ghost"
                 onClick={() => {
+                  play('attention', false);
                   setShowHint(true);
                   onUpdate({ ...state, hintUsed: true });
                 }}
@@ -213,6 +216,7 @@ function QuestionCard({ q, index, total, state, onUpdate, onNext, isLast }: { q:
       {state.feedback && (
         <div className="mt-4">
           <Feedback
+            key={state.attempts}
             correct={state.feedback.correct}
             message={
               state.feedback.correct ? (

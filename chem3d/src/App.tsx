@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { useT } from './i18n';
 import { navigate, useRoute, type Route } from './router';
 import { useSettings } from './state/settings';
+import { HomePage } from './pages/HomePage';
 import { LabPage } from './pages/LabPage';
 
 const ElectronsPage = lazy(() => import('./pages/ElectronsPage').then((m) => ({ default: m.ElectronsPage })));
@@ -70,13 +71,15 @@ function Header({ route }: { route: Route }) {
   const setLang = useSettings((s) => s.setLang);
   const theme = useSettings((s) => s.theme);
   const setTheme = useSettings((s) => s.setTheme);
+  const sound = useSettings((s) => s.sound);
+  const setSound = useSettings((s) => s.setSound);
   const [menu, setMenu] = useState(false);
   const isDark = theme === 'dark' || (theme === 'system' && systemIsDark());
   useEffect(() => setMenu(false), [route]);
   return (
     <header className="sticky top-0 z-50 border-b border-line bg-surface/95 backdrop-blur" style={{ top: 'env(safe-area-inset-top, 0px)' }}>
       <div className="gutter mx-auto flex h-[var(--header-h)] max-w-[1600px] items-center gap-3">
-        <a href="#lab" className="flex items-center gap-2" onClick={() => navigate('lab')}>
+        <a href="#home" className="flex items-center gap-2" onClick={() => navigate('home')} data-testid="logo-link">
           <Logo />
           <span className="flex flex-col leading-tight">
             <span className="text-base font-bold" style={{ fontFamily: 'var(--font-display)' }} dir="ltr">
@@ -117,6 +120,17 @@ function Header({ route }: { route: Route }) {
           >
             <span aria-hidden>{isDark ? '☀' : '☾'}</span>
           </button>
+          <button
+            type="button"
+            onClick={() => setSound(!sound)}
+            className="rounded-lg border border-line px-2.5 py-1.5 text-sm hover:bg-surface-2"
+            aria-pressed={sound}
+            aria-label={sound ? t('nav.sound.on') : t('nav.sound.off')}
+            title={sound ? t('nav.sound.on') : t('nav.sound.off')}
+            data-testid="sound-toggle"
+          >
+            <span aria-hidden>{sound ? '🔊' : '🔇'}</span>
+          </button>
           <button type="button" className="rounded-lg border border-line px-2.5 py-1.5 text-sm font-semibold xl:hidden" aria-expanded={menu} aria-controls="mobile-nav" onClick={() => setMenu((m) => !m)} data-testid="menu-toggle">
             {t('nav.menu')}
           </button>
@@ -124,7 +138,7 @@ function Header({ route }: { route: Route }) {
       </div>
       {menu && (
         <nav id="mobile-nav" aria-label={t('nav.menu')} className="gutter grid grid-cols-2 gap-1 border-t border-line bg-surface pb-3 pt-2 sm:grid-cols-4 xl:hidden">
-          {NAV.map((r) => (
+          {(['home', ...NAV] as Route[]).map((r) => (
             <a key={r} href={`#${r}`} aria-current={route === r ? 'page' : undefined} className={`rounded-lg px-3 py-2 text-sm font-medium ${route === r ? 'bg-accent-soft text-accent' : 'text-fg hover:bg-surface-2'}`} data-testid={`mnav-${r}`}>
               {t(`nav.${r}`)}
             </a>
@@ -143,9 +157,14 @@ function Footer() {
         <span className="font-semibold text-fg" data-testid="credits">
           {t('app.credits')}
         </span>
-        <a href="#references" className="hover:text-accent">
-          {t('app.footer.data')}
-        </a>
+        <span className="flex gap-4">
+          <a href="#home" className="hover:text-accent" data-testid="footer-home">
+            {t('app.footer.about')}
+          </a>
+          <a href="#references" className="hover:text-accent">
+            {t('app.footer.data')}
+          </a>
+        </span>
       </div>
     </footer>
   );
@@ -156,7 +175,7 @@ export function App() {
   const route = useRoute();
   const t = useT();
   useEffect(() => {
-    document.title = route === 'lab' ? 'Chem3D Lab' : `Chem3D · ${t(`nav.${route}`)}`;
+    document.title = route === 'home' ? `${t('home.title')} · Chem3D` : route === 'lab' ? 'Chem3D Lab' : `Chem3D · ${t(`nav.${route}`)}`;
   }, [route, t]);
   return (
     <div className="flex min-h-dvh flex-col">
@@ -166,6 +185,7 @@ export function App() {
       <Header route={route} />
       <main id="main" tabIndex={-1} className="flex-1 outline-none">
         <Suspense fallback={<div className="gutter py-10 text-muted">{t('common.loading')}</div>}>
+          {route === 'home' && <HomePage />}
           {route === 'lab' && <LabPage />}
           {route === 'electrons' && <ElectronsPage />}
           {route === 'library' && <LibraryPage />}

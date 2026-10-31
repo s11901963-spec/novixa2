@@ -18,6 +18,7 @@ import { useLang, useT } from '../../i18n';
 import { useHistory } from '../../state/history';
 import { Badge, Button, Card } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
+import { useCue } from '../ui/useCue';
 import { RefCite } from '../ui/RefCite';
 import { ConfigKeyboard } from './ConfigKeyboard';
 import { ConfigText } from './ConfigText';
@@ -85,7 +86,7 @@ function TaskCard({
       </div>
       {state.diag && (
         <div data-testid={`ec-feedback-${task}`} data-correct={state.diag.correct} data-code={state.diag.code}>
-          <Feedback correct={state.diag.correct} message={electronMessage(t, state.diag, z, task)} rule={state.diag.correct ? t(`ec.rule.${task}`) : undefined}>
+          <Feedback key={state.attempts} correct={state.diag.correct} message={electronMessage(t, state.diag, z, task)} rule={state.diag.correct ? t(`ec.rule.${task}`) : undefined}>
             <div className="mt-1.5 text-xs text-muted">
               {t('common.sources')}: <RefCite ids={RULE_SOURCES[task]} />
             </div>
@@ -105,6 +106,8 @@ function TaskCard({
 /** Four practice tasks for one element; every answer is checked by chem/electrons. */
 export function ElectronPractice({ z }: { z: number }) {
   const t = useT();
+  const play = useCue();
+  const attention = () => play('attention', false);
   const lang = useLang();
   const addPractice = useHistory((s) => s.addPractice);
   const atom = getAtom(z);
@@ -154,7 +157,10 @@ export function ElectronPractice({ z }: { z: number }) {
           help={t('ec.practice.full.hint')}
           state={st.full}
           onCheck={() => full.trim() && record('full', diagnoseNotation(z, full, 'full'), full)}
-          onReveal={() => setSt((s) => ({ ...s, full: { ...s.full, revealed: true } }))}
+          onReveal={() => {
+            attention();
+            setSt((s) => ({ ...s, full: { ...s.full, revealed: true } }));
+          }}
           onClear={() => {
             setFull('');
             setSt((s) => ({ ...s, full: { ...s.full, diag: null } }));
@@ -189,7 +195,10 @@ export function ElectronPractice({ z }: { z: number }) {
           help={c.core ? t('ec.practice.noble.hint') : t('ec.practice.noble.hintNoCore', { symbol: atom.symbol })}
           state={st.noble}
           onCheck={() => noble.trim() && record('noble', diagnoseNotation(z, noble, 'noble'), noble)}
-          onReveal={() => setSt((s) => ({ ...s, noble: { ...s.noble, revealed: true } }))}
+          onReveal={() => {
+            attention();
+            setSt((s) => ({ ...s, noble: { ...s.noble, revealed: true } }));
+          }}
           onClear={() => {
             setNoble('');
             setSt((s) => ({ ...s, noble: { ...s.noble, diag: null } }));
@@ -223,7 +232,10 @@ export function ElectronPractice({ z }: { z: number }) {
           help={t('ec.practice.boxes.help')}
           state={st.boxes}
           onCheck={() => record('boxes', diagnoseBoxes(z, boxes), boxesText(boxes))}
-          onReveal={() => setSt((s) => ({ ...s, boxes: { ...s.boxes, revealed: true } }))}
+          onReveal={() => {
+            attention();
+            setSt((s) => ({ ...s, boxes: { ...s.boxes, revealed: true } }));
+          }}
           onClear={() => {
             setBoxes(emptyBoxes(boxList));
             setSt((s) => ({ ...s, boxes: { ...s.boxes, diag: null } }));
@@ -249,7 +261,10 @@ export function ElectronPractice({ z }: { z: number }) {
             help={t('ec.practice.dots.help')}
             state={st.dots}
             onCheck={() => record('dots', diagnoseDots(z, sides), sides.join(','))}
-            onReveal={() => setSt((s) => ({ ...s, dots: { ...s.dots, revealed: true } }))}
+            onReveal={() => {
+            attention();
+            setSt((s) => ({ ...s, dots: { ...s.dots, revealed: true } }));
+          }}
             onClear={() => {
               setSides([0, 0, 0, 0]);
               setSt((s) => ({ ...s, dots: { ...s.dots, diag: null } }));

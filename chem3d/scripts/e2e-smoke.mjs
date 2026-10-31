@@ -44,6 +44,12 @@ const check = (cond, msg) => {
 
 const browser = await chromium.launch({ args: ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader'] });
 const page = await browser.newPage({ viewport: { width: 1366, height: 860 } });
+// Feedback sounds announce themselves with a 'chem3d:cue' event (kind and the words spoken).
+await page.addInitScript(() => {
+  window.__cues = [];
+  window.addEventListener('chem3d:cue', (e) => window.__cues.push(e.detail));
+});
+const lastCue = () => page.evaluate(() => window.__cues.at(-1) ?? null);
 const errors = [];
 page.on('pageerror', (e) => errors.push(e.message));
 page.on('console', (m) => m.type() === 'error' && errors.push(m.text()));
@@ -117,9 +123,13 @@ try {
   await page.fill('#practice-valence', '5');
   await page.click('[data-testid=check-valence]');
   check(await page.getByText('❌').first().isVisible(), 'wrong valence count → ❌ with explanation');
+  let heard = await lastCue();
+  check(heard?.kind === 'wrong' && heard.text === 'إجابة غير صحيحة، حاول مرة أخرى', `❌ also sounds: low buzz and «${heard?.text}»`);
   await page.fill('#practice-valence', '8');
   await page.click('[data-testid=check-valence]');
   check(await page.getByText('✅').first().isVisible(), 'correct valence count → ✅');
+  heard = await lastCue();
+  check(heard?.kind === 'correct' && heard.text === 'إجابة صحيحة', `✅ also sounds: chime and «${heard?.text}»`);
   for (const id of ['bonding', 'central-lp', 'steric-number', 'electron-geometry']) await page.click(`[data-testid=reveal-${id}]`);
   await page.click('[data-testid=practice-step-molecular-geometry] [role=radio] >> nth=0');
   await page.click('[data-testid=check-molecular-geometry]');
@@ -458,7 +468,29 @@ try {
   await page.click('[data-testid=lang-toggle]');
   check((await page.evaluate(() => document.documentElement.dir)) === 'rtl', 'Arabic switches back to right-to-left');
 
-  console.log('14. Menu links stay inside the app, even when a viewer adds a <base> (htmlpreview.github.io does)');
+  console.log('14. Cover page (first page) and sound switch');
+  await page.goto(base, { waitUntil: 'networkidle' });
+  await page.waitForSelector('[data-testid=home-page]', { timeout: 10000 });
+  const cover = await page.textContent('[data-testid=home-page]');
+  check(
+    ['مدرسة الفيصلية', 'مشروع الشعبة 201', 'تركيب الجزيئات', 'تصميم وتنفيذ الطالب', 'عوض الحربي', 'تحت إشراف المعلم الفاضل', 'الأستاذ أشرف صلاح'].every((x) => cover.includes(x)),
+    'the site opens on the cover: school, section 201, «تركيب الجزيئات», student and supervisor',
+  );
+  await page.click('[data-testid=home-start]');
+  await page.waitForSelector('[data-testid=molecule-viewer]');
+  check(page.url().endsWith('#lab') && (await page.getAttribute('[data-testid=tab-practice]', 'aria-selected')) === 'true', '«ابدأ المشروع» opens the lab on «حل بنفسك»');
+  await page.click('[data-testid=sound-toggle]');
+  const quietFrom = await page.evaluate(() => window.__cues.length);
+  await page.fill('#practice-valence', '3');
+  await page.click('[data-testid=check-valence]');
+  await page.waitForTimeout(300);
+  check((await page.evaluate(() => window.__cues.length)) === quietFrom && (await page.textContent('[data-testid=sound-toggle]')).includes('🔇'), '🔇 in the header mutes every sound');
+  await page.click('[data-testid=sound-toggle]');
+  await page.click('[data-testid=logo-link]');
+  const coverBack = await page.waitForSelector('[data-testid=home-page]', { timeout: 5000 }).then(() => true, () => false);
+  check(page.url().endsWith('#home') && coverBack, 'the logo goes back to the cover');
+
+  console.log('15. Menu links stay inside the app, even when a viewer adds a <base> (htmlpreview.github.io does)');
   const addBase = (pg) =>
     pg.evaluate(() => {
       const b = document.createElement('base');

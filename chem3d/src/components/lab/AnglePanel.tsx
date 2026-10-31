@@ -7,6 +7,7 @@ import { useSettings } from '../../state/settings';
 import { AngleDial } from '../ui/AngleDial';
 import { Button } from '../ui/controls';
 import { Feedback } from '../ui/Feedback';
+import { useCue } from '../ui/useCue';
 import { Deg, Formula, formulaText, Ltr } from '../ui/Formula';
 import { RefCite } from '../ui/RefCite';
 import { useAngleChallenge } from './useAngleChallenge';
@@ -32,6 +33,7 @@ export function AnglePanel({ model }: { model: LabModel }) {
   const setAngleTry = useLab((s) => s.setAngleTry);
   const addPractice = useHistory((s) => s.addPractice);
   const angleLive = useSettings((s) => s.angleLive);
+  const play = useCue();
   const setAngleLive = useSettings((s) => s.setAngleLive);
   const ex = model.explorer;
   const challenge = useAngleChallenge(model);
@@ -63,6 +65,13 @@ export function AnglePanel({ model }: { model: LabModel }) {
     setAttempts(n);
     setVerdict(j);
     addPractice({ formula, step: 'angle-try', answer: `${value}°`, correct: j.correct, code: j.code });
+    if (j.correct) play('correct');
+    else if (n < MAX_ATTEMPTS) play('wrong');
+    else {
+      // Third wrong try: the buzz, then the alert as the model moves to the right angle.
+      play('wrong', false);
+      window.setTimeout(() => play('attention', t('angle.sound.revealed')), 700);
+    }
     if (!j.correct && n >= MAX_ATTEMPTS) {
       setRevealed(true);
       setAngleTry(fmt(goal));
@@ -107,6 +116,7 @@ export function AnglePanel({ model }: { model: LabModel }) {
           <Button
             variant="ghost"
             onClick={() => {
+              play('attention', t('angle.sound.revealed'));
               setRevealed(true);
               setAngleTry(fmt(goal));
             }}
@@ -124,6 +134,7 @@ export function AnglePanel({ model }: { model: LabModel }) {
       {shownVerdict && (
         <div data-testid="angle-feedback" data-correct={shownVerdict.correct} data-code={shownVerdict.code}>
           <Feedback
+            silent
             correct={shownVerdict.correct}
             message={shownVerdict.correct ? t('angle.correct', { label, target: target.value !== undefined ? fmt(target.value) : `${fmt(target.range![0])}–${fmt(target.range![1])}`, source: sourceText }) : verdictText(t, shownVerdict, { central, formula, hint: lp ? t('angle.hint.lp') : t('angle.hint.spread') })}
             rule={shownVerdict.correct ? t('angle.rule', { tol: TOLERANCE }) : undefined}

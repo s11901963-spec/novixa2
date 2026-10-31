@@ -1,5 +1,6 @@
 import { Button, Card, Field, Segmented, ToggleChip } from '../components/ui/controls';
 import { useT } from '../i18n';
+import { cue } from '../lib/sound';
 import { useSettings, type DisplayToggles } from '../state/settings';
 
 export function PreferencesPage() {
@@ -94,6 +95,22 @@ export function PreferencesPage() {
               <input type="checkbox" className="h-5 w-5" checked={s.angleLive} onChange={(e) => s.setAngleLive(e.target.checked)} />
               {t('pref.angleLive')}
             </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-5 w-5" checked={s.sound} onChange={(e) => s.setSound(e.target.checked)} data-testid="pref-sound" />
+              {t('pref.sound')}
+            </label>
+            <label className="flex items-center gap-2 text-sm">
+              <input type="checkbox" className="h-5 w-5" checked={s.voice} disabled={!s.sound} onChange={(e) => s.setVoice(e.target.checked)} data-testid="pref-voice" />
+              {t('pref.voice')}
+            </label>
+            <div className="flex flex-wrap gap-2">
+              <Button variant="secondary" onClick={() => cue('correct', { sound: true, voice: s.voice, lang: s.lang })} data-testid="sound-test-correct">
+                {t('pref.soundTest.correct')}
+              </Button>
+              <Button variant="secondary" onClick={() => cue('wrong', { sound: true, voice: s.voice, lang: s.lang })} data-testid="sound-test-wrong">
+                {t('pref.soundTest.wrong')}
+              </Button>
+            </div>
             <label className="flex items-center gap-2 text-sm">
               <input type="checkbox" className="h-5 w-5" checked={s.haptics} onChange={(e) => s.setHaptics(e.target.checked)} />
               {t('pref.haptics')}
