@@ -92,7 +92,7 @@ npm run build && npm run test:e2e                         # لقطات الشا�
 التطبيق موقع ثابت (static) ومساراته من نوع `#lab` و`#library`، فلا يحتاج إعدادات توجيه في الخادم.
 
 - **GitHub Pages من المجلد `docs/`** (الأسهل): الأمر `npm run build:docs` يضع التطبيق كاملًا في ملف واحد `docs/index.html` في جذر المستودع. من إعدادات المستودع: Settings → Pages → Source: Deploy from a branch → اختر الفرع والمجلد `/docs` → Save، فيصبح الرابط `https://<user>.github.io/<repo>/`.
-- **فيديوهات توضيحية** في المجلد `docs/`: `chem3d-project-video.mp4` (جولة في كل أقسام المشروع، 4:39) و`chem3d-angle-demo.mp4` (طريقة تغيير الزاوية باللمس، 1:22).
+- **فيديوهات توضيحية** في المجلد `docs/`: `chem3d-project-video.mp4` (يبدأ بغلاف المشروع ثم جولة في كل أقسامه، بأصوات التصحيح والعبارات المنطوقة، 5:06) و`chem3d-angle-demo.mp4` (طريقة تغيير الزاوية باللمس، 1:22).
 - **رابط فوري دون إعدادات**: لأن المستودع عام، يفتح `docs/index.html` مباشرة عبر `https://htmlpreview.github.io/?https://github.com/<user>/<repo>/blob/<commit>/docs/index.html` (الأمر `build:docs` يحوّل سكربت الصفحة إلى سكربت عادي لأن هذا العارض يعيد تشغيل السكربتات بهذه الطريقة). ويعمل أيضًا `https://rawcdn.githack.com/<user>/<repo>/<commit>/docs/index.html`، لكنه يعرض الآن صفحة تنبيه إنجليزية يُضغط فيها «Open the page» أولًا.
 - **GitHub Pages عبر Actions**: الملف `.github/workflows/chem3d-pages.yml` يبني وينشر عند الدفع إلى `main` (أو يدويًا من تبويب Actions) إذا اخترت Settings → Pages → Source: GitHub Actions.
 - **Netlify / Vercel / Cloudflare Pages**: المجلد الجذري `chem3d`، أمر البناء `npm run build`، مجلد النشر `dist`.
