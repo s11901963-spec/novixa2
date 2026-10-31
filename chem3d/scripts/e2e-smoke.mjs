@@ -473,8 +473,8 @@ try {
   await page.waitForSelector('[data-testid=home-page]', { timeout: 10000 });
   const cover = await page.textContent('[data-testid=home-page]');
   check(
-    ['مدرسة الفيصلية', 'مشروع الشعبة 201', 'تركيب الجزيئات', 'تصميم وتنفيذ الطالب', 'عوض الحربي', 'تحت إشراف المعلم الفاضل', 'الأستاذ أشرف صلاح'].every((x) => cover.includes(x)),
-    'the site opens on the cover: school, section 201, «تركيب الجزيئات», student and supervisor',
+    ['مدرسة الفيصلية', 'مشروع الشعبة 201', 'تركيب الجزيئات', 'تصميم وتنفيذ الطالبين', 'عوض الحربي', 'سلطان العصيمي', 'تحت إشراف المعلم الفاضل', 'الأستاذ أشرف صلاح'].every((x) => cover.includes(x)),
+    'the site opens on the cover: school, section 201, «تركيب الجزيئات», both students and the supervisor',
   );
   await page.click('[data-testid=home-start]');
   await page.waitForSelector('[data-testid=molecule-viewer]');

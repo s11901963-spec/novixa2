@@ -36,8 +36,9 @@ export function HomePage() {
         <dl className="mx-auto mt-6 grid max-w-xl gap-2 text-base sm:grid-cols-2">
           <div className="rounded-2xl bg-white/10 px-4 py-3">
             <dt className="text-sm text-[#cbd5e1]">{t('home.byLabel')}</dt>
-            <dd className="mt-0.5 text-lg font-bold text-[#ffc44d]" data-testid="home-student">
-              {t('home.by')}
+            <dd className="mt-0.5 text-lg font-bold leading-7 text-[#ffc44d]" data-testid="home-student">
+              <span className="block">{t('home.by')}</span>
+              <span className="block">{t('home.by2')}</span>
             </dd>
           </div>
           <div className="rounded-2xl bg-white/10 px-4 py-3">
