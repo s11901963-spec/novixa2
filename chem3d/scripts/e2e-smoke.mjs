@@ -302,6 +302,11 @@ try {
   check((await page.$$('[data-testid^=book-row-]')).length === 7, 'all seven textbook molecules listed');
   await page.screenshot({ path: `${out}/book-table.png`, fullPage: true });
 
+  await page.click('[data-testid=nav-electrons]');
+  await page.click('[data-testid=video-help-electrons]');
+  check((await page.$eval('[data-testid=video-modal]', (el) => el.dataset.start)) === '189.2', '«🎬 شرح بالفيديو» on the electron page starts at its part of the video');
+  await page.click('[data-testid=video-close]');
+
   console.log('11. Electron-configuration challenge');
   await page.goto(`${base}#challenges`, { waitUntil: 'networkidle' });
   await page.waitForSelector('[data-testid=start-level-2]', { timeout: 10000 });
@@ -476,9 +481,24 @@ try {
     ['مدرسة الفيصلية', 'مشروع الشعبة 201', 'تركيب الجزيئات', 'تصميم وتنفيذ الطالبين', 'عوض الحربي', 'سلطان العصيمي', 'تحت إشراف المعلم الفاضل', 'الأستاذ أشرف صلاح'].every((x) => cover.includes(x)),
     'the site opens on the cover: school, section 201, «تركيب الجزيئات», both students and the supervisor',
   );
+  await page.click('[data-testid=home-watch]');
+  await page.waitForSelector('[data-testid=video-modal]', { timeout: 5000 });
+  const intro = await page.$eval('[data-testid=video-modal]', (el) => ({ kind: el.dataset.video, start: el.dataset.start, src: el.querySelector('video').getAttribute('src'), chapters: el.querySelectorAll('[data-testid^=video-chapter-]').length }));
+  check(intro.kind === 'project' && intro.start === '0' && intro.src.endsWith('/docs/chem3d-project-video.mp4') && intro.chapters === 14, `«شاهد الفيديو التعريفي» opens the explainer large, from the start, with ${intro.chapters} chapters`);
+  await page.keyboard.press('Escape');
+  check(!(await page.$('[data-testid=video-modal]')), 'Esc closes the video');
   await page.click('[data-testid=home-start]');
   await page.waitForSelector('[data-testid=molecule-viewer]');
   check(page.url().endsWith('#lab') && (await page.getAttribute('[data-testid=tab-practice]', 'aria-selected')) === 'true', '«ابدأ المشروع» opens the lab on «حل بنفسك»');
+  await page.click('[data-testid=video-help-practice]');
+  const atPractice = await page.$eval('[data-testid=video-modal]', (el) => el.dataset.start);
+  await page.click('[data-testid=video-close]');
+  await page.click('[data-testid=tab-angle]');
+  await page.click('[data-testid=video-help-angle]');
+  const angleVideo = await page.$eval('[data-testid=video-modal]', (el) => el.querySelector('video').getAttribute('src'));
+  await page.click('[data-testid=video-close]');
+  await page.click('[data-testid=tab-practice]');
+  check(atPractice === '31.5' && angleVideo.endsWith('/docs/chem3d-angle-demo.mp4'), `«🎬 شرح بالفيديو» in the lab opens the part for the open tab («حل بنفسك» at ${atPractice} s; «غيّر الزاوية» → the touch video)`);
   await page.click('[data-testid=sound-toggle]');
   const quietFrom = await page.evaluate(() => window.__cues.length);
   await page.fill('#practice-valence', '3');

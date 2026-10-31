@@ -2,6 +2,7 @@ import { lazy, Suspense, useEffect, useState } from 'react';
 import { useT } from './i18n';
 import { navigate, useRoute, type Route } from './router';
 import { useSettings } from './state/settings';
+import { VideoModal } from './components/ui/VideoModal';
 import { HomePage } from './pages/HomePage';
 import { LabPage } from './pages/LabPage';
 
@@ -197,6 +198,7 @@ export function App() {
         </Suspense>
       </main>
       <Footer />
+      <VideoModal />
     </div>
   );
 }

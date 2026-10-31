@@ -1,4 +1,5 @@
 import { Button, Card, Field, Segmented, ToggleChip } from '../components/ui/controls';
+import { VideoHelpButton } from '../components/ui/VideoModal';
 import { useT } from '../i18n';
 import { cue } from '../lib/sound';
 import { useSettings, type DisplayToggles } from '../state/settings';
@@ -9,7 +10,10 @@ export function PreferencesPage() {
   const toggles: (keyof DisplayToggles)[] = ['bonds', 'lonePairs', 'terminalLonePairs', 'bondingPairs', 'angles', 'allAngles', 'polyhedron', 'autoRotate'];
   return (
     <div className="gutter mx-auto max-w-3xl py-6" data-testid="preferences-page">
-      <h1 className="text-2xl font-bold">{t('pref.title')}</h1>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 className="text-2xl font-bold">{t('pref.title')}</h1>
+        <VideoHelpButton chapter="settings" />
+      </div>
       <p className="mt-1 text-sm text-muted">{t('pref.saved')}</p>
       <Card className="mt-5 flex flex-col gap-5 p-5">
         <Field label={t('pref.language')}>

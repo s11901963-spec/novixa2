@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { VideoHelpButton } from '../components/ui/VideoModal';
 import {
   aufbauTerms,
   boxSubshellsFor,
@@ -162,7 +163,10 @@ export function ElectronsPage() {
     <div className="gutter mx-auto max-w-7xl py-6" data-testid="electrons-page">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t('ec.title')}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="text-2xl font-bold">{t('ec.title')}</h1>
+            <VideoHelpButton chapter="electrons" />
+          </div>
           <p className="mt-1 max-w-3xl leading-7 text-muted">{t('ec.intro')}</p>
         </div>
         <Segmented

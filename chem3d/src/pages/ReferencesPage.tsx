@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { VideoHelpButton } from '../components/ui/VideoModal';
 import { Badge, Card } from '../components/ui/controls';
 import { refHref, shortCitation } from '../components/ui/RefCite';
 import { dataset, type ReferenceData } from '../data';
@@ -59,7 +60,10 @@ export function ReferencesPage() {
 
   return (
     <div className="gutter mx-auto max-w-5xl py-6" data-testid="references-page">
-      <h1 className="text-2xl font-bold">{t('ref.title')}</h1>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+        <h1 className="text-2xl font-bold">{t('ref.title')}</h1>
+        <VideoHelpButton chapter="references" />
+      </div>
       <p className="mt-2 max-w-3xl leading-7 text-muted">
         {t('ref.intro', { date: new Intl.DateTimeFormat(lang === 'ar' ? 'ar' : 'en', { dateStyle: 'long', numberingSystem: 'latn', timeZone: 'UTC' }).format(new Date(`${dataset.checkedOn}T00:00:00Z`)) })}
       </p>

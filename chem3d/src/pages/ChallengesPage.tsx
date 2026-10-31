@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from 'react';
+import { VideoHelpButton } from '../components/ui/VideoModal';
 import { buildSceneModel } from '../chem/geometry';
 import { generateSession, isCorrect, scoreFor, analysisOf, type Level, type Question, type Topic } from '../chem/questions';
 import { randomSeed } from '../chem/random';
@@ -314,7 +315,10 @@ export function ChallengesPage() {
   if (!run) {
     return (
       <div className="gutter mx-auto max-w-5xl py-6">
-        <h1 className="text-2xl font-bold">{t('ch.title')}</h1>
+        <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+          <h1 className="text-2xl font-bold">{t('ch.title')}</h1>
+          <VideoHelpButton chapter="challenges" />
+        </div>
         <p className="mt-2 max-w-2xl text-muted">{t('ch.intro')}</p>
         <div className="mt-4 flex flex-wrap items-center gap-3">
           <span className="text-sm font-semibold">{t('ch.topic')}</span>

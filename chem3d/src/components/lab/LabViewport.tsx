@@ -7,6 +7,7 @@ import { useLab, type ViewMode } from '../../state/lab';
 import { useSettings, type DisplayToggles } from '../../state/settings';
 import { Segmented, ToggleChip } from '../ui/controls';
 import { DraggablePanel } from '../ui/DraggablePanel';
+import { VideoHelpButton } from '../ui/VideoModal';
 import { useCue } from '../ui/useCue';
 import { useRepeat } from '../ui/useRepeat';
 import { Axe, Formula, formulaText, Ltr } from '../ui/Formula';
@@ -493,6 +494,11 @@ export function LabViewport({ model }: { model: LabModel }) {
                 </button>
               )}
             </>
+          )}
+          {tab === 'angle' ? (
+            <VideoHelpButton angle tone="screen" />
+          ) : (
+            <VideoHelpButton chapter={tab === 'practice' ? 'practice' : tab === 'solution' ? 'solution' : tab === 'builder' ? 'builder' : tab === 'atom' ? 'views' : 'lab'} tone="screen" />
           )}
           <span className="ms-auto hidden text-xs text-screen-muted md:pointer-fine:inline">{bending ? t('angle.mouseHint') : t('lab.dragHint')}</span>
         </div>

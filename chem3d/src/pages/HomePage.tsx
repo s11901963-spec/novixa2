@@ -2,6 +2,7 @@ import { PROJECT_VIDEO_POSTER, PROJECT_VIDEO_URL } from '../data/media';
 import { useT } from '../i18n';
 import { navigate, type Route } from '../router';
 import { useLab, type LabTab } from '../state/lab';
+import { useVideo } from '../state/video';
 
 const FEATURES: { id: string; icon: string; route: Route; tab?: LabTab }[] = [
   { id: 'lab', icon: '🧪', route: 'lab', tab: 'solution' },
@@ -16,6 +17,7 @@ const FEATURES: { id: string; icon: string; route: Route; tab?: LabTab }[] = [
 export function HomePage() {
   const t = useT();
   const setTab = useLab((s) => s.setTab);
+  const showVideo = useVideo((s) => s.show);
   const open = (route: Route, tab?: LabTab) => {
     if (tab) setTab(tab);
     navigate(route);
@@ -57,12 +59,17 @@ export function HomePage() {
           >
             {t('home.start')}
           </button>
-          <a href="#home-video" onClick={(e) => { e.preventDefault(); document.getElementById('home-video')?.scrollIntoView({ behavior: 'smooth' }); }} className="rounded-2xl border border-white/30 px-5 py-3 text-lg font-bold text-white hover:bg-white/10 pointer-coarse:min-h-12">
+          <button type="button" onClick={() => showVideo({ kind: 'project' })} className="rounded-2xl border border-white/30 px-5 py-3 text-lg font-bold text-white hover:bg-white/10 pointer-coarse:min-h-12" data-testid="home-watch">
             {t('home.watch')}
-          </a>
+          </button>
         </div>
       </section>
 
+      <section id="home-video" className="rounded-2xl border border-line bg-surface p-5 sm:p-7">
+        <h2 className="text-xl font-bold">{t('home.videoTitle')}</h2>
+        <p className="mt-1 text-sm text-muted">{t('home.videoNote')}</p>
+        <video className="mt-3 aspect-video w-full rounded-xl bg-black" src={PROJECT_VIDEO_URL} poster={PROJECT_VIDEO_POSTER} controls preload="metadata" playsInline data-testid="home-video-player" />
+      </section>
       <section className="rounded-2xl border border-line bg-surface p-5 sm:p-7">
         <h2 className="text-xl font-bold">{t('home.ideaTitle')}</h2>
         <p className="mt-2 leading-8 text-fg">{t('home.idea')}</p>
@@ -89,11 +96,6 @@ export function HomePage() {
         </div>
       </section>
 
-      <section id="home-video" className="rounded-2xl border border-line bg-surface p-5 sm:p-7">
-        <h2 className="text-xl font-bold">{t('home.videoTitle')}</h2>
-        <p className="mt-1 text-sm text-muted">{t('home.videoNote')}</p>
-        <video className="mt-3 aspect-video w-full rounded-xl bg-black" src={PROJECT_VIDEO_URL} poster={PROJECT_VIDEO_POSTER} controls preload="metadata" playsInline data-testid="home-video-player" />
-      </section>
     </div>
   );
 }

@@ -1,4 +1,5 @@
 import { useMemo, useState } from 'react';
+import { VideoHelpButton } from '../components/ui/VideoModal';
 import { diagnoseAngle, diagnoseElectronGeometry, diagnoseMolecularGeometry } from '../chem/diagnose';
 import { buildSceneModel } from '../chem/geometry';
 import { analysisOf } from '../chem/questions';
@@ -115,7 +116,10 @@ export function PredictPage() {
     <div className="gutter mx-auto max-w-6xl py-6" data-testid="predict-page">
       <div className="flex flex-wrap items-end justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold">{t('pr.title')}</h1>
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            <h1 className="text-2xl font-bold">{t('pr.title')}</h1>
+            <VideoHelpButton chapter="predict" />
+          </div>
           <p className="mt-1 max-w-2xl text-muted">{t('pr.intro')}</p>
         </div>
         <div className="flex flex-wrap items-center gap-3">
